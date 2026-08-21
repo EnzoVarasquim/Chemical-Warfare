@@ -126,6 +126,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,11 +155,11 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="geral.c" />
-    <ClCompile Include="inimigos.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="player.c" />
-    <ClCompile Include="tiro.c" />
+    <ClCompile Include="src\geral.c" />
+    <ClCompile Include="src\inimigos.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\player.c" />
+    <ClCompile Include="src\tiro.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -166,10 +167,10 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="geral.h" />
-    <ClInclude Include="inimigos.h" />
-    <ClInclude Include="player.h" />
-    <ClInclude Include="tiro.h" />
+    <ClInclude Include="include\geral.h" />
+    <ClInclude Include="include\inimigos.h" />
+    <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\tiro.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\..\..\Downloads\font.ttf" />
