@@ -1,41 +1,49 @@
-# Chemical Warfare
+# 🧪 Chemical Warfare
 
-Jogo 2D educacional desenvolvido em **C** utilizando a biblioteca **Allegro 5**.
+> 🎮 Jogo 2D educacional desenvolvido em **C** utilizando a biblioteca **Allegro 5**.
 
-O projeto está sendo desenvolvido em grupo utilizando **Visual Studio, C, Allegro 5, Git e GitHub**.
+Projeto desenvolvido em grupo utilizando:
 
----
-
-# 📋 Sumário
-
-- [Tecnologias](#-tecnologias)
-- [Estrutura do projeto](#-estrutura-do-projeto)
-- [1. Instalar o Git](#1-instalar-o-git)
-- [2. Configurar o Git](#2-configurar-o-git)
-- [3. Instalar o Visual Studio](#3-instalar-o-visual-studio)
-- [4. Instalar o Allegro 5](#4-instalar-o-allegro-5)
-- [5. Clonar o projeto](#5-clonar-o-projeto)
-- [6. Abrir o projeto](#6-abrir-o-projeto)
-- [7. Configurar o Allegro no Visual Studio](#7-configurar-o-allegro-no-visual-studio)
-- [8. Configurar os Headers](#8-configurar-os-headers)
-- [9. Compilar o projeto](#9-compilar-o-projeto)
-- [10. Comandos Git](#10-comandos-git)
-- [11. Fluxo de trabalho da equipe](#11-fluxo-de-trabalho-da-equipe)
-- [12. Criar uma nova branch](#12-criar-uma-nova-branch)
-- [13. Enviar uma branch para o GitHub](#13-enviar-uma-branch-para-o-github)
-- [14. Atualizar o projeto](#14-atualizar-o-projeto)
-- [15. Conflitos](#15-conflitos)
-- [16. Cuidados importantes](#16-cuidados-importantes)
+- 💻 **C**
+- 🎨 **Allegro 5**
+- 🛠️ **Visual Studio**
+- 🔧 **Git**
+- 🌐 **GitHub**
 
 ---
 
-# 🛠 Tecnologias
+## 📋 Sumário
 
-- C
-- Visual Studio
-- Allegro 5
-- Git
-- GitHub
+- [🛠️ Tecnologias](#️-tecnologias)
+- [📁 Estrutura do projeto](#-estrutura-do-projeto)
+- [1️⃣ Instalar o Git](#1️⃣-instalar-o-git)
+- [2️⃣ Configurar o Git](#2️⃣-configurar-o-git)
+- [3️⃣ Instalar o Visual Studio](#3️⃣-instalar-o-visual-studio)
+- [4️⃣ Instalar o Allegro 5](#4️⃣-instalar-o-allegro-5)
+- [5️⃣ Clonar o projeto](#5️⃣-clonar-o-projeto)
+- [6️⃣ Abrir o projeto](#6️⃣-abrir-o-projeto)
+- [7️⃣ Configurar o Allegro no Visual Studio](#7️⃣-configurar-o-allegro-no-visual-studio)
+- [8️⃣ Configurar os Headers](#8️⃣-configurar-os-headers)
+- [9️⃣ Compilar o projeto](#9️⃣-compilar-o-projeto)
+- [🔟 Comandos Git](#-comandos-git)
+- [👥 Fluxo de trabalho da equipe](#-fluxo-de-trabalho-da-equipe)
+- [🌿 Criar uma nova branch](#-criar-uma-nova-branch)
+- [⬆️ Enviar uma branch para o GitHub](#️-enviar-uma-branch-para-o-github)
+- [🔄 Atualizar o projeto](#-atualizar-o-projeto)
+- [⚠️ Conflitos](#️-conflitos)
+- [🚨 Cuidados importantes](#-cuidados-importantes)
+
+---
+
+# 🛠️ Tecnologias
+
+| Tecnologia | Utilização |
+|---|---|
+| **C** | Linguagem principal |
+| **Allegro 5** | Criação do jogo 2D |
+| **Visual Studio** | Desenvolvimento e compilação |
+| **Git** | Controle de versão |
+| **GitHub** | Armazenamento e colaboração |
 
 ---
 
@@ -44,122 +52,161 @@ O projeto está sendo desenvolvido em grupo utilizando **Visual Studio, C, Alleg
 ```text
 Chemical-Warfare/
 │
-├── assets/
-│   ├── fonts/
-│   ├── images/
-│   └── sounds/
+├── 📂 assets/
+│   ├── 📂 fonts/
+│   ├── 📂 images/
+│   └── 📂 sounds/
 │
-├── include/
+├── 📂 include/
 │   ├── geral.h
 │   ├── inimigos.h
 │   ├── player.h
 │   └── tiro.h
 │
-├── src/
+├── 📂 src/
 │   ├── geral.c
 │   ├── inimigos.c
 │   ├── main.c
 │   ├── player.c
 │   └── tiro.c
 │
-├── .gitignore
-├── README.md
-├── packages.config
-├── ConsoleApplication1.vcxproj
-└── ConsoleApplication1.vcxproj.filters
+├── 📄 .gitignore
+├── 📄 README.md
+├── 📄 packages.config
+├── 📄 ConsoleApplication1.vcxproj
+└── 📄 ConsoleApplication1.vcxproj.filters
+```
 
+### 📂 `src/`
+
+Contém os arquivos `.c` responsáveis pela implementação do jogo.
+
+```text
 src/
+├── geral.c
+├── inimigos.c
+├── main.c
+├── player.c
+└── tiro.c
+```
 
-Contém os arquivos .c do projeto.
+### 📂 `include/`
 
-Exemplo:
+Contém os arquivos `.h`, que possuem estruturas, declarações e protótipos das funções.
 
-src/player.c
-src/tiro.c
-src/inimigos.c
+```text
 include/
+├── geral.h
+├── inimigos.h
+├── player.h
+└── tiro.h
+```
 
-Contém os arquivos .h.
+### 📂 `assets/`
 
-Exemplo:
+Contém os recursos utilizados pelo jogo.
 
-include/player.h
-include/tiro.h
+```text
 assets/
+├── fonts/
+├── images/
+└── sounds/
+```
 
-Contém os recursos do jogo:
+---
 
-assets/fonts/
-assets/images/
-assets/sounds/
-1. Instalar o Git
-Windows
+# 1️⃣ Instalar o Git
+
+## 🪟 Windows
 
 Baixe o Git pelo site oficial:
 
 https://git-scm.com/downloads
 
-Baixe a versão para Windows.
+Baixe a versão para **Windows**.
 
-Durante a instalação, você pode manter as opções padrão.
+Durante a instalação, as opções padrão podem ser mantidas.
 
-Depois de instalar, abra o:
+Após a instalação, abra o:
 
-Git Bash
+> **Git Bash**
 
-Verifique se o Git foi instalado:
+### ✅ Verificar a instalação
 
+Execute:
+
+```bash
 git --version
+```
 
 Se aparecer algo semelhante a:
 
+```text
 git version 2.x.x
+```
 
-o Git está instalado corretamente.
+o Git foi instalado corretamente.
 
-2. Configurar o Git
+---
 
-Se esta for a primeira vez que você utiliza Git no computador, configure seu nome:
+# 2️⃣ Configurar o Git
 
+Se esta for a primeira vez que você utiliza Git neste computador, configure seu nome:
+
+```bash
 git config --global user.name "SEU NOME"
+```
 
-Exemplo:
+### Exemplo
 
+```bash
 git config --global user.name "João Silva"
+```
 
-Configure também o e-mail da sua conta do GitHub:
+Configure também o e-mail utilizado na sua conta do GitHub:
 
+```bash
 git config --global user.email "seuemail@email.com"
+```
 
-Para conferir:
+### 🔎 Verificar a configuração
 
+```bash
 git config --global --list
+```
 
-Você deverá encontrar:
+Você deverá encontrar algo semelhante a:
 
+```text
 user.name=João Silva
 user.email=seuemail@email.com
-3. Instalar o Visual Studio
+```
 
-Baixe o Visual Studio:
+---
+
+# 3️⃣ Instalar o Visual Studio
+
+Baixe o Visual Studio pelo site oficial:
 
 https://visualstudio.microsoft.com/
 
 Durante a instalação, selecione a carga de trabalho:
 
-Desenvolvimento para Desktop com C++
+> **Desenvolvimento para Desktop com C++**
 
-Mesmo que o projeto seja escrito em C, utilizamos as ferramentas de compilação fornecidas pelo Visual Studio para C/C++.
+> 💡 Mesmo que o projeto seja escrito em C, utilizamos as ferramentas de compilação fornecidas pelo Visual Studio para C/C++.
 
-Depois de instalar, abra o Visual Studio uma vez para confirmar que está funcionando.
+Após a instalação, abra o Visual Studio pelo menos uma vez para confirmar que está funcionando corretamente.
 
-4. Instalar o Allegro 5
+---
 
-O projeto utiliza a biblioteca Allegro 5.
+# 4️⃣ Instalar o Allegro 5
+
+O projeto utiliza a biblioteca **Allegro 5**.
 
 O Allegro precisa estar instalado e configurado antes de tentar compilar o projeto.
 
-4.1 Baixar o Allegro
+## 4.1 📥 Baixar o Allegro
 
 Baixe o Allegro 5 pelo site oficial:
 
@@ -167,42 +214,57 @@ https://liballeg.org/
 
 Procure uma versão compatível com:
 
+```text
 Windows
 64 bits
 Visual Studio
+```
 
 Extraia o arquivo baixado em um local permanente.
 
 Por exemplo:
 
+```text
 C:\Allegro
+```
 
-Evite colocar a biblioteca dentro da pasta do projeto.
+> ⚠️ Evite colocar a biblioteca dentro da pasta do projeto.
 
-5. Clonar o projeto
+---
 
-Depois de instalar o Git, abra o Git Bash.
+# 5️⃣ Clonar o projeto
 
-Escolha uma pasta para guardar o projeto.
+Depois de instalar o Git, abra o **Git Bash**.
+
+Escolha uma pasta onde deseja armazenar o projeto.
 
 Por exemplo:
 
+```bash
 cd ~/Documents
+```
 
 Agora clone o repositório:
 
+```bash
 git clone https://github.com/EnzoVarasquim/Chemical-Warfare.git
+```
 
 Entre na pasta:
 
+```bash
 cd Chemical-Warfare
+```
 
-Confira os arquivos:
+### 🔎 Conferir os arquivos
 
+```bash
 ls
+```
 
 Você deverá encontrar:
 
+```text
 assets
 include
 src
@@ -210,308 +272,499 @@ README.md
 ConsoleApplication1.vcxproj
 ConsoleApplication1.vcxproj.filters
 packages.config
-6. Abrir o projeto
+```
 
-Dentro da pasta do projeto existe:
+---
 
+# 6️⃣ Abrir o projeto
+
+Dentro da pasta do projeto existe o arquivo:
+
+```text
 ConsoleApplication1.vcxproj
+```
 
-Você pode abrir dando duplo clique nesse arquivo.
+## Opção 1 — Abrir diretamente
 
-Outra opção:
+Dê **duplo clique** em:
 
-Abra o Visual Studio.
-Clique em Open a project or solution.
-Entre na pasta Chemical-Warfare.
-Selecione:
+```text
 ConsoleApplication1.vcxproj
-Clique em Open.
-7. Configurar o Allegro no Visual Studio
+```
 
-⚠️ Esta etapa precisa ser feita na primeira configuração da máquina.
+## Opção 2 — Abrir pelo Visual Studio
+
+1. Abra o **Visual Studio**.
+2. Clique em **Open a project or solution**.
+3. Entre na pasta `Chemical-Warfare`.
+4. Selecione:
+
+```text
+ConsoleApplication1.vcxproj
+```
+
+5. Clique em **Open**.
+
+---
+
+# 7️⃣ Configurar o Allegro no Visual Studio
+
+> ⚠️ **Esta etapa precisa ser feita na primeira configuração da máquina.**
 
 Depois de abrir o projeto:
 
-Botão direito no projeto → Properties
+**Botão direito no projeto → Properties**
 
 No topo, selecione:
 
+```text
 Configuration: All Configurations
 Platform: x64
-7.1 Include Directories
+```
+
+---
+
+## 7.1 📂 Include Directories
 
 Entre em:
 
+```text
 C/C++
 → General
 → Additional Include Directories
+```
 
-Adicione a pasta include do Allegro.
+Adicione a pasta `include` do Allegro.
 
 Exemplo:
 
+```text
 C:\Allegro\include
+```
 
-Use o caminho real onde você instalou o Allegro.
+> ⚠️ Utilize o caminho real onde o Allegro foi instalado.
 
-7.2 Library Directories
+---
+
+## 7.2 📚 Library Directories
 
 Entre em:
 
+```text
 Linker
 → General
 → Additional Library Directories
+```
 
-Adicione a pasta onde estão os arquivos .lib do Allegro.
+Adicione a pasta onde estão os arquivos `.lib` do Allegro.
 
 Exemplo:
 
+```text
 C:\Allegro\lib
+```
 
-Use o caminho real da sua instalação.
+> ⚠️ Utilize o caminho real da sua instalação.
 
-7.3 Linker → Input
+---
+
+## 7.3 🔗 Linker → Input
 
 Entre em:
 
+```text
 Linker
 → Input
 → Additional Dependencies
+```
 
 Adicione as bibliotecas necessárias do Allegro.
 
 Exemplo:
 
+```text
 allegro-5.x.x-monolith-mt.lib
+```
 
-O nome exato depende da versão do Allegro instalada.
+> ℹ️ O nome exato depende da versão do Allegro instalada.
 
-7.4 DLLs
+---
 
-Para executar o jogo, as DLLs do Allegro também precisam estar disponíveis.
+## 7.4 📦 DLLs
 
-Uma forma simples é colocar as DLLs necessárias junto do .exe gerado.
+Para executar o jogo, as DLLs necessárias do Allegro também precisam estar disponíveis.
+
+Uma forma simples é colocar as DLLs necessárias junto do `.exe` gerado.
 
 Por exemplo:
 
-x64/Debug/
+```text
+x64/
+└── Debug/
+    ├── Chemical Warfare.exe
+    ├── allegro-*.dll
+    └── ...
+```
 
-As DLLs não devem ser adicionadas ao Git se forem arquivos gerados/externos. Cada integrante deve configurar o próprio ambiente.
+> ⚠️ As DLLs externas não devem ser adicionadas ao Git caso sejam arquivos gerados/externos. Cada integrante deve configurar seu próprio ambiente.
 
-8. Configurar os Headers do projeto
+---
 
-O projeto possui os headers dentro de:
+# 8️⃣ Configurar os Headers
 
+Os headers do projeto estão dentro de:
+
+```text
 include/
+```
 
 No Visual Studio:
 
+```text
 Project Properties
 → C/C++
 → General
 → Additional Include Directories
+```
 
 Deve existir:
 
+```text
 $(ProjectDir)include
+```
 
 Isso permite utilizar:
 
+```c
 #include "geral.h"
 #include "player.h"
 #include "tiro.h"
 #include "inimigos.h"
+```
 
 em vez de:
 
+```c
 #include "include/geral.h"
-9. Compilar o projeto
+```
+
+---
+
+# 9️⃣ Compilar o projeto
 
 No Visual Studio:
 
+```text
 Build
 → Rebuild Solution
+```
 
-Ou:
+Ou utilize:
 
+```text
 Ctrl + Shift + B
+```
 
-Se não houver erros, execute:
+Se não houver erros, execute o jogo utilizando:
 
+```text
 F5
+```
 
 ou clique em:
 
-Local Windows Debugger
-10. Comandos Git
-Verificar o estado do projeto
+> **Local Windows Debugger**
+
+🎉 Se a janela do jogo abrir corretamente, sua configuração está pronta!
+
+---
+
+# 🔟 Comandos Git
+
+## 🔎 Verificar o estado do projeto
+
+```bash
 git status
-Baixar alterações do GitHub
+```
+
+---
+
+## ⬇️ Baixar alterações do GitHub
+
+```bash
 git pull
-Ver histórico de commits
+```
+
+---
+
+## 📜 Ver histórico de commits
+
+```bash
 git log --oneline
-Ver alterações
+```
+
+---
+
+## 🔍 Ver alterações feitas
+
+```bash
 git diff
-Adicionar alterações
+```
+
+---
+
+## ➕ Adicionar alterações
+
+```bash
 git add .
-Criar um commit
+```
+
+---
+
+## 💾 Criar um commit
+
+```bash
 git commit -m "Descrição da alteração"
+```
 
-Exemplo:
+### Exemplo
 
+```bash
 git commit -m "Adiciona movimentação do jogador"
-Enviar alterações para o GitHub
+```
+
+---
+
+## ⬆️ Enviar alterações para o GitHub
+
+```bash
 git push
-11. Fluxo de trabalho da equipe
+```
+
+---
+
+# 👥 Fluxo de trabalho da equipe
 
 Antes de começar a programar:
 
+```bash
 git pull
+```
 
 Faça suas alterações no Visual Studio.
 
 Depois:
 
+```bash
 git status
+```
 
 Adicione os arquivos:
 
+```bash
 git add .
+```
 
 Crie o commit:
 
+```bash
 git commit -m "Descrição da alteração"
+```
 
 Envie para o GitHub:
 
+```bash
 git push
+```
 
-Fluxo completo:
+### 🔄 Fluxo completo
 
-git pull
-     ↓
-Programar
-     ↓
-git status
-     ↓
-git add .
-     ↓
+```text
+        git pull
+           │
+           ▼
+    👨‍💻 Programar
+           │
+           ▼
+       git status
+           │
+           ▼
+        git add .
+           │
+           ▼
 git commit -m "Descrição"
-     ↓
-git push
-12. Criar uma nova branch
+           │
+           ▼
+        git push
+```
 
-Para trabalhar em uma funcionalidade sem mexer diretamente na main:
+---
 
+# 🌿 Criar uma nova branch
+
+Para trabalhar em uma funcionalidade sem modificar diretamente a `main`:
+
+```bash
 git checkout -b nome-da-feature
+```
 
-Exemplo:
+### Exemplo
 
+```bash
 git checkout -b sistema-inimigos
+```
 
-Confira em qual branch você está:
+Verifique em qual branch você está:
 
+```bash
 git branch
+```
 
-A branch atual aparecerá com:
+A branch atual aparecerá com `*`:
 
+```text
 * sistema-inimigos
-13. Enviar uma branch para o GitHub
+  main
+```
+
+---
+
+# ⬆️ Enviar uma branch para o GitHub
 
 Depois de fazer seus commits:
 
+```bash
 git push -u origin sistema-inimigos
+```
 
 Depois disso, a branch aparecerá no GitHub.
 
-14. Atualizar o projeto
+---
+
+# 🔄 Atualizar o projeto
 
 Antes de começar um novo trabalho:
 
+```bash
 git checkout main
 git pull
+```
 
 Se você estiver trabalhando em uma branch:
 
+```bash
 git checkout nome-da-feature
+```
 
-E continue trabalhando.
+E continue trabalhando normalmente.
 
-15. Conflitos
+---
+
+# ⚠️ Conflitos
 
 Pode acontecer de duas pessoas alterarem a mesma parte do mesmo arquivo.
 
-O Git pode mostrar:
+Nesse caso, o Git poderá mostrar:
 
+```text
 CONFLICT
+```
 
-Nesse caso:
+### ❌ NÃO faça:
 
-NÃO faça:
-
+```bash
 git init
+```
 
-NÃO apague a pasta .git.
+### ❌ NÃO apague:
 
-NÃO force um push sem saber o que está acontecendo.
+```text
+.git/
+```
+
+### ❌ NÃO force um `push` sem saber o que está acontecendo.
+
+---
+
+## 🔧 Resolver um conflito
 
 Abra o arquivo indicado pelo Git.
 
-Você poderá encontrar algo como:
+Você poderá encontrar algo semelhante a:
 
+```text
 <<<<<<< HEAD
-
 
 código da sua versão
 
-
 =======
-
 
 código da outra versão
 
-
 >>>>>>> outra-branch
+```
 
-Decida qual código deve permanecer e remova os marcadores.
+Decida qual código deve permanecer e remova os marcadores:
+
+```text
+<<<<<<<
+=======
+>>>>>>>
+```
 
 Depois:
 
+```bash
 git add .
+```
 
-e:
+E crie o commit:
 
+```bash
 git commit -m "Resolve conflito"
+```
 
-Se houver dúvidas, converse com os outros integrantes antes de continuar.
+> 💡 Se você não souber qual versão deve permanecer, converse com o integrante que fez a outra alteração antes de continuar.
 
-16. Cuidados importantes
-Não executar git init
+---
 
-O projeto já possui um repositório Git.
+# 🚨 Cuidados importantes
+
+## ❌ Não executar `git init`
+
+O projeto **já possui um repositório Git**.
 
 Não execute:
 
+```bash
 git init
+```
 
-dentro do projeto.
+dentro da pasta do projeto.
 
-Não apagar .git
+---
+
+## ❌ Não apagar `.git`
 
 A pasta:
 
+```text
 .git/
+```
 
 contém o histórico e as configurações do Git.
 
-Não apague essa pasta.
+**Não apague essa pasta.**
 
-Não enviar arquivos de compilação
+---
 
-O projeto possui um .gitignore.
+## 🚫 Não enviar arquivos de compilação
+
+O projeto possui um `.gitignore` configurado.
 
 Arquivos como:
 
+```text
 x64/
 Debug/
 Release/
@@ -522,42 +775,90 @@ Release/
 *.exe
 *.user
 *.log
+```
 
 não devem ser enviados para o GitHub.
 
-Não trabalhar dentro de x64/
+---
+
+## 🚫 Não trabalhar dentro de `x64/`
 
 A pasta:
 
+```text
 x64/
+```
 
 é utilizada pelo Visual Studio para arquivos gerados durante a compilação.
 
 Não coloque código-fonte nela.
 
-🔄 Fluxo recomendado para a equipe
-Ao começar o dia
+O código deve ficar em:
+
+```text
+src/
+include/
+```
+
+---
+
+# 🔄 Fluxo recomendado para a equipe
+
+## 1. 🌅 Ao começar o trabalho
+
+```bash
 git checkout main
 git pull
-Criar sua funcionalidade
+```
+
+## 2. 🌿 Criar sua funcionalidade
+
+```bash
 git checkout -b minha-feature
-Trabalhar
+```
 
-Faça as alterações no Visual Studio.
+## 3. 👨‍💻 Trabalhar
 
-Salvar no Git
+Faça as alterações normalmente no Visual Studio.
+
+## 4. 💾 Salvar no Git
+
+```bash
 git status
 git add .
 git commit -m "Descrição da alteração"
+```
+
+## 5. ⬆️ Enviar para o GitHub
+
+```bash
 git push -u origin minha-feature
-Depois
+```
 
-Abra um Pull Request no GitHub para juntar sua branch à main.
+## 6. 🔀 Pull Request
 
-👥 Equipe
+Depois, abra um **Pull Request** no GitHub para juntar sua branch à `main`.
 
-Projeto desenvolvido em grupo.
+---
 
-Repositório:
+# 🧪 Chemical Warfare
 
+Projeto desenvolvido para fins educacionais.
+
+### 🌐 Repositório
+
+**GitHub:**  
 https://github.com/EnzoVarasquim/Chemical-Warfare
+
+---
+
+### 👥 Equipe
+
+Projeto desenvolvido em grupo utilizando:
+
+**C + Allegro 5 + Visual Studio + Git + GitHub**
+
+---
+
+> 💡 **Dica:** Antes de alterar qualquer código, sempre faça `git pull`.  
+> Isso reduz bastante a chance de conflitos entre os integrantes.
