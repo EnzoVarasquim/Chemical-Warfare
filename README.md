@@ -16,9 +16,9 @@ Jogo 2D educativo desenvolvido em C utilizando Allegro 5.
 
 ## Estrutura
 
-src/      → arquivos .c
-include/  → arquivos .h
-assets/   → imagens, fontes e sons
+- src/      → arquivos .c
+- include/  → arquivos .h
+- assets/   → imagens, fontes e sons
 
 ## Como executar
 
