@@ -22,7 +22,6 @@ Projeto desenvolvido em grupo utilizando:
 - [4️⃣ Instalar o Allegro 5](#4️⃣-instalar-o-allegro-5)
 - [5️⃣ Clonar o projeto](#5️⃣-clonar-o-projeto)
 - [6️⃣ Abrir o projeto](#6️⃣-abrir-o-projeto)
-- [7️⃣ Configurar o Allegro no Visual Studio](#7️⃣-configurar-o-allegro-no-visual-studio)
 - [8️⃣ Configurar os Headers](#8️⃣-configurar-os-headers)
 - [9️⃣ Compilar o projeto](#9️⃣-compilar-o-projeto)
 - [🔟 Comandos Git](#-comandos-git)
@@ -208,27 +207,9 @@ O Allegro precisa estar instalado e configurado antes de tentar compilar o proje
 
 ## 4.1 📥 Baixar o Allegro
 
-Baixe o Allegro 5 pelo site oficial:
+Guia detalhado para instalar o Allegro 5 direto pelo Visual Studio:
 
-https://liballeg.org/
-
-Procure uma versão compatível com:
-
-```text
-Windows
-64 bits
-Visual Studio
-```
-
-Extraia o arquivo baixado em um local permanente.
-
-Por exemplo:
-
-```text
-C:\Allegro
-```
-
-> ⚠️ Evite colocar a biblioteca dentro da pasta do projeto.
+https://youtu.be/mJFYV8Hk6jY?si=MRp6EtQmP5Q6xG4h
 
 ---
 
@@ -304,109 +285,6 @@ ConsoleApplication1.vcxproj
 ```
 
 5. Clique em **Open**.
-
----
-
-# 7️⃣ Configurar o Allegro no Visual Studio
-
-> ⚠️ **Esta etapa precisa ser feita na primeira configuração da máquina.**
-
-Depois de abrir o projeto:
-
-**Botão direito no projeto → Properties**
-
-No topo, selecione:
-
-```text
-Configuration: All Configurations
-Platform: x64
-```
-
----
-
-## 7.1 📂 Include Directories
-
-Entre em:
-
-```text
-C/C++
-→ General
-→ Additional Include Directories
-```
-
-Adicione a pasta `include` do Allegro.
-
-Exemplo:
-
-```text
-C:\Allegro\include
-```
-
-> ⚠️ Utilize o caminho real onde o Allegro foi instalado.
-
----
-
-## 7.2 📚 Library Directories
-
-Entre em:
-
-```text
-Linker
-→ General
-→ Additional Library Directories
-```
-
-Adicione a pasta onde estão os arquivos `.lib` do Allegro.
-
-Exemplo:
-
-```text
-C:\Allegro\lib
-```
-
-> ⚠️ Utilize o caminho real da sua instalação.
-
----
-
-## 7.3 🔗 Linker → Input
-
-Entre em:
-
-```text
-Linker
-→ Input
-→ Additional Dependencies
-```
-
-Adicione as bibliotecas necessárias do Allegro.
-
-Exemplo:
-
-```text
-allegro-5.x.x-monolith-mt.lib
-```
-
-> ℹ️ O nome exato depende da versão do Allegro instalada.
-
----
-
-## 7.4 📦 DLLs
-
-Para executar o jogo, as DLLs necessárias do Allegro também precisam estar disponíveis.
-
-Uma forma simples é colocar as DLLs necessárias junto do `.exe` gerado.
-
-Por exemplo:
-
-```text
-x64/
-└── Debug/
-    ├── Chemical Warfare.exe
-    ├── allegro-*.dll
-    └── ...
-```
-
-> ⚠️ As DLLs externas não devem ser adicionadas ao Git caso sejam arquivos gerados/externos. Cada integrante deve configurar seu próprio ambiente.
 
 ---
 
