@@ -1,0 +1,89 @@
+# ==============================
+
+# Visual Studio
+
+# ==============================
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Arquivos de compilação
+
+Debug/
+Release/
+x64/
+x86/
+
+# Arquivos temporários do Visual Studio
+
+*.VC.db
+*.VC.VC.opendb
+
+# ==============================
+
+# Compilação C/C++
+
+# ==============================
+
+*.obj
+*.o
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.idb
+*.pch
+
+# ==============================
+
+# CMake (caso seja utilizado no futuro)
+
+# ==============================
+
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# ==============================
+
+# Arquivos temporários
+
+# ==============================
+
+*.tmp
+*.temp
+*.log
+*.bak
+*.swp
+*.swo
+
+# ==============================
+
+# Sistema operacional
+
+# ==============================
+
+# Windows
+
+Thumbs.db
+Desktop.ini
+
+# macOS
+
+.DS_Store
+
+# ==============================
+
+# Arquivos específicos do usuário
+
+# ==============================
+
+*.user
+*.suo
+*.opensdf
+*.sdf
