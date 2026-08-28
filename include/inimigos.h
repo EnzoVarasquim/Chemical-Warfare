@@ -15,6 +15,6 @@ typedef struct {
 
 Inimigo init_inimigo(void);
 void desenhar_inimigo(Inimigo inimigo);
-void colisao_tiro(Inimigo* inimigo, Tiro* tiros);
+void colisao_tiro(Inimigo* inimigo, Tiro tiros[]);
 
 #endif

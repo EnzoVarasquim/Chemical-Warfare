@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
@@ -41,7 +42,7 @@ int main(){
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
-    ALLEGRO_FONT* fonte = al_load_font("font.ttf", 24, 0);
+    ALLEGRO_FONT* fonte = al_load_font("assets/fonts/font.ttf", 24, 0);
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0); //fps
     al_start_timer(timer);
@@ -51,6 +52,7 @@ int main(){
     //caso falhe um evento, ele fecha a tela
     if (!event_queue) {
         al_destroy_display(display);
+        printf("Algum evento falhou");
         return 1;
     }
 

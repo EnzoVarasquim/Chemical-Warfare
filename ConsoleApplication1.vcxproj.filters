@@ -33,21 +33,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tiro.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="player.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="main.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="inimigos.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="geral.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\geral.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
@@ -65,23 +50,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tiro.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="player.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="inimigos.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="geral.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\geral.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
