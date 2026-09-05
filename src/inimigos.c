@@ -17,23 +17,25 @@ void desenhar_inimigo(Inimigo inimigo) {
 }
 
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
-    for (int i = 0; i < MAX_TIROS; i++) {
-        if (tiros[i].ativo) {
+    if (inimigo->vivo == true) {
+        for (int i = 0; i < MAX_TIROS; i++) {
+            if (tiros[i].ativo) {
 
-            if (tiros[i].x + tiros[i].size >= inimigo->x &&       //esquerda
-                tiros[i].x <= inimigo->x + inimigo->size &&       //direita
-                tiros[i].y + tiros[i].size >= inimigo->y &&       //cima
-                tiros[i].y <= inimigo->y + inimigo->size)         //baixo
-            {
-                tiros[i].ativo = false;
-                inimigo->vida--;
+                if (tiros[i].x + tiros[i].size >= inimigo->x &&       //esquerda
+                    tiros[i].x <= inimigo->x + inimigo->size &&       //direita
+                    tiros[i].y + tiros[i].size >= inimigo->y &&       //cima
+                    tiros[i].y <= inimigo->y + inimigo->size)         //baixo
+                {
+                    tiros[i].ativo = false;
+                    inimigo->vida--;
+                }
+
+                //matando o inimigo
+                if (inimigo->vida == 0) {
+                    inimigo->vivo = false;
+                }
+
             }
-
-            //matando o inimigo
-            if (inimigo->vida == 0) {
-                inimigo->vivo = false;
-            }
-
         }
     }
 }
