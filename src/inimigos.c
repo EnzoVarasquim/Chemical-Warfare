@@ -34,7 +34,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
                 if (inimigo->vida == 0) {
                     inimigo->vivo = false;
                 }
-
+                
             }
         }
     }
