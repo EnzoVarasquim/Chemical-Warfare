@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
@@ -13,6 +14,8 @@
 #define MAX_TIROS 30
 
 int main(){
+    srand(time(NULL));
+
     al_init();
     al_install_keyboard();
     al_install_mouse();
@@ -28,10 +31,21 @@ int main(){
     bool saindo = false;
     
     Player player = init_player();
-    Inimigo inimigo = init_inimigo();
+
+    // Aloca memória pra guardar 5 inimigos (dps tem q mudar pra quantidade aumentar por wave)
+    int total_inimigos = 5;
+    Inimigo* qtd_inimigos = (Inimigo*)al_malloc(total_inimigos * sizeof(Inimigo));
+
+    // Inicializa cada inimigo em uma posição diferente
+    for (int i = 0; i < total_inimigos; i++) {
+        int tamanho_inimigo = 20;
+        int posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
+        int posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
+        qtd_inimigos[i] = init_inimigo(posX, posY);
+    }
+
     Mouse mouse = init_mouse();
     Keyboard keyboard = init_keyboard();
-    Tiro tiro = init_tiro();
     Tiro num_tiros[MAX_TIROS];
 
     //percorre o array dos tiros pra iniciar todos igualmente
@@ -42,7 +56,9 @@ int main(){
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
-    ALLEGRO_FONT* fonte = al_load_font("assets/fonts/font.ttf", 18, 0);
+    ALLEGRO_FONT* fonte_grande = al_load_font("assets/fonts/font.ttf", 24, 0);
+    ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
+    ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0); //fps
     al_start_timer(timer);
@@ -106,7 +122,7 @@ int main(){
                 keyboard.d_pressed = true;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                reset(&player, &inimigo, num_tiros);
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros);
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
@@ -138,7 +154,11 @@ int main(){
 
             //tiros
             atualizar_posicao_tiros(num_tiros, width, height);
-            colisao_tiro(&inimigo, num_tiros);
+
+            //checar a colisão do inimigo com os tiros
+            for (int i = 0; i < total_inimigos; i++) {
+                colisao_tiro(&qtd_inimigos[i], num_tiros);
+            }
         }
 
         //quando acaba todos os eventos de cima, isso aq desenha os elementos
@@ -147,31 +167,43 @@ int main(){
             desenhar_background();
 
             if (saindo) {
-                al_draw_text(fonte, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
+                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
                 al_flip_display(); 
                 al_rest(0.5);      
                 rodando = false;   
             }
             else {
                 desenhar_tiros(num_tiros);
-                desenhar_inimigo(inimigo);
+
+                for (int i = 0; i < total_inimigos; i++) {
+                    desenhar_inimigo(qtd_inimigos[i]);
+
+                    if (qtd_inimigos[i].vivo) {
+                        al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), qtd_inimigos[i].x - 3, qtd_inimigos[i].y - 15, ALLEGRO_ALIGN_LEFT, "%d HP", qtd_inimigos[i].vida);
+                    }
+                }
+
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
                 //textos na tela
-                al_draw_text(fonte, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
-                al_draw_textf(fonte, al_map_rgb(255, 255, 255), 10, 10, ALLEGRO_ALIGN_LEFT, "Inimigo HP: %d", inimigo.vida);
+                al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
                 
                 al_flip_display();
             }
         }
     }
 
+    //libera os inimigos da memoria
+    al_free(qtd_inimigos);
+
     //desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
     al_destroy_timer(timer);
-    al_destroy_font(fonte);
+    al_destroy_font(fonte_grande);
+    al_destroy_font(fonte_media);
+    al_destroy_font(fonte_pequena);
         
     al_uninstall_mouse();
     al_uninstall_keyboard();
