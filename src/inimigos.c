@@ -3,8 +3,8 @@
 
 #define MAX_TIROS 30
 
-Inimigo init_inimigo(void) {
-	Inimigo inimigo = { 340, 240, 20, 2, 5, true };
+Inimigo init_inimigo(int x, int y) {
+	Inimigo inimigo = { x, y, 20, 2, 5, true };
 	return inimigo;
 }
 
@@ -17,25 +17,26 @@ void desenhar_inimigo(Inimigo inimigo) {
 }
 
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
-    if (inimigo->vivo == true) {
-        for (int i = 0; i < MAX_TIROS; i++) {
-            if (tiros[i].ativo) {
+    if (inimigo->vivo == false) return;
 
-                if (tiros[i].x + tiros[i].size >= inimigo->x &&       //esquerda
-                    tiros[i].x <= inimigo->x + inimigo->size &&       //direita
-                    tiros[i].y + tiros[i].size >= inimigo->y &&       //cima
-                    tiros[i].y <= inimigo->y + inimigo->size)         //baixo
-                {
-                    tiros[i].ativo = false;
-                    inimigo->vida--;
-                }
+    for (int i = 0; i < MAX_TIROS; i++) {
+        if (tiros[i].ativo) {
 
-                //matando o inimigo
-                if (inimigo->vida == 0) {
-                    inimigo->vivo = false;
-                }
-                
+            if (tiros[i].x + tiros[i].size >= inimigo->x &&       //esquerda
+                tiros[i].x <= inimigo->x + inimigo->size &&       //direita
+                tiros[i].y + tiros[i].size >= inimigo->y &&       //cima
+                tiros[i].y <= inimigo->y + inimigo->size)         //baixo
+            {
+                tiros[i].ativo = false;
+                inimigo->vida--;
             }
+
+            //matando o inimigo
+            if (inimigo->vida == 0) {
+                inimigo->vivo = false;
+                break;
+            }
+                
         }
     }
 }
