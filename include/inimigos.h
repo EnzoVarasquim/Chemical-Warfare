@@ -13,7 +13,7 @@ typedef struct {
     bool vivo;
 } Inimigo;
 
-Inimigo init_inimigo(void);
+Inimigo init_inimigo(int x, int y);
 void desenhar_inimigo(Inimigo inimigo);
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]);
 

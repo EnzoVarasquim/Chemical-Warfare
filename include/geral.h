@@ -5,6 +5,6 @@
 #include "inimigos.h"
 
 void desenhar_background(void);
-void reset(Player* player, Inimigo* inimigo, Tiro tiros[]);
+void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[]);
 
 #endif
