@@ -42,7 +42,7 @@ int main(){
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
-    ALLEGRO_FONT* fonte = al_load_font("assets/fonts/font.ttf", 24, 0);
+    ALLEGRO_FONT* fonte = al_load_font("assets/fonts/font.ttf", 18, 0);
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0); //fps
     al_start_timer(timer);
@@ -158,7 +158,10 @@ int main(){
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
-                al_draw_text(fonte, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTER, "TESTES");
+                //textos na tela
+                al_draw_text(fonte, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
+                al_draw_textf(fonte, al_map_rgb(255, 255, 255), 10, 10, ALLEGRO_ALIGN_LEFT, "Inimigo HP: %d", inimigo.vida);
+                
                 al_flip_display();
             }
         }
