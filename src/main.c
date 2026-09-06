@@ -6,14 +6,18 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/keyboard.h>
 #include <allegro5/mouse.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include "geral.h"
 #include "player.h"
 #include "tiro.h"
 #include "inimigos.h"
 
+
+//salve
 #define MAX_TIROS 30
 
-int main(){
+int main() {
     srand(time(NULL));
 
     al_init();
@@ -22,6 +26,10 @@ int main(){
     al_init_primitives_addon();
     al_init_font_addon();
     al_init_ttf_addon();
+    al_install_audio();
+    al_init_acodec_addon();
+
+  
 
     //tela
     int width = 640;
@@ -29,7 +37,7 @@ int main(){
 
     bool rodando = true;
     bool saindo = false;
-    
+
     Player player = init_player();
 
     // Aloca memória pra guardar 5 inimigos (dps tem q mudar pra quantidade aumentar por wave)
@@ -50,7 +58,7 @@ int main(){
 
     //percorre o array dos tiros pra iniciar todos igualmente
     for (int i = 0; i < MAX_TIROS; i++) {
-        num_tiros[i] = init_tiro(); 
+        num_tiros[i] = init_tiro();
     }
 
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
@@ -59,6 +67,24 @@ int main(){
     ALLEGRO_FONT* fonte_grande = al_load_font("assets/fonts/font.ttf", 24, 0);
     ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
+
+    //som do tiro
+    printf("Diretorio de trabalho: %s\n", al_get_current_directory());
+
+    ALLEGRO_SAMPLE* som_tiro =
+        al_load_sample("assets/sounds/som_tiro_lase.wav");
+
+
+    if (!al_reserve_samples(16)) {
+        printf("ERRO: nao conseguiu reservar os canais de audio!\n");
+        return 1;
+    }
+
+    if (!som_tiro) {
+        printf("ERRO: nao conseguiu carregar o som!\n");
+        return 1;
+    }
+
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0); //fps
     al_start_timer(timer);
@@ -72,13 +98,15 @@ int main(){
         return 1;
     }
 
+   
+
     //registra os eventos
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_register_event_source(event_queue, al_get_mouse_event_source());
 
-    while (rodando){
+    while (rodando) {
         ALLEGRO_EVENT event;
 
         al_wait_for_event(event_queue, &event);
@@ -98,7 +126,20 @@ int main(){
         if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
             if (event.mouse.button == 1) {
                 mouse.left_button = true;
+                mouse.left_button = true;
                 disparar_tiro(&mouse, &player, num_tiros);
+
+
+				printf("Tocando som!\n");
+                al_play_sample(
+                    som_tiro,
+                    1.0,
+                    0.0,
+                    1.0,
+                    ALLEGRO_PLAYMODE_ONCE,
+                    NULL
+                );
+
             }
         }
         if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
@@ -168,9 +209,9 @@ int main(){
 
             if (saindo) {
                 al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
-                al_flip_display(); 
-                al_rest(0.5);      
-                rodando = false;   
+                al_flip_display();
+                al_rest(0.5);
+                rodando = false;
             }
             else {
                 desenhar_tiros(num_tiros);
@@ -188,7 +229,7 @@ int main(){
 
                 //textos na tela
                 al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
-                
+
                 al_flip_display();
             }
         }
@@ -198,15 +239,17 @@ int main(){
     al_free(qtd_inimigos);
 
     //desliga os eventos e desisntala as biblioteca quando fecha a tela
+    al_destroy_sample(som_tiro);
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_font(fonte_grande);
     al_destroy_font(fonte_media);
     al_destroy_font(fonte_pequena);
-        
+
     al_uninstall_mouse();
     al_uninstall_keyboard();
+    al_uninstall_audio();
 
     al_shutdown_primitives_addon();
     al_uninstall_system();

@@ -4,7 +4,7 @@
 
 Player init_player(void) {
 	Player player = { 200, 240, 10, 5};
-	return player;
+    return player;
 }
 
 void desenhar_player(Player player) {
