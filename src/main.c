@@ -72,7 +72,7 @@ int main() {
     printf("Diretorio de trabalho: %s\n", al_get_current_directory());
 
     ALLEGRO_SAMPLE* som_tiro =
-        al_load_sample("assets/sounds/som_tiro_lase.wav");
+        al_load_sample("assets/sounds/som_tiro_lase.ogg");
 
 
     if (!al_reserve_samples(16)) {
