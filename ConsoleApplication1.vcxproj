@@ -162,6 +162,7 @@
     <ClCompile Include="src\tiro.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\Downloads\acerto_som.ogg" />
     <None Include=".gitignore" />
     <None Include="packages.config" />
     <None Include="README.md" />

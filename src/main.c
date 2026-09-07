@@ -128,9 +128,7 @@ int main() {
                 mouse.left_button = true;
                 mouse.left_button = true;
                 disparar_tiro(&mouse, &player, num_tiros);
-
-
-				printf("Tocando som!\n");
+                //
                 al_play_sample(
                     som_tiro,
                     1.0,
@@ -238,7 +236,7 @@ int main() {
     //libera os inimigos da memoria
     al_free(qtd_inimigos);
 
-    //desliga os eventos e desisntala as biblioteca quando fecha a tela
+   // desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_sample(som_tiro);
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
