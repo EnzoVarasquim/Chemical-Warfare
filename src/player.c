@@ -3,8 +3,8 @@
 
 
 Player init_player(void) {
-	Player player = { 200, 240, 10, 5};
-    return player;
+	Player player = { 320, 240, 10, 5 };
+	return player;
 }
 
 void desenhar_player(Player player) {
