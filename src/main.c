@@ -1,4 +1,4 @@
-#include <stdio.h>
+a#include <stdio.h>
 #include <time.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
