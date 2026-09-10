@@ -16,6 +16,31 @@ void desenhar_inimigo(Inimigo inimigo) {
    
 }
 
+void seguir_player(Inimigo* inimigo, int player_x, int player_y)
+{
+    if (inimigo->vivo == false) return;
+
+    if (inimigo->x < player_x)
+    {
+        inimigo->x += inimigo->vel;
+    }
+
+    if (inimigo->x > player_x)
+    {
+        inimigo->x -= inimigo->vel;
+    }
+
+    if (inimigo->y < player_y)
+    {
+        inimigo->y += inimigo->vel;
+    }
+
+    if (inimigo->y > player_y)
+    {
+        inimigo->y -= inimigo->vel;
+    }
+}
+
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
     if (inimigo->vivo == false) return;
 

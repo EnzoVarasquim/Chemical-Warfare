@@ -129,14 +129,7 @@ int main() {
                 mouse.left_button = true;
                 disparar_tiro(&mouse, &player, num_tiros);
                 //
-                al_play_sample(
-                    som_tiro,
-                    1.0,
-                    0.0,
-                    1.0,
-                    ALLEGRO_PLAYMODE_ONCE,
-                    NULL
-                );
+                al_play_sample(som_tiro,1.0,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
 
             }
         }
@@ -193,6 +186,11 @@ int main() {
 
             //tiros
             atualizar_posicao_tiros(num_tiros, width, height);
+
+            // inimigos
+            for (int i = 0; i < total_inimigos; i++) {
+                seguir_player(&qtd_inimigos[i], player.x, player.y);
+            }
 
             //checar a colisão do inimigo com os tiros
             for (int i = 0; i < total_inimigos; i++) {
