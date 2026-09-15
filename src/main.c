@@ -192,6 +192,13 @@ int main() {
                 seguir_player(&qtd_inimigos[i], player.x, player.y);
             }
 
+            // checar a colisão entre os inimigos
+            for (int i = 0; i < total_inimigos; i++) {
+                for (int j = i + 1; j < total_inimigos; j++) {
+                    colisao_inimigos(&qtd_inimigos[i], &qtd_inimigos[j]);
+                }
+            }
+
             //checar a colisão do inimigo com os tiros
             for (int i = 0; i < total_inimigos; i++) {
                 colisao_tiro(&qtd_inimigos[i], num_tiros);

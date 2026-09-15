@@ -17,5 +17,6 @@ Inimigo init_inimigo(int x, int y);
 void desenhar_inimigo(Inimigo inimigo);
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]);
 void seguir_player(Inimigo* inimigo, int player_x, int player_y);
+void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2);
 
 #endif
