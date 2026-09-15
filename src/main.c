@@ -13,8 +13,6 @@
 #include "tiro.h"
 #include "inimigos.h"
 
-
-//salve
 #define MAX_TIROS 30
 
 int main() {
@@ -28,8 +26,6 @@ int main() {
     al_init_ttf_addon();
     al_install_audio();
     al_init_acodec_addon();
-
-  
 
     //tela
     int width = 640;
@@ -68,12 +64,11 @@ int main() {
     ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
-    //som do tiro
+    //debug
     printf("Diretorio de trabalho: %s\n", al_get_current_directory());
 
-    ALLEGRO_SAMPLE* som_tiro =
-        al_load_sample("assets/sounds/som_tiro_lase.ogg");
-
+    //som do tiro
+    ALLEGRO_SAMPLE* som_tiro = al_load_sample("assets/sounds/som_tiro_lase.ogg");
 
     if (!al_reserve_samples(16)) {
         printf("ERRO: nao conseguiu reservar os canais de audio!\n");
@@ -84,7 +79,6 @@ int main() {
         printf("ERRO: nao conseguiu carregar o som!\n");
         return 1;
     }
-
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0); //fps
     al_start_timer(timer);
@@ -97,8 +91,6 @@ int main() {
         printf("Algum evento falhou");
         return 1;
     }
-
-   
 
     //registra os eventos
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -129,7 +121,7 @@ int main() {
                 mouse.left_button = true;
                 disparar_tiro(&mouse, &player, num_tiros);
                 //
-                al_play_sample(som_tiro,1.0,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+                al_play_sample(som_tiro, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
             }
         }
@@ -187,24 +179,22 @@ int main() {
             //tiros
             atualizar_posicao_tiros(num_tiros, width, height);
 
-            // inimigos
+            //fazer os inimigos seguirem o player
             for (int i = 0; i < total_inimigos; i++) {
                 seguir_player(&qtd_inimigos[i], player.x, player.y);
             }
 
-            // checar a colisão entre os inimigos
+            //checar a colisão entre os inimigos
             for (int i = 0; i < total_inimigos; i++) {
                 for (int j = i + 1; j < total_inimigos; j++) {
                     colisao_inimigos(&qtd_inimigos[i], &qtd_inimigos[j]);
                 }
             }
 
-            // colisão do player com os inimigos
+            //colisão do player com os inimigos
             for (int i = 0; i < total_inimigos; i++) {
                 colisao_player(&qtd_inimigos[i], &player);
             }
-
-
 
             //checar a colisão do inimigo com os tiros
             for (int i = 0; i < total_inimigos; i++) {
