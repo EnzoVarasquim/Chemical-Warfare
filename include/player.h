@@ -8,6 +8,7 @@ typedef struct {
     int y;
     int size;
     int vel;
+    int hitbox;
 } Player;
 
 typedef struct {
