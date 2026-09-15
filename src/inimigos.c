@@ -15,7 +15,41 @@ void desenhar_inimigo(Inimigo inimigo) {
     }
    
 }
+// segue player
+void seguir_player(Inimigo* inimigo, int player_x, int player_y)
+{
+    if (!inimigo->vivo) return;
 
+    float velocidade = inimigo->vel * 0.5f;
+
+    if (inimigo->x < player_x)
+        inimigo->x += velocidade;
+    else if (inimigo->x > player_x)
+        inimigo->x -= velocidade;
+
+    if (inimigo->y < player_y)
+        inimigo->y += velocidade;
+    else if (inimigo->y > player_y)
+        inimigo->y -= velocidade;
+}
+// colisão entre inimigos
+void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2)
+{
+    if (!inimigo1->vivo || !inimigo2->vivo)
+        return;
+
+    if (inimigo1->x < inimigo2->x + inimigo2->size &&
+        inimigo1->x + inimigo1->size > inimigo2->x &&
+        inimigo1->y < inimigo2->y + inimigo2->size &&
+        inimigo1->y + inimigo1->size > inimigo2->y)
+    {
+        inimigo1->x -= 1;
+        inimigo1->y -= 1;
+
+        inimigo2->x += 1;
+        inimigo2->y += 1;
+    }
+}
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
     if (inimigo->vivo == false) return;
 
