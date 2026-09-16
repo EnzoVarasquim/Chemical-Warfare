@@ -181,7 +181,7 @@ int main() {
 
             //fazer os inimigos seguirem o player
             for (int i = 0; i < total_inimigos; i++) {
-                seguir_player(&qtd_inimigos[i], player.x, player.y);
+                seguir_player(&qtd_inimigos[i], &player);
             }
 
             //checar a colisão entre os inimigos
