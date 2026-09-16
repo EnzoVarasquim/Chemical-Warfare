@@ -15,29 +15,26 @@ void desenhar_inimigo(Inimigo inimigo) {
     al_draw_filled_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 0, 0));
 }
 
-void seguir_player(Inimigo* inimigo, int player_x, int player_y)
-{
+void seguir_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo) return;
 
     float velocidade = inimigo->vel * 0.5f;
-    int distancia = 20;
 
-    if (inimigo->x < player_x - distancia)
+    if (inimigo->x < player->x + player->size)     //direita
         inimigo->x += velocidade;
 
-    else if (inimigo->x > player_x + distancia)
+    if (inimigo->x + inimigo->size > player->x)    //esquerda
         inimigo->x -= velocidade;
 
-    if (inimigo->y < player_y - distancia)
-        inimigo->y += velocidade;
-
-    else if (inimigo->y > player_y + distancia)
+    if (inimigo->y + inimigo->size > player->y)    //cima
         inimigo->y -= velocidade;
+
+    if (inimigo->y < player->y + player->size)     //baixo
+        inimigo->y += velocidade;
 }
 
 //colisão entre inimigos
-void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2)
-{
+void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
     if (!inimigo1->vivo || !inimigo2->vivo) return;
 
     //checa colisao
@@ -47,17 +44,16 @@ void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2)
         inimigo1->y + inimigo1->size > inimigo2->y)
     {
         //troca as posições para os inimigos não entrarem um no outro
-        inimigo1->x -= 1;
-        inimigo1->y -= 1;
+        inimigo1->x -= 10;
+        inimigo1->y -= 10;
                        
-        inimigo2->x += 1;
-        inimigo2->y += 1;
+        inimigo2->x += 10;
+        inimigo2->y += 10;
     }
 }
 
 //colisão do player com o inimigo
-void colisao_player(Inimigo* inimigo, Player* player)
-{
+void colisao_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo) return;
 
     //checa colisao
