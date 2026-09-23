@@ -227,9 +227,13 @@ int main() {
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
-                //textos na tela
+                //textinhos na tela
                 al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
                 al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "%d HP PLAYER", player.vida);
+
+                if (!player.vivo) {
+                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P | aperte R para reiniciar");
+                }
 
                 al_flip_display();
             }
