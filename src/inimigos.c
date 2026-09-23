@@ -44,11 +44,11 @@ void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
         inimigo1->y + inimigo1->size > inimigo2->y)
     {
         //troca as posições para os inimigos não entrarem um no outro
-        inimigo1->x -= 10;
-        inimigo1->y -= 10;
+        inimigo1->x -= 1;
+        inimigo1->y -= 1;
                        
-        inimigo2->x += 10;
-        inimigo2->y += 10;
+        inimigo2->x += 1;
+        inimigo2->y += 1;
     }
 }
 
