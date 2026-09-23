@@ -3,7 +3,7 @@
 
 
 Player init_player(void) {
-    Player player = { 200, 240, 20, 5 };
+    Player player = { 200, 240, 20, 5, 100, true };
     return player;
 }
 
