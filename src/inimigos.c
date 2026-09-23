@@ -16,7 +16,7 @@ void desenhar_inimigo(Inimigo inimigo) {
 }
 
 void seguir_player(Inimigo* inimigo, Player* player) {
-    if (!inimigo->vivo) return;
+    if (!inimigo->vivo || !player->vivo) return;
 
     float velocidade = inimigo->vel * 0.5f;
 
@@ -54,7 +54,7 @@ void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
 
 //colisão do player com o inimigo
 void colisao_player(Inimigo* inimigo, Player* player) {
-    if (!inimigo->vivo) return;
+    if (!inimigo->vivo || !player->vivo) return;
 
     //checa colisao
     if (inimigo->x < player->x + player->size &&     //direita
@@ -72,6 +72,14 @@ void colisao_player(Inimigo* inimigo, Player* player) {
             inimigo->y -= 2;
         else
             inimigo->y += 2;
+
+        //dano no player quando toca nele
+        player->vida--;
+
+        if (player->vida == 0) {
+            player->vivo = false;
+            return;
+        }
     }
 }
 
@@ -94,7 +102,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
             //matando o inimigo
             if (inimigo->vida == 0) {
                 inimigo->vivo = false;
-                break;
+                return;
             }
                 
         }
