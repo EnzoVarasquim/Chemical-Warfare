@@ -8,11 +8,15 @@ Player init_player(void) {
 }
 
 void desenhar_player(Player player) {
+    if (!player.vivo) return;
+
     al_draw_rectangle(player.x, player.y, player.x + player.size, player.y + player.size, al_map_rgb(255, 120, 255), 2);
     al_draw_filled_rectangle(player.x, player.y, player.x + player.size, player.y + player.size, al_map_rgb(255, 0, 255));
 }
 
 void atualizar_player(Player* player, Keyboard keyboard) {
+    if (!player->vivo) return;
+
     if (keyboard.w_pressed == true) {
         player->y -= player->vel;
     }
