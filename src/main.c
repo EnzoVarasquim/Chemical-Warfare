@@ -229,6 +229,7 @@ int main() {
 
                 //textos na tela
                 al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
+                al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "%d HP PLAYER", player.vida);
 
                 al_flip_display();
             }
