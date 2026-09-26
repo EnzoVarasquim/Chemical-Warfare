@@ -32,11 +32,11 @@ int main(){
     
     Player player = init_player();
 
-    // Aloca memória pra guardar 5 inimigos (dps tem q mudar pra quantidade aumentar por wave)
+    //aloca memória pra guardar 5 inimigos (dps tem q mudar pra quantidade aumentar por wave)
     int total_inimigos = 5;
     Inimigo* qtd_inimigos = (Inimigo*)al_malloc(total_inimigos * sizeof(Inimigo));
 
-    // Inicializa cada inimigo em uma posição diferente
+    //inicializa cada inimigo em uma posição diferente
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
         int posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
