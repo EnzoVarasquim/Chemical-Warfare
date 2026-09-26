@@ -4,6 +4,7 @@
 #include <math.h>
 #include "tiro.h"
 
+
 Mouse init_mouse(void) {
     Mouse mouse = { 0, 0, false };
     return mouse;
