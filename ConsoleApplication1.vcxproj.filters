@@ -53,6 +53,9 @@
     <None Include=".gitignore" />
     <None Include="README.md" />
     <None Include="packages.config" />
+    <None Include="..\..\..\Downloads\musica.ogg">
+      <Filter>assets\sounds</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\geral.h">
