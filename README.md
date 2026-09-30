@@ -123,7 +123,7 @@ ls
 Abra:
 
 ```text
-ConsoleApplication1.vcxproj
+ConsoleApplication1.sln
 ```
 
 pelo Visual Studio.
