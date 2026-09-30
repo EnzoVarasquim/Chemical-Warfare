@@ -70,10 +70,7 @@ int main() {
     //som do tiro
     ALLEGRO_SAMPLE* som_tiro = al_load_sample("assets/sounds/som_tiro_lase.ogg");
 
-    if (!al_reserve_samples(16)) {
-        printf("ERRO: nao conseguiu reservar os canais de audio!\n");
-        return 1;
-    }
+
 
     if (!som_tiro) {
         printf("ERRO: nao conseguiu carregar o som!\n");
