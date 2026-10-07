@@ -18,7 +18,7 @@ void desenhar_inimigo(Inimigo inimigo) {
 void seguir_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
 
-    float velocidade = inimigo->vel * 0.5f;
+    float velocidade = inimigo->vel * 0.6f;
 
     if (inimigo->x < player->x + player->size)     //direita
         inimigo->x += velocidade;
@@ -43,12 +43,25 @@ void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
         inimigo1->y < inimigo2->y + inimigo2->size &&
         inimigo1->y + inimigo1->size > inimigo2->y)
     {
-        //troca as posições para os inimigos não entrarem um no outro
-        inimigo1->x -= 1;
-        inimigo1->y -= 1;
-                       
-        inimigo2->x += 1;
-        inimigo2->y += 1;
+        //eles se empurram quando colidem no eixo X 
+        if (inimigo1->x < inimigo2->x) {
+            inimigo1->x -= 3; 
+            inimigo2->x += 3; 
+        }                  
+        else {             
+            inimigo1->x += 3; 
+            inimigo2->x -= 3; 
+        }
+
+        //empurram quando colidem no eixo Y 
+        if (inimigo1->y < inimigo2->y) {
+            inimigo1->y -= 3; 
+            inimigo2->y += 3; 
+        }                  
+        else {             
+            inimigo1->y += 3; 
+            inimigo2->y -= 3; 
+        }
     }
 }
 
@@ -62,23 +75,33 @@ void colisao_player(Inimigo* inimigo, Player* player) {
         inimigo->y < player->y + player->size &&     //baixo
         inimigo->y + inimigo->size > player->y)      //cima
     {
-        //faz com q o inimigo n entre dentro do player
-        if (inimigo->x < player->x)
-            inimigo->x -= 2;
-        else
-            inimigo->x += 2;
-
-        if (inimigo->y < player->y)
-            inimigo->y -= 2;
-        else
-            inimigo->y += 2;
-
         //dano no player quando toca nele
         player->vida--;
 
-        if (player->vida == 0) {
+        if (player->vida <= 0) {
             player->vivo = false;
             return;
+        }
+
+        //faz com q o inimigo n entre dentro do player
+        if (inimigo->x == player->x) {
+            inimigo->x -= 3; //previni um bug dele ficar parado no lugar sem fazer nada
+        }
+        else if (inimigo->x < player->x) {
+            inimigo->x -= 3; 
+        }
+        else {
+            inimigo->x += 3;
+        }
+
+        if (inimigo->y == player->y) {
+            inimigo->y -= 3; //previni um bug dele ficar parado no lugar sem fazer nada
+        }
+        else if (inimigo->y < player->y) {
+            inimigo->y -= 1;
+        }
+        else {
+            inimigo->y += 1;
         }
     }
 }
