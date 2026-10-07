@@ -131,3 +131,21 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
         }
     }
 }
+
+void colisao_tela_inimigo(Inimigo* inimigo) {
+    if (inimigo->x < 0) {               //esquerda
+        inimigo->x = 0;
+    }
+
+    if (inimigo->x > (640 - inimigo->size)) {       //direita
+        inimigo->x = (640 - inimigo->size);
+    }
+
+    if (inimigo->y < 0) {               //cima
+        inimigo->y = 0;
+    }
+
+    if (inimigo->y > (480 - inimigo->size)) {       //baixo
+        inimigo->y = (480 - inimigo->size);
+    }
+}
