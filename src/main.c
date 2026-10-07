@@ -86,9 +86,7 @@ int main() {
     ALLEGRO_SAMPLE* som_tiro = al_load_sample("assets/sounds/som_tiro_lase.ogg");
 
     //musica de fundo
-    ALLEGRO_SAMPLE* musica_background = al_load_sample("assets/sounds/music_background.ogg");
-
-   
+    ALLEGRO_AUDIO_STREAM* musica_background = al_load_audio_stream("assets/sounds/musica_background.ogg", 4, 2048);
 
     if (!som_tiro) {
         printf("ERRO: nao conseguiu carregar o som!\n");
@@ -99,8 +97,8 @@ int main() {
         return 1;
     }
 
-    ALLEGRO_SAMPLE_ID musica_id;
-    al_play_sample(musica_background, 2.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, &musica_id);
+    al_attach_audio_stream_to_mixer(musica_background, al_get_default_mixer());
+    al_set_audio_stream_playmode(musica_background, ALLEGRO_PLAYMODE_LOOP);
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0); //fps
     al_start_timer(timer);
@@ -143,7 +141,7 @@ int main() {
 
                 if (player.vivo) {
                     disparar_tiro(&mouse, &player, num_tiros);
-                    al_play_sample(som_tiro, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                    al_play_sample(som_tiro, 0.1, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 }
 
             }
@@ -268,7 +266,7 @@ int main() {
 
    // desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_sample(som_tiro);
-    al_destroy_sample(musica_background);
+    al_destroy_audio_stream(musica_background);
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
     al_destroy_timer(timer);
