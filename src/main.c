@@ -45,7 +45,8 @@ int main() {
         int tamanho_inimigo = 20;
         int posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
         int posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
-        qtd_inimigos[i] = init_inimigo(posX, posY);
+        TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
+        qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
     }
 
     Mouse mouse = init_mouse();
