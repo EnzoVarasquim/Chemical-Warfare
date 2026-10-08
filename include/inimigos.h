@@ -5,6 +5,12 @@
 #include "tiro.h"
 #include "player.h"
 
+typedef enum {
+    TIPO_ACIDO,
+    TIPO_BASICO,
+    TIPO_METALICO
+} TipoInimigo;
+
 typedef struct {
     int x;
     int y;
@@ -12,9 +18,10 @@ typedef struct {
     int vel;
     int vida;
     bool vivo;
+    TipoInimigo tipo;
 } Inimigo;
 
-Inimigo init_inimigo(int x, int y);
+Inimigo init_inimigo(int x, int y, TipoInimigo tipo);
 void desenhar_inimigo(Inimigo inimigo);
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[]);
 void seguir_player(Inimigo* inimigo, Player* player);
