@@ -123,27 +123,32 @@ void colisao_player(Inimigo* inimigo, Player* player) {
 }
 
 //colissão do tiro com o inimigo
-void colisao_tiro(Inimigo* inimigo, Tiro tiros[]) {
+void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq) {
     if (!inimigo->vivo) return;
 
     for (int i = 0; i < MAX_TIROS; i++) {
         if (tiros[i].ativo) {
-
-            if (tiros[i].x + tiros[i].size >= inimigo->x &&       //esquerda
-                tiros[i].x <= inimigo->x + inimigo->size &&       //direita
-                tiros[i].y + tiros[i].size >= inimigo->y &&       //cima
-                tiros[i].y <= inimigo->y + inimigo->size)         //baixo
+            if (tiros[i].x + tiros[i].size >= inimigo->x &&
+                tiros[i].x <= inimigo->x + inimigo->size &&
+                tiros[i].y + tiros[i].size >= inimigo->y &&
+                tiros[i].y <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
                 inimigo->vida--;
-            }
 
-            //matando o inimigo
-            if (inimigo->vida == 0) {
-                inimigo->vivo = false;
-                return;
+                if (inimigo->vida <= 0) {
+                    inimigo->vida = 0;
+                    inimigo->vivo = false;
+
+                    // Adiciona direto no inventário numérico
+                    if (inimigo->tipo == TIPO_ACIDO) sq->qtd_H++;
+                    else if (inimigo->tipo == TIPO_BASICO) sq->qtd_Na++;
+                    else if (inimigo->tipo == TIPO_METALICO) sq->qtd_Cl++;
+
+                    checar_reacoes(sq);
+                    break;
+                }
             }
-                
         }
     }
 }
