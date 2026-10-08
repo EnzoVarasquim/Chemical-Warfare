@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
@@ -44,11 +45,24 @@ int main() {
     int total_inimigos = 5;
     Inimigo* qtd_inimigos = (Inimigo*)al_malloc(total_inimigos * sizeof(Inimigo));
 
-    //inicializa cada inimigo em uma posição diferente
+    // Inicializa cada inimigo garantindo que não nasça em cima do player
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
-        int posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
-        int posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
+        int posX, posY;
+        float distancia;
+
+        do {
+            // Sorteia a posição na tela
+            posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
+            posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
+
+            // Calcula a distância entre o ponto sorteado e o player
+            float diffX = posX - player.x;
+            float diffY = posY - player.y;
+            distancia = sqrtf(diffX * diffX + diffY * diffY);
+
+        } while (distancia < 75.0f); //pixels de distância do player
+
         TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
         qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
     }

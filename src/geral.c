@@ -1,5 +1,6 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <math.h>
 #include "geral.h"
 
 #define MAX_TIROS 30
@@ -24,8 +25,19 @@ void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiro
     *player = init_player();
 
     for (int i = 0; i < total_inimigos; i++) {
-        int posX = qtd_inimigos[i].size + (rand() % (width - 2 * qtd_inimigos[i].size + 1));
-        int posY = qtd_inimigos[i].size + (rand() % (height - 2 * qtd_inimigos[i].size + 1));
+        int posX, posY;
+        float distancia;
+
+        do {
+            posX = 20 + (rand() % (640 - 2 * 20 + 1));
+            posY = 20 + (rand() % (480 - 2 * 20 + 1));
+
+            float diffX = posX - player->x;
+            float diffY = posY - player->y;
+            distancia = sqrtf(diffX * diffX + diffY * diffY);
+
+        } while (distancia < 75.0f);
+
         TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
         qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
     }
