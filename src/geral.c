@@ -27,7 +27,8 @@ void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiro
     for (int i = 0; i < total_inimigos; i++) {
         int posX = qtd_inimigos[i].size + (rand() % (width - 2 * qtd_inimigos[i].size + 1));
         int posY = qtd_inimigos[i].size + (rand() % (height - 2 * qtd_inimigos[i].size + 1));
-        qtd_inimigos[i] = init_inimigo(posX, posY);
+        TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
+        qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
     }
 
     for (int i = 0; i < MAX_TIROS; i++) {
