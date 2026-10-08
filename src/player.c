@@ -35,16 +35,16 @@ void atualizar_player(Player* player, Keyboard keyboard) {
 }
 
 void colisao_tela(Player* player) {
-    if (player->x < player->size) {               //esquerda
-        player->x = player->size;
+    if (player->x < 0) {               //esquerda
+        player->x = 0;
     }
 
     if (player->x > (640 - player->size)) {       //direita
         player->x = (640 - player->size);
     }
 
-    if (player->y < player->size) {               //cima
-        player->y = player->size;
+    if (player->y < 0) {               //cima
+        player->y = 0;
     }
 
     if (player->y > (480 - player->size)) {       //baixo

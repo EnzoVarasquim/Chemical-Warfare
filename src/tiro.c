@@ -3,7 +3,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "tiro.h"
-
+#include "player.h"
 
 Mouse init_mouse(void) {
     Mouse mouse = { 0, 0, false };
@@ -43,6 +43,8 @@ void atualizar_posicao_tiros(Tiro tiros[], int largura_tela, int altura_tela) {
 }
 
 void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[]) {
+    if (!player->vivo) return;
+
     if (mouse->left_button == true) {
         //procura por um tiro que não esteja ativo no array
         for (int i = 0; i < MAX_TIROS; i++) {

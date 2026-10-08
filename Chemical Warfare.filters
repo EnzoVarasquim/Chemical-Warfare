@@ -52,7 +52,13 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="..\..\..\Downloads\musica.ogg">
+      <Filter>assets\sounds</Filter>
+    </None>
     <None Include="packages.config" />
+    <None Include="..\..\Downloads\music_background.ogg">
+      <Filter>assets\sounds</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\geral.h">

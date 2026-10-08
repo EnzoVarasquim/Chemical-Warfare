@@ -20,5 +20,6 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[]);
 void seguir_player(Inimigo* inimigo, Player* player);
 void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2);
 void colisao_player(Inimigo* inimigo, Player* player);
+void colisao_tela_inimigo(Inimigo* inimigo);
 
 #endif
