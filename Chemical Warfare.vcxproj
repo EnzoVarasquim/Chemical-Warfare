@@ -162,7 +162,6 @@
     <ClCompile Include="src\tiro.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Downloads\musica.ogg" />
     <None Include=".gitignore" />
     <None Include="packages.config" />
     <None Include="README.md" />
