@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "player.h"
 
+
 typedef struct {
     float x;
     float y;

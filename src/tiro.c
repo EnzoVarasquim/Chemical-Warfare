@@ -3,7 +3,6 @@
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "tiro.h"
-#include "player.h"
 
 Mouse init_mouse(void) {
     Mouse mouse = { 0, 0, false };

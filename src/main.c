@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
@@ -12,6 +13,7 @@
 #include "player.h"
 #include "tiro.h"
 #include "inimigos.h"
+#include "reacoes.h"
 
 #define MAX_TIROS 30
 
@@ -36,16 +38,33 @@ int main() {
 
     Player player = init_player();
 
+    SistemaQuimico sq;
+    inicializar_sistema_quimico(&sq);
+
     //aloca memória pra guardar 5 inimigos (dps tem q mudar pra quantidade aumentar por wave)
     int total_inimigos = 5;
     Inimigo* qtd_inimigos = (Inimigo*)al_malloc(total_inimigos * sizeof(Inimigo));
 
-    //inicializa cada inimigo em uma posição diferente
+    // Inicializa cada inimigo garantindo que não nasça em cima do player
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
-        int posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
-        int posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
-        qtd_inimigos[i] = init_inimigo(posX, posY);
+        int posX, posY;
+        float distancia;
+
+        do {
+            // Sorteia a posição na tela
+            posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
+            posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
+
+            // Calcula a distância entre o ponto sorteado e o player
+            float diffX = posX - player.x;
+            float diffY = posY - player.y;
+            distancia = sqrtf(diffX * diffX + diffY * diffY);
+
+        } while (distancia < 75.0f); //pixels de distância do player
+
+        TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
+        qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
     }
 
     Mouse mouse = init_mouse();
@@ -118,11 +137,11 @@ int main() {
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_register_event_source(event_queue, al_get_mouse_event_source());
 
+    al_hide_mouse_cursor(display);
+
     while (rodando) {
         ALLEGRO_EVENT event;
-
         al_wait_for_event(event_queue, &event);
-        al_hide_mouse_cursor(display);
 
         //fecha a janela
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
@@ -168,6 +187,7 @@ int main() {
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
                 reset(&player, qtd_inimigos, total_inimigos, num_tiros);
+                inicializar_sistema_quimico(&sq);
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
@@ -219,7 +239,7 @@ int main() {
 
             //checar a colisão do inimigo com os tiros
             for (int i = 0; i < total_inimigos; i++) {
-                colisao_tiro(&qtd_inimigos[i], num_tiros);
+                colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
             }
         }
 
@@ -238,9 +258,8 @@ int main() {
                 desenhar_tiros(num_tiros);
 
                 for (int i = 0; i < total_inimigos; i++) {
-                    desenhar_inimigo(qtd_inimigos[i]);
-
                     if (qtd_inimigos[i].vivo) {
+                        desenhar_inimigo(qtd_inimigos[i]);
                         al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), qtd_inimigos[i].x - 3, qtd_inimigos[i].y - 15, ALLEGRO_ALIGN_LEFT, "%d HP", qtd_inimigos[i].vida);
                     }
                 }
@@ -249,13 +268,18 @@ int main() {
                 desenhar_mira(&mouse);
 
                 //textinhos na tela
-                al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 10, ALLEGRO_ALIGN_CENTRE, "TESTES");
-                al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "%d HP PLAYER", player.vida);
-
-                if (!player.vivo) {
-                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P | aperte R para reiniciar");
+                if (player.vivo) {
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
                 }
-
+                else {
+                    al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P");
+                    al_draw_text(fonte_media, al_map_rgb(220, 220, 220), width / 2, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
+                }
+       
                 al_flip_display();
             }
         }

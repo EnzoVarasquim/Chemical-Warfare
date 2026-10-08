@@ -1,9 +1,8 @@
 #include <allegro5/allegro_primitives.h>
 #include "player.h"
 
-
 Player init_player(void) {
-    Player player = { 200, 240, 20, 5, 100, true };
+    Player player = { 310, 230, 20, 5, 100, true };
     return player;
 }
 
@@ -11,7 +10,7 @@ void desenhar_player(Player player) {
     if (!player.vivo) return;
 
     al_draw_rectangle(player.x, player.y, player.x + player.size, player.y + player.size, al_map_rgb(255, 120, 255), 2);
-    al_draw_filled_rectangle(player.x, player.y, player.x + player.size, player.y + player.size, al_map_rgb(255, 0, 255));
+    al_draw_filled_rectangle(player.x, player.y, player.x + player.size, player.y + player.size, al_map_rgb(30, 100, 220));
 }
 
 void atualizar_player(Player* player, Keyboard keyboard) {
