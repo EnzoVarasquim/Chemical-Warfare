@@ -3,16 +3,32 @@
 
 #define MAX_TIROS 30
 
-Inimigo init_inimigo(int x, int y) {
-	Inimigo inimigo = { x, y, 20, 2, 5, true };
+Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
+	Inimigo inimigo = { x, y, 20, 2, 10, true, tipo };
 	return inimigo;
 }
 
 void desenhar_inimigo(Inimigo inimigo) {
     if (!inimigo.vivo) return;
 
-    al_draw_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 120, 0), 2);
-    al_draw_filled_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 0, 0));
+    ALLEGRO_COLOR cor;
+    switch (inimigo.tipo) {
+    case TIPO_ACIDO:
+        cor = al_map_rgb(0, 255, 0);       //Verde pra Ácido
+        break;
+    case TIPO_BASICO:
+        cor = al_map_rgb(255, 0, 255);     //Magenta pra Base
+        break;
+    case TIPO_METALICO:
+        cor = al_map_rgb(100, 100, 100);   //Cinza pra Metal
+        break;
+    default:
+        cor = al_map_rgb(255, 0, 0);       // Vermelho caso dê um bug :P
+        break;
+    }
+
+    al_draw_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 255, 255), 2);
+    al_draw_filled_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, cor);
 }
 
 void seguir_player(Inimigo* inimigo, Player* player) {
