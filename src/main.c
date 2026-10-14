@@ -159,7 +159,7 @@ int main() {
                 mouse.left_button = true;
 
                 if (player.vivo) {
-                    disparar_tiro(&mouse, &player, num_tiros);
+                    disparar_tiro(&mouse, &player, num_tiros, sq.arma_ativa);
                     al_play_sample(som_tiro, 0.1, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 }
 
