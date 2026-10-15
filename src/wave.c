@@ -33,30 +33,43 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
     }
 
     if (wave->finalizado == true) {
+        //wave do boss
+        if (wave->atual == 5) {
+            *total_inimigos = 1;
 
-        //aumenta o número total de inimigos na memória da main
-        (*total_inimigos)++;
+            //redimensiona o array para caber só 1 inimigo
+            *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
 
-        //realoca a memória do array original para caber o novo inimigo extra
-        *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
+            //nasce o Boss bem no centro da tela
+            int centroX = 640 / 2;
+            int centroY = 480 / 2;
 
-        //spawna todos os inimigos
-        for (int i = 0; i < *total_inimigos; i++) {
-            int posX, posY;
-            float distancia;
+            (*qtd_inimigos)[0] = init_inimigo(centroX - 30, centroY - 30, TIPO_BOSS);
+        } 
+        else {
+            (*total_inimigos)++;
 
-            do {
-                posX = 20 + (rand() % (640 - 2 * 20 + 1));
-                posY = 20 + (rand() % (480 - 2 * 20 + 1));
+            //realoca a memória do array original para caber o novo inimigo extra
+            *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
 
-                float diffX = posX - player->x;
-                float diffY = posY - player->y;
-                distancia = sqrtf(diffX * diffX + diffY * diffY);
+            //spawna todos os inimigos
+            for (int i = 0; i < *total_inimigos; i++) {
+                int posX, posY;
+                float distancia;
 
-            } while (distancia < 75.0f);
+                do {
+                    posX = 20 + (rand() % (640 - 2 * 20 + 1));
+                    posY = 20 + (rand() % (480 - 2 * 20 + 1));
 
-            TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
-            (*qtd_inimigos)[i] = init_inimigo(posX, posY, tipo_aleatorio);
+                    float diffX = posX - player->x;
+                    float diffY = posY - player->y;
+                    distancia = sqrtf(diffX * diffX + diffY * diffY);
+
+                } while (distancia < 75.0f);
+
+                TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
+                (*qtd_inimigos)[i] = init_inimigo(posX, posY, tipo_aleatorio);
+            }
         }
 
         //atualiza os estados para iniciar a próxima wave
