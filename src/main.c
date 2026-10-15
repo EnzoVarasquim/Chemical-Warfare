@@ -285,7 +285,12 @@ int main() {
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 20, ALLEGRO_ALIGN_LEFT, "WAVE: %d", wave.atual);
+                    if (wave.atual == 5) {
+                        al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 100, 50, ALLEGRO_ALIGN_LEFT, "BOSS");
+                    }
+                    
                 }
                 else {
                     al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P");
