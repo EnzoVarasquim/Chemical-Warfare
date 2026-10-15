@@ -1,33 +1,47 @@
 #include "wave.h"
+#include <stdlib.h> 
 #include <math.h>
 
 void init_wave(Wave* wave) {
-	wave->atual = 0;
-	wave->inicio = false;
-	wave->andamento = false;
-	wave->finalizado = false;
+    wave->atual = 1;        
+    wave->inicio = true;    
+    wave->andamento = false;
+    wave->finalizado = false;
 }
 
-void sistema_waves(Wave* wave, Inimigo* qtd_inimigos[], int total_inimigos, Player* player) {
+void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player) {
     if (wave->inicio == true) {
-        wave->atual = 1;
-        wave->andamento == true;
-        !wave->inicio;
+        wave->andamento = true;
+        wave->inicio = false;
     }
-    
+
+    //checa se todos os inimigos ativos morreram
     if (wave->andamento == true) {
-        if (total_inimigos <= 0) {
-            wave->finalizado == true;
-            !wave->andamento;
+        int vivos = 0;
+        for (int i = 0; i < *total_inimigos; i++) {
+            //acessa o array original usando (*qtd_inimigos)
+            if ((*qtd_inimigos)[i].vivo) {
+                vivos++;
+            }
+        }
+
+        //se nenhum estiver vivo, a wave foi finalizada
+        if (vivos == 0) {
+            wave->finalizado = true;
+            wave->andamento = false;
         }
     }
 
-	if (wave->finalizado == true) {
+    if (wave->finalizado == true) {
 
-        //spawna os inimigos de novo com um numero maior
-        total_inimigos++;
+        //aumenta o número total de inimigos na memória da main
+        (*total_inimigos)++;
 
-        for (int i = 0; i < total_inimigos; i++) {
+        //realoca a memória do array original para caber o novo inimigo extra
+        *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
+
+        //spawna todos os inimigos
+        for (int i = 0; i < *total_inimigos; i++) {
             int posX, posY;
             float distancia;
 
@@ -42,12 +56,12 @@ void sistema_waves(Wave* wave, Inimigo* qtd_inimigos[], int total_inimigos, Play
             } while (distancia < 75.0f);
 
             TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
-            qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
+            (*qtd_inimigos)[i] = init_inimigo(posX, posY, tipo_aleatorio);
         }
 
-        //troca o estado da wave e aumenta o numero da wave atual
-		wave->atual++;
-        wave->andamento == true;
-        !wave->finalizado;
-	}
+        //atualiza os estados para iniciar a próxima wave
+        wave->atual++;
+        wave->andamento = true;
+        wave->finalizado = false;
+    }
 }
