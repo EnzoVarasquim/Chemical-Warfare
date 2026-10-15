@@ -7,9 +7,11 @@
 
 typedef struct {
     int atual;
+    int final;
     bool inicio;
     bool andamento;
     bool finalizado;
+    bool vitoria;
 } Wave;
 
 void init_wave(Wave* wave);
