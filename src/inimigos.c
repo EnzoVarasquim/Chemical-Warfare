@@ -4,7 +4,7 @@
 #define MAX_TIROS 30
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
-	Inimigo inimigo = { x, y, 20, 2, 3, true, tipo };
+	Inimigo inimigo = { x, y, 20, 2, 5, true, tipo };
 	return inimigo;
 }
 
