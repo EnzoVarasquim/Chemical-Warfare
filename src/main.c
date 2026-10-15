@@ -194,6 +194,8 @@ int main() {
                 reset(&player, qtd_inimigos, total_inimigos, num_tiros);
                 inicializar_sistema_quimico(&sq);
                 init_wave(&wave);
+                total_inimigos = 3;
+                qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
