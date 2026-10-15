@@ -4,8 +4,20 @@
 #define MAX_TIROS 30
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
-	Inimigo inimigo = { x, y, 20, 2, 10, true, tipo };
-	return inimigo;
+    //inimigos normais
+    int tamanho = 20;
+    int velocidade = 2;
+    int vida = 5;
+
+    //boss
+    if (tipo == TIPO_BOSS) {
+        tamanho = 60;     
+        velocidade = 0;    
+        vida = 100;        
+    }
+
+    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, tipo };
+    return inimigo;
 }
 
 void desenhar_inimigo(Inimigo inimigo) {
@@ -14,16 +26,19 @@ void desenhar_inimigo(Inimigo inimigo) {
     ALLEGRO_COLOR cor;
     switch (inimigo.tipo) {
     case TIPO_ACIDO:
-        cor = al_map_rgb(0, 255, 0);       //Verde pra Ácido
+        cor = al_map_rgb(0, 255, 0);       // Verde pra Ácido
         break;
     case TIPO_BASICO:
-        cor = al_map_rgb(255, 0, 255);     //Magenta pra Base
+        cor = al_map_rgb(255, 0, 255);     // Magenta pra Base
         break;
     case TIPO_METALICO:
-        cor = al_map_rgb(100, 100, 100);   //Cinza pra Metal
+        cor = al_map_rgb(100, 100, 100);   // Cinza pra Metal
+        break;
+    case TIPO_BOSS:
+        cor = al_map_rgb(255, 69, 0);      // Laranja Escuro pro Boss
         break;
     default:
-        cor = al_map_rgb(255, 0, 0);       // Vermelho caso dê um bug :P
+        cor = al_map_rgb(255, 255, 255);   // Branco caso dê bug
         break;
     }
 

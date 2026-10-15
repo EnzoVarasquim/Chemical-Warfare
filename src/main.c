@@ -14,6 +14,7 @@
 #include "tiro.h"
 #include "inimigos.h"
 #include "reacoes.h"
+#include "wave.h"
 
 #define MAX_TIROS 30
 
@@ -41,9 +42,13 @@ int main() {
     SistemaQuimico sq;
     inicializar_sistema_quimico(&sq);
 
-    //aloca memória pra guardar 5 inimigos (dps tem q mudar pra quantidade aumentar por wave)
-    int total_inimigos = 5;
-    Inimigo* qtd_inimigos = (Inimigo*)al_malloc(total_inimigos * sizeof(Inimigo));
+    Wave wave;
+    init_wave(&wave);
+
+    //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
+    int total_inimigos = 3;
+    Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo)); //
+
 
     // Inicializa cada inimigo garantindo que não nasça em cima do player
     for (int i = 0; i < total_inimigos; i++) {
@@ -188,6 +193,9 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
                 reset(&player, qtd_inimigos, total_inimigos, num_tiros);
                 inicializar_sistema_quimico(&sq);
+                init_wave(&wave);
+                total_inimigos = 3;
+                qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
@@ -213,33 +221,38 @@ int main() {
 
         //atualizando os dados em tempo real ;P
         if (event.type == ALLEGRO_EVENT_TIMER) {
-            //player
-            atualizar_player(&player, keyboard);
-            colisao_tela(&player);
+            if (!wave.vitoria) {
+                //player
+                atualizar_player(&player, keyboard);
+                colisao_tela(&player);
 
-            //tiros
-            atualizar_posicao_tiros(num_tiros, width, height);
+                //tiros
+                atualizar_posicao_tiros(num_tiros, width, height);
 
-            //fazer os inimigos seguirem o player
-            for (int i = 0; i < total_inimigos; i++) {
-                seguir_player(&qtd_inimigos[i], &player);
-            }
+                //loop das waves
+                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player);
 
-            //checar a colisão entre os inimigos
-            for (int i = 0; i < total_inimigos; i++) {
-                for (int j = i + 1; j < total_inimigos; j++) {
-                    colisao_inimigos(&qtd_inimigos[i], &qtd_inimigos[j]);
+                //fazer os inimigos seguirem o player
+                for (int i = 0; i < total_inimigos; i++) {
+                    seguir_player(&qtd_inimigos[i], &player);
                 }
-            }
 
-            //colisão do player com os inimigos
-            for (int i = 0; i < total_inimigos; i++) {
-                colisao_player(&qtd_inimigos[i], &player);
-            }
+                //checar a colisão entre os inimigos
+                for (int i = 0; i < total_inimigos; i++) {
+                    for (int j = i + 1; j < total_inimigos; j++) {
+                        colisao_inimigos(&qtd_inimigos[i], &qtd_inimigos[j]);
+                    }
+                }
 
-            //checar a colisão do inimigo com os tiros
-            for (int i = 0; i < total_inimigos; i++) {
-                colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
+                //colisão do player com os inimigos
+                for (int i = 0; i < total_inimigos; i++) {
+                    colisao_player(&qtd_inimigos[i], &player);
+                }
+
+                //checar a colisão do inimigo com os tiros
+                for (int i = 0; i < total_inimigos; i++) {
+                    colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
+                }
             }
         }
 
@@ -267,13 +280,24 @@ int main() {
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
-                //textinhos na tela
+                //textinhos na tela | UI
                 if (player.vivo) {
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+
+                    if (wave.vitoria == true) {
+                        al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), 640 / 2, 480 / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
+                        al_draw_text(fonte_media, al_map_rgb(255, 255, 255), 640 / 2, (480 / 2) + 40, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
+                    }
+
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 20, ALLEGRO_ALIGN_LEFT, "WAVE: %d", wave.atual);
+                    if (wave.atual == wave.final + 1) {
+                        al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 100, 50, ALLEGRO_ALIGN_LEFT, "BOSS");
+                    }
+                    
                 }
                 else {
                     al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P");
@@ -286,7 +310,7 @@ int main() {
     }
 
     //libera os inimigos da memoria
-    al_free(qtd_inimigos);
+    free(qtd_inimigos);
 
    // desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_sample(som_tiro);

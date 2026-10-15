@@ -9,7 +9,8 @@
 typedef enum {
     TIPO_ACIDO,
     TIPO_BASICO,
-    TIPO_METALICO
+    TIPO_METALICO,
+    TIPO_BOSS
 } TipoInimigo;
 
 typedef struct {
