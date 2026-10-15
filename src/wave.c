@@ -4,12 +4,19 @@
 
 void init_wave(Wave* wave) {
     wave->atual = 1;        
+    wave->final = 2;
     wave->inicio = true;    
     wave->andamento = false;
     wave->finalizado = false;
+    wave->vitoria = false;
 }
 
 void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player) {
+
+    if (wave->vitoria == true) {
+        return;
+    }
+
     if (wave->inicio == true) {
         wave->andamento = true;
         wave->inicio = false;
@@ -19,14 +26,22 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
     if (wave->andamento == true) {
         int vivos = 0;
         for (int i = 0; i < *total_inimigos; i++) {
-            //acessa o array original usando (*qtd_inimigos)
+            //acessa o array original
             if ((*qtd_inimigos)[i].vivo) {
                 vivos++;
             }
         }
 
-        //se nenhum estiver vivo, a wave foi finalizada
+        //se nenhum estiver vivo, a wave acaba
         if (vivos == 0) {
+            //se for a wave final, o jogo acaba
+            if (wave->atual == wave->final + 1) {
+                wave->vitoria = true;
+                wave->andamento = false;
+                wave->finalizado = false;
+                return;
+            }
+
             wave->finalizado = true;
             wave->andamento = false;
         }
@@ -34,7 +49,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
 
     if (wave->finalizado == true) {
         //wave do boss
-        if (wave->atual == 5) {
+        if (wave->atual == wave->final) {
             *total_inimigos = 1;
 
             //redimensiona o array para caber só 1 inimigo
