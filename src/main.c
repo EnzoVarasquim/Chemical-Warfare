@@ -47,7 +47,7 @@ int main() {
 
     //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
     int total_inimigos = 3;
-    Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo)); //
+    Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
     // Inicializa cada inimigo garantindo que não nasça em cima do player
