@@ -10,6 +10,7 @@ typedef enum {
     TIPO_ACIDO,
     TIPO_BASICO,
     TIPO_METALICO,
+    TIPO_TORRETA,
     TIPO_BOSS
 } TipoInimigo;
 
