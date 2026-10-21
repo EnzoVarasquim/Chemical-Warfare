@@ -50,6 +50,23 @@ void colisao_tela(Player* player) {
         player->y = (480 - player->size);
     }
 }
+void tomar_dano(Player* player, int dano) {
+    if (!player->vivo) return;
+
+    static double tempo_ultimo_dano = 0.0;
+
+    if (al_get_time() - tempo_ultimo_dano >= 0.1) {
+        player->vida -= dano;
+        tempo_ultimo_dano = al_get_time();
+
+        if (player->vida <= 0) {
+            player->vida = 0;
+            player->vivo = false;
+        }
+    }
+}
+
+
 
 
 Keyboard init_keyboard(void) {

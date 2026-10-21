@@ -22,7 +22,7 @@ typedef struct {
 Player init_player(void);
 void desenhar_player(Player player);
 void atualizar_player(Player *player, Keyboard keyboard);
-
+void tomar_dano(Player* player, int dano);
 void colisao_tela(Player *player);
 
 Keyboard init_keyboard(void);
