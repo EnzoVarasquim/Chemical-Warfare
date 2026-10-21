@@ -4,7 +4,7 @@
 
 void init_wave(Wave* wave) {
     wave->atual = 1;        
-    wave->final = 2;
+    wave->final = 9;
     wave->inicio = true;    
     wave->andamento = false;
     wave->finalizado = false;
