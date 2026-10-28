@@ -15,7 +15,7 @@ Tiro init_tiro(void) {
     tiro.ativo = false;
     tiro.formato = FORMATO_CIRCULO;
 
-    // Tiro padrão branco
+    // Tiro padrao branco
     tiro.cor_r = 255;
     tiro.cor_g = 255;
     tiro.cor_b = 255;
@@ -29,7 +29,6 @@ Tiro init_tiro(void) {
 void desenhar_tiros(Tiro tiros[]) {
     for (int i = 0; i < MAX_TIROS; i++) {
 
-        // Ignora tiros inativos
         if (!tiros[i].ativo) {
             continue;
         }
@@ -63,20 +62,35 @@ void desenhar_tiros(Tiro tiros[]) {
             );
             break;
 
-        case FORMATO_TRIANGULO:
+        case FORMATO_TRIANGULO: {
+            // Angulo da direcao do disparo
+            float angulo = atan2f(t->vel_y, t->vel_x);
+
+            // Tamanho do triangulo
+            float tamanho = t->size * 1.2f;
+
+            // Ponta do triangulo
+            float frente_x = t->x + cosf(angulo) * tamanho;
+            float frente_y = t->y + sinf(angulo) * tamanho;
+
+            // Parte traseira
+            float tras_x = t->x - cosf(angulo) * tamanho * 0.7f;
+            float tras_y = t->y - sinf(angulo) * tamanho * 0.7f;
+
+            // Largura do triangulo
+            float lado_x = sinf(angulo) * tamanho * 0.6f;
+            float lado_y = -cosf(angulo) * tamanho * 0.6f;
+
             al_draw_filled_triangle(
-                t->x,
-                t->y - t->size * 1.5f,
-                t->x - t->size,
-                t->y + t->size,
-                t->x + t->size,
-                t->y + t->size,
+                frente_x, frente_y,
+                tras_x + lado_x, tras_y + lado_y,
+                tras_x - lado_x, tras_y - lado_y,
                 cor
             );
             break;
+        }
 
         default:
-            // Formato desconhecido: círculo branco
             al_draw_filled_circle(
                 t->x,
                 t->y,
@@ -119,7 +133,7 @@ void atualizar_posicao_tiros(
         tiros[i].x += tiros[i].vel_x;
         tiros[i].y += tiros[i].vel_y;
 
-        // Desativa o tiro quando sai da tela
+        // Desativa quando sai da tela
         if (tiros[i].x < 0 ||
             tiros[i].x > largura_tela ||
             tiros[i].y < 0 ||
@@ -143,18 +157,17 @@ void disparar_tiro(
 
     for (int i = 0; i < MAX_TIROS; i++) {
 
-        // Procura uma vaga livre
         if (tiros[i].ativo) {
             continue;
         }
 
         Tiro* t = &tiros[i];
 
-        // Posição inicial no centro do jogador
+        // Posicao inicial no centro do jogador
         t->x = player->x + player->size / 2.0f;
         t->y = player->y + player->size / 2.0f;
 
-        // Calcula a direção do disparo
+        // Calcula a direcao do disparo
         float dx = mouse->x - t->x;
         float dy = mouse->y - t->y;
         float distancia = sqrtf(dx * dx + dy * dy);
@@ -168,28 +181,46 @@ void disparar_tiro(
             t->vel_y = 0.0f;
         }
 
-        // Define a aparência padrão branca
+        // Tiro padrao branco
         t->formato = FORMATO_CIRCULO;
         t->cor_r = 255;
         t->cor_g = 255;
         t->cor_b = 255;
         t->size = 2;
 
-        // Copia a aparência da combinação química
+        // Aparencia das armas quimicas
         if (arma != TIRO_PADRAO) {
+
             t->formato = sq->formato_ativo;
             t->cor_r = sq->cor_r;
             t->cor_g = sq->cor_g;
             t->cor_b = sq->cor_b;
             t->size = sq->tamanho_ativo;
 
-            // Evita tamanho inválido
+            // Circulos quimicos roxos
+            if (t->formato == FORMATO_CIRCULO) {
+                t->cor_r = 160;
+                t->cor_g = 32;
+                t->cor_b = 240;
+            }
+
+            // Quadrados menores
+            if (t->formato == FORMATO_QUADRADO) {
+                t->size *= 0.5f;
+            }
+
+            // Triangulos menores
+            if (t->formato == FORMATO_TRIANGULO) {
+                t->size *= 0.5f;
+            }
+
+            // Evita tamanho invalido
             if (t->size <= 0) {
                 t->size = 2;
             }
         }
 
-        // Ativa o tiro por último
+        // Ativa o tiro por ultimo
         t->ativo = true;
 
         break;
