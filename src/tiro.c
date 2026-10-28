@@ -28,45 +28,26 @@ Tiro init_tiro(void) {
 
 void desenhar_tiros(Tiro tiros[]) {
     for (int i = 0; i < MAX_TIROS; i++) {
-
         if (!tiros[i].ativo) {
             continue;
         }
 
         Tiro* t = &tiros[i];
 
-        ALLEGRO_COLOR cor = al_map_rgb(
-            t->cor_r,
-            t->cor_g,
-            t->cor_b
-        );
+        ALLEGRO_COLOR cor = al_map_rgb(t->cor_r, t->cor_g, t->cor_b);
 
         switch (t->formato) {
 
         case FORMATO_CIRCULO:
-            al_draw_filled_circle(
-                t->x,
-                t->y,
-                t->size,
-                cor
-            );
+            al_draw_filled_circle(t->x, t->y, t->size, cor);
             break;
 
         case FORMATO_QUADRADO:
-            al_draw_filled_rectangle(
-                t->x - t->size,
-                t->y - t->size,
-                t->x + t->size,
-                t->y + t->size,
-                cor
-            );
+            al_draw_filled_rectangle(t->x - t->size, t->y - t->size, t->x + t->size, t->y + t->size, cor);
             break;
 
         case FORMATO_TRIANGULO: {
-            // Angulo da direcao do disparo
             float angulo = atan2f(t->vel_y, t->vel_x);
-
-            // Tamanho do triangulo
             float tamanho = t->size * 1.2f;
 
             // Ponta do triangulo
@@ -81,51 +62,24 @@ void desenhar_tiros(Tiro tiros[]) {
             float lado_x = sinf(angulo) * tamanho * 0.6f;
             float lado_y = -cosf(angulo) * tamanho * 0.6f;
 
-            al_draw_filled_triangle(
-                frente_x, frente_y,
-                tras_x + lado_x, tras_y + lado_y,
-                tras_x - lado_x, tras_y - lado_y,
-                cor
-            );
+            al_draw_filled_triangle(frente_x, frente_y, tras_x + lado_x, tras_y + lado_y, tras_x - lado_x, tras_y - lado_y, cor);
             break;
         }
 
         default:
-            al_draw_filled_circle(
-                t->x,
-                t->y,
-                t->size,
-                al_map_rgb(255, 255, 255)
-            );
+            al_draw_filled_circle(t->x, t->y, t->size, al_map_rgb(255, 255, 255));
             break;
         }
     }
 }
 
 void desenhar_mira(Mouse* mouse) {
-    al_draw_circle(
-        mouse->x,
-        mouse->y,
-        5,
-        al_map_rgb(255, 0, 0),
-        1
-    );
-
-    al_draw_filled_circle(
-        mouse->x,
-        mouse->y,
-        4,
-        al_map_rgb(255, 235, 120)
-    );
+    al_draw_circle(mouse->x, mouse->y, 5, al_map_rgb(255, 0, 0), 1);
+    al_draw_filled_circle(mouse->x, mouse->y, 4, al_map_rgb(255, 235, 120));
 }
 
-void atualizar_posicao_tiros(
-    Tiro tiros[],
-    int largura_tela,
-    int altura_tela
-) {
+void atualizar_posicao_tiros(Tiro tiros[], int largura_tela, int altura_tela) {
     for (int i = 0; i < MAX_TIROS; i++) {
-
         if (!tiros[i].ativo) {
             continue;
         }
@@ -134,29 +88,18 @@ void atualizar_posicao_tiros(
         tiros[i].y += tiros[i].vel_y;
 
         // Desativa quando sai da tela
-        if (tiros[i].x < 0 ||
-            tiros[i].x > largura_tela ||
-            tiros[i].y < 0 ||
-            tiros[i].y > altura_tela) {
-
+        if (tiros[i].x < 0 || tiros[i].x > largura_tela || tiros[i].y < 0 || tiros[i].y > altura_tela) {
             tiros[i].ativo = false;
         }
     }
 }
 
-void disparar_tiro(
-    Mouse* mouse,
-    Player* player,
-    Tiro tiros[],
-    TipoArma arma,
-    SistemaQuimico* sq
-) {
+void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[], TipoArma arma, SistemaQuimico* sq) {
     if (!player->vivo || !mouse->left_button || sq == NULL) {
         return;
     }
 
     for (int i = 0; i < MAX_TIROS; i++) {
-
         if (tiros[i].ativo) {
             continue;
         }
@@ -190,7 +133,6 @@ void disparar_tiro(
 
         // Aparencia das armas quimicas
         if (arma != TIRO_PADRAO) {
-
             t->formato = sq->formato_ativo;
             t->cor_r = sq->cor_r;
             t->cor_g = sq->cor_g;
@@ -220,9 +162,7 @@ void disparar_tiro(
             }
         }
 
-        // Ativa o tiro por ultimo
         t->ativo = true;
-
         break;
     }
 }
