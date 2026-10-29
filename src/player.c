@@ -51,7 +51,6 @@ void colisao_tela(Player* player) {
     }
 }
 
-
 Keyboard init_keyboard(void) {
     Keyboard keyboard = { false, false, false, false };
     return keyboard;
