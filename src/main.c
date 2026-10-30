@@ -225,17 +225,6 @@ int main() {
                 //player
                 atualizar_player(&player, keyboard);
                 colisao_tela(&player);
-                for(int i = 0; i < total_inimigos; i++) {
-                    if (qtd_inimigos[i].vivo) {
-                        float diffX = qtd_inimigos[i].x - player.x;
-                        float diffY = qtd_inimigos[i].y - player.y;
-                        float distancia = sqrtf(diffX * diffX + diffY * diffY);
-
-                        if (distancia < 25.0f) {
-                            tomar_dano(&player, 10);
-                        }
-                    }
-                }
 
                 //tiros
                 atualizar_posicao_tiros(num_tiros, width, height);

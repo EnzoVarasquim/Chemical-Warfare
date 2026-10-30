@@ -107,7 +107,7 @@ void colisao_player(Inimigo* inimigo, Player* player) {
         inimigo->y + inimigo->size > player->y)      //cima
     {
         //dano no player quando toca nele
-        player->vida--;
+        tomar_dano(player, 1);
 
         if (player->vida <= 0) {
             player->vivo = false;

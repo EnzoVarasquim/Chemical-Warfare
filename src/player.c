@@ -2,7 +2,7 @@
 #include "player.h"
 
 Player init_player(void) {
-    Player player = { 310, 230, 20, 5, 100, true };
+    Player player = { 310, 230, 20, 5, 10, true };
     return player;
 }
 
@@ -53,9 +53,10 @@ void colisao_tela(Player* player) {
 void tomar_dano(Player* player, int dano) {
     if (!player->vivo) return;
 
-    static double tempo_ultimo_dano = 0.0;
+    static float tempo_ultimo_dano = 0.0;
 
-    if (al_get_time() - tempo_ultimo_dano >= 0.1) {
+    // 10 segundos de invulnerabilidade
+    if (al_get_time() - tempo_ultimo_dano >= 0.5) {
         player->vida -= dano;
         tempo_ultimo_dano = al_get_time();
 
@@ -65,9 +66,6 @@ void tomar_dano(Player* player, int dano) {
         }
     }
 }
-
-
-
 
 Keyboard init_keyboard(void) {
     Keyboard keyboard = { false, false, false, false };
