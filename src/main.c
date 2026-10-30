@@ -307,6 +307,7 @@ int main() {
                 al_flip_display();
             }
         }
+
     }
 
     //libera os inimigos da memoria

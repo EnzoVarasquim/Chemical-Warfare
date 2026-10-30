@@ -2,7 +2,7 @@
 #include "player.h"
 
 Player init_player(void) {
-    Player player = { 310, 230, 20, 5, 100, true };
+    Player player = { 310, 230, 20, 5, 10, true };
     return player;
 }
 
@@ -48,6 +48,22 @@ void colisao_tela(Player* player) {
 
     if (player->y > (480 - player->size)) {       //baixo
         player->y = (480 - player->size);
+    }
+}
+void tomar_dano(Player* player, int dano) {
+    if (!player->vivo) return;
+
+    static float tempo_ultimo_dano = 0.0;
+
+    // 10 segundos de invulnerabilidade
+    if (al_get_time() - tempo_ultimo_dano >= 0.5) {
+        player->vida -= dano;
+        tempo_ultimo_dano = al_get_time();
+
+        if (player->vida <= 0) {
+            player->vida = 0;
+            player->vivo = false;
+        }
     }
 }
 
