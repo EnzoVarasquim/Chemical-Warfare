@@ -47,7 +47,7 @@ int main() {
 
     //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
     int total_inimigos = 3;
-    Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo)); //
+    Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
     // Inicializa cada inimigo garantindo que não nasça em cima do player
@@ -164,7 +164,7 @@ int main() {
                 mouse.left_button = true;
 
                 if (player.vivo) {
-                    disparar_tiro(&mouse, &player, num_tiros);
+                    disparar_tiro(&mouse,&player,num_tiros,sq.arma_ativa,&sq);
                     al_play_sample(som_tiro, 0.1, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 }
 
