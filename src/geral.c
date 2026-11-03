@@ -36,7 +36,7 @@ void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiro
             float diffY = posY - player->y;
             distancia = sqrtf(diffX * diffX + diffY * diffY);
 
-        } while (distancia < 75.0f);
+        } while (distancia < 150.0f);
 
         TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
         qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);

@@ -4,16 +4,28 @@
 #define MAX_TIROS 30
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
-    //inimigos normais
-    int tamanho = 20;
-    int velocidade = 2;
-    int vida = 5;
+    int tamanho, velocidade, vida;
 
+    if (tipo == TIPO_ACIDO) {
+        tamanho = 20;
+        velocidade = 2.5;
+        vida = 5;
+    }
+    if (tipo == TIPO_BASICO) {
+        tamanho = 20;
+        velocidade = 2;
+        vida = 7;
+    }
+    if (tipo == TIPO_METALICO) {
+        tamanho = 20;
+        velocidade = 1.5;
+        vida = 10;
+    }
     //boss
     if (tipo == TIPO_BOSS) {
         tamanho = 60;     
         velocidade = 0;    
-        vida = 100;        
+        vida = 50;        
     }
 
     Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, tipo };
@@ -49,7 +61,7 @@ void desenhar_inimigo(Inimigo inimigo) {
 void seguir_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
 
-    float velocidade = inimigo->vel * 0.6f;
+    float velocidade = inimigo->vel;
 
     if (inimigo->x < player->x + player->size)     //direita
         inimigo->x += velocidade;
