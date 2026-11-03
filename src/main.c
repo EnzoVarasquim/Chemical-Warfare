@@ -81,6 +81,7 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
+    al_set_new_display_flags(ALLEGRO_FULLSCREEN);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
