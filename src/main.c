@@ -66,7 +66,7 @@ int main() {
             float diffY = posY - player.y;
             distancia = sqrtf(diffX * diffX + diffY * diffY);
 
-        } while (distancia < 75.0f); //pixels de distância do player
+        } while (distancia < 150.0f); //pixels de distância do player
 
         TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
         qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
