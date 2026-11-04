@@ -1,6 +1,8 @@
 #ifndef REACOES_H
 #define REACOES_H
 
+#include <stdbool.h>
+
 typedef enum {
     ELEMENTO_NENHUM,
     ELEMENTO_H,
@@ -28,16 +30,35 @@ typedef struct {
 
     TipoArma arma_ativa;
 
-    // Aparencia da combinacao ativa
+    // Aparência da arma
     FormatoTiro formato_ativo;
     int cor_r;
     int cor_g;
     int cor_b;
     float tamanho_ativo;
 
+    // Armas desbloqueadas
+    bool acida_desbloqueada;
+    bool basica_desbloqueada;
+    bool metalica_desbloqueada;
+
+    // Mensagem de seleção inválida
+    bool mensagem_arma_bloqueada;
+
+
+    // Aviso de nova arma
+    TipoArma arma_desbloqueada;
+    int tempo_mensagem_desbloqueio;
+
+
+
 } SistemaQuimico;
 
 void inicializar_sistema_quimico(SistemaQuimico* sq);
 void checar_reacoes(SistemaQuimico* sq);
+bool selecionar_arma(SistemaQuimico* sq, TipoArma arma);
+void atualizar_aparencia_arma(SistemaQuimico* sq);
+
+
 
 #endif

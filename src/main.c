@@ -1,4 +1,4 @@
-#include <stdio.h>
+/**/#include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include <allegro5/allegro.h>
@@ -206,6 +206,8 @@ int main() {
 
         //se soltar uma tecla
         if (event.type == ALLEGRO_EVENT_KEY_UP) {
+
+            //movimentação do player
             if (event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_W) {
                 keyboard.w_pressed = false;
             }
@@ -218,10 +220,34 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT || event.keyboard.keycode == ALLEGRO_KEY_D) {
                 keyboard.d_pressed = false;
             }
+
+            // Seleção de armas
+            if (event.keyboard.keycode == ALLEGRO_KEY_1) {
+                selecionar_arma(&sq, TIRO_PADRAO);
+            }
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_2) {
+                selecionar_arma(&sq, ARMA_ACIDA);
+            }
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_3) {
+                selecionar_arma(&sq, ARMA_BASICA);
+            }
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_4) {
+                selecionar_arma(&sq, ARMA_METALICA);
+            }
+
         }
 
         //atualizando os dados em tempo real ;P
         if (event.type == ALLEGRO_EVENT_TIMER) {
+
+            if (sq.tempo_mensagem_desbloqueio > 0) {
+                sq.tempo_mensagem_desbloqueio--;
+                al_draw_text(fonte_pequena, al_map_rgb(255, 50, 50), width / 2, 150, ALLEGRO_ALIGN_CENTER, "Arma nova");
+            }
+
             if (!wave.vitoria) {
                 //player
                 atualizar_player(&player, keyboard);
@@ -284,10 +310,36 @@ int main() {
                 //textinhos na tela | UI
                 if (player.vivo) {
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
+
+                    const char* nome_arma = "Desconhecida";
+
+                    switch (sq.arma_ativa) {
+                    case TIRO_PADRAO:
+                        nome_arma = "Padrao";
+                        break;
+
+                    case ARMA_ACIDA:
+                        nome_arma = "Acida";
+                        break;
+
+                    case ARMA_BASICA:
+                        nome_arma = "Basica";
+                        break;
+
+                    case ARMA_METALICA:
+                        nome_arma = "Metalica";
+                        break;
+                    }
+
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255),20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+
+                    if (sq.mensagem_arma_bloqueada) {
+
+                        al_draw_text(fonte_pequena,al_map_rgb(255, 50, 50),width / 2,150,ALLEGRO_ALIGN_CENTER, "Arma nao descoberta ou elementos insuficientes!");
+                    }
 
                     if (wave.vitoria == true) {
                         al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), 640 / 2, 480 / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
@@ -333,3 +385,4 @@ int main() {
 
     return 0;
 }
+*/
