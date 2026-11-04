@@ -31,13 +31,13 @@ int main() {
     al_init_acodec_addon();
 
     //tela
-    int width = 640;
-    int height = 480;
+    int width = 960;
+    int height = 540;
 
     bool rodando = true;
     bool saindo = false;
 
-    Player player = init_player();
+    Player player = init_player(width, height);
 
     SistemaQuimico sq;
     inicializar_sistema_quimico(&sq);
@@ -46,7 +46,7 @@ int main() {
     init_wave(&wave);
 
     //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
-    int total_inimigos = 3;
+    int total_inimigos = 5;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
@@ -192,10 +192,10 @@ int main() {
                 keyboard.d_pressed = true;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros);
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
                 inicializar_sistema_quimico(&sq);
                 init_wave(&wave);
-                total_inimigos = 3;
+                total_inimigos = 5;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -225,7 +225,7 @@ int main() {
             if (!wave.vitoria) {
                 //player
                 atualizar_player(&player, keyboard);
-                colisao_tela(&player);
+                colisao_tela(&player, width, height);
 
                 //tiros
                 atualizar_posicao_tiros(num_tiros, width, height);
@@ -260,7 +260,7 @@ int main() {
         //quando acaba todos os eventos de cima, isso aq desenha os elementos
         if (al_is_event_queue_empty(event_queue)) {
             //background bonitin q eu fiz :)
-            desenhar_background();
+            desenhar_background(width, height);
 
             if (saindo) {
                 al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
