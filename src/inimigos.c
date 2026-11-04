@@ -197,3 +197,40 @@ void colisao_tela_inimigo(Inimigo* inimigo) {
         inimigo->y = (480 - inimigo->size);
     }
 }
+//gerar a moeda
+void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq) {
+    for (int i = 0; i < total; i++) {
+        if (!inimigos[i].vivo && inimigos[i].vida != -99 && player->vivo) {
+            if (player->x < inimigos[i].x + inimigos[i].size &&
+                player->x + player->size > inimigos[i].x &&
+                player->y < inimigos[i].y + inimigos[i].size &&
+                player->y + player->size > inimigos[i].y)
+            {
+                inimigos[i].vida = -99; // Marca como recolhido para sumir
+
+                if (inimigos[i].tipo == TIPO_ACIDO) sq->qtd_H++;
+                else if (inimigos[i].tipo == TIPO_BASICO) sq->qtd_Na++;
+                else if (inimigos[i].tipo == TIPO_METALICO) sq->qtd_Cl++;
+
+                checar_reacoes(sq);
+            }
+        }
+    }
+}
+
+void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
+    for (int i = 0; i < total; i++) {
+        if (!inimigos[i].vivo && inimigos[i].vida != -99) {
+            ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
+                (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
+                al_map_rgb(100, 100, 100);
+
+            float cx = inimigos[i].x + inimigos[i].size / 2;
+            float cy = inimigos[i].y + inimigos[i].size / 2;
+            float s = 16;
+
+            al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
+            al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
+        }
+    }
+}

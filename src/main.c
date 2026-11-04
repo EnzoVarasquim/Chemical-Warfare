@@ -249,6 +249,8 @@ int main() {
                 for (int i = 0; i < total_inimigos; i++) {
                     colisao_player(&qtd_inimigos[i], &player);
                 }
+                //atualizar a moeda 
+                atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
 
                 //checar a colisão do inimigo com os tiros
                 for (int i = 0; i < total_inimigos; i++) {
@@ -277,6 +279,8 @@ int main() {
                         al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), qtd_inimigos[i].x - 3, qtd_inimigos[i].y - 15, ALLEGRO_ALIGN_LEFT, "%d HP", qtd_inimigos[i].vida);
                     }
                 }
+
+                desenhar_moedas_mortos(qtd_inimigos, total_inimigos);
 
                 desenhar_player(player);
                 desenhar_mira(&mouse);
