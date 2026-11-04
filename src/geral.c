@@ -5,12 +5,7 @@
 
 #define MAX_TIROS 30
 
-//tela
-int width = 640;
-int height = 480;
-
-
-void desenhar_background(void) {
+void desenhar_background(int width, int height) {
     al_clear_to_color(al_map_rgb(0, 0, 0));
 
     for (int x = 0; x <= width; x += 20) {
@@ -21,16 +16,16 @@ void desenhar_background(void) {
     }
 }
 
-void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[]) {
-    *player = init_player();
+void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], int width, int height) {
+    *player = init_player(width, height);
 
     for (int i = 0; i < total_inimigos; i++) {
         int posX, posY;
         float distancia;
 
         do {
-            posX = 20 + (rand() % (640 - 2 * 20 + 1));
-            posY = 20 + (rand() % (480 - 2 * 20 + 1));
+            posX = 20 + (rand() % (width - 2 * 20 + 1));
+            posY = 20 + (rand() % (height - 2 * 20 + 1));
 
             float diffX = posX - player->x;
             float diffY = posY - player->y;
