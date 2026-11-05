@@ -45,23 +45,23 @@ int main() {
     Wave wave;
     init_wave(&wave);
 
-    //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
+    //aloca memória pra guardar os inimigos
     int total_inimigos = 5;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
-    // Inicializa cada inimigo garantindo que não nasça em cima do player
+    //inicializa cada inimigo garantindo que não nasça em cima do player
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
         int posX, posY;
         float distancia;
 
         do {
-            // Sorteia a posição na tela
+            //sorteia a posição na tela
             posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
             posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
 
-            // Calcula a distância entre o ponto sorteado e o player
+            //calcula a distância entre o ponto sorteado e o player
             float diffX = posX - player.x;
             float diffY = posY - player.y;
             distancia = sqrtf(diffX * diffX + diffY * diffY);
@@ -81,6 +81,7 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
+    //cria a janela do jogo que pode ser redimensionada
     al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
@@ -89,7 +90,7 @@ int main() {
     ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
-    //debug
+    //debugs
     printf("Diretorio de trabalho: %s\n", al_get_current_directory());
 
     if (!al_install_audio()) {
