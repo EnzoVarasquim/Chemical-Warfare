@@ -193,11 +193,11 @@ int main() {
                 keyboard.d_pressed = true;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
-                inicializar_sistema_quimico(&sq);
                 init_wave(&wave);
                 total_inimigos = 5;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
+                inicializar_sistema_quimico(&sq);
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
