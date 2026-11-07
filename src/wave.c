@@ -11,7 +11,7 @@ void init_wave(Wave* wave) {
     wave->vitoria = false;
 }
 
-void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player, SistemaQuimico* sq) {
+void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player, SistemaQuimico* sq, int width, int height) {
 
     if (wave->vitoria == true) {
         return;
@@ -57,8 +57,8 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
 
             //nasce o Boss bem no centro da tela
-            int centroX = 640 / 2;
-            int centroY = 480 / 2;
+            int centroX = width / 2;
+            int centroY = height / 2;
 
             (*qtd_inimigos)[0] = init_inimigo(centroX - 30, centroY - 30, TIPO_BOSS);
         } 

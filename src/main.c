@@ -232,7 +232,7 @@ int main() {
                 atualizar_posicao_tiros(num_tiros, width, height);
 
                 //loop das waves
-                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq);
+                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq, width, height);
 
                 //fazer os inimigos seguirem o player
                 for (int i = 0; i < total_inimigos; i++) {
@@ -292,8 +292,8 @@ int main() {
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 140, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
                     if (wave.vitoria == true) {
-                        al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), 640 / 2, 480 / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
-                        al_draw_text(fonte_media, al_map_rgb(255, 255, 255), 640 / 2, (480 / 2) + 40, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
+                        al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 2, height / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
+                        al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, (height / 2) + 40, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
                     }
 
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 20, ALLEGRO_ALIGN_LEFT, "WAVE: %d", wave.atual);
