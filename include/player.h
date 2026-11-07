@@ -10,6 +10,7 @@ typedef struct {
     int vel;
     int vida;
     bool vivo;
+    float tempo_ultimo_dano;
 } Player;
 
 typedef struct {
