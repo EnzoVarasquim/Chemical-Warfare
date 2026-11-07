@@ -5,8 +5,9 @@ void inicializar_sistema_quimico(SistemaQuimico* sq) {
     sq->qtd_H = 0;
     sq->qtd_Cl = 0;
     sq->qtd_Na = 0;
+    sq->research_point = 0;
 
-    // Aparência padrão
+    //aparência padrão
     sq->arma_ativa = TIRO_PADRAO;
     sq->formato_ativo = FORMATO_CIRCULO;
     sq->cor_r = 255;

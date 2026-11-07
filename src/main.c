@@ -31,13 +31,13 @@ int main() {
     al_init_acodec_addon();
 
     //tela
-    int width = 640;
-    int height = 480;
+    int width = 960;
+    int height = 540;
 
     bool rodando = true;
     bool saindo = false;
 
-    Player player = init_player();
+    Player player = init_player(width, height);
 
     SistemaQuimico sq;
     inicializar_sistema_quimico(&sq);
@@ -45,23 +45,23 @@ int main() {
     Wave wave;
     init_wave(&wave);
 
-    //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
-    int total_inimigos = 3;
+    //aloca memória pra guardar os inimigos
+    int total_inimigos = 5;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
-    // Inicializa cada inimigo garantindo que não nasça em cima do player
+    //inicializa cada inimigo garantindo que não nasça em cima do player
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
         int posX, posY;
         float distancia;
 
         do {
-            // Sorteia a posição na tela
+            //sorteia a posição na tela
             posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
             posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
 
-            // Calcula a distância entre o ponto sorteado e o player
+            //calcula a distância entre o ponto sorteado e o player
             float diffX = posX - player.x;
             float diffY = posY - player.y;
             distancia = sqrtf(diffX * diffX + diffY * diffY);
@@ -81,7 +81,8 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
-    al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
+    //cria a janela do jogo que pode ser redimensionada
+    al_set_new_display_flags(ALLEGRO_MAXIMIZED | ALLEGRO_NOFRAME);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
@@ -89,7 +90,7 @@ int main() {
     ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
-    //debug
+    //debugs
     printf("Diretorio de trabalho: %s\n", al_get_current_directory());
 
     if (!al_install_audio()) {
@@ -192,10 +193,10 @@ int main() {
                 keyboard.d_pressed = true;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros);
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
                 inicializar_sistema_quimico(&sq);
                 init_wave(&wave);
-                total_inimigos = 3;
+                total_inimigos = 5;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -225,13 +226,13 @@ int main() {
             if (!wave.vitoria) {
                 //player
                 atualizar_player(&player, keyboard);
-                colisao_tela(&player);
+                colisao_tela(&player, width, height);
 
                 //tiros
                 atualizar_posicao_tiros(num_tiros, width, height);
 
                 //loop das waves
-                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player);
+                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq);
 
                 //fazer os inimigos seguirem o player
                 for (int i = 0; i < total_inimigos; i++) {
@@ -260,7 +261,7 @@ int main() {
         //quando acaba todos os eventos de cima, isso aq desenha os elementos
         if (al_is_event_queue_empty(event_queue)) {
             //background bonitin q eu fiz :)
-            desenhar_background();
+            desenhar_background(width, height);
 
             if (saindo) {
                 al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
@@ -285,9 +286,10 @@ int main() {
                 if (player.vivo) {
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 140, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
                     if (wave.vitoria == true) {
                         al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), 640 / 2, 480 / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");

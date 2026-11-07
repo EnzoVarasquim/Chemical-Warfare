@@ -25,6 +25,7 @@ typedef struct {
     int qtd_H;
     int qtd_Cl;
     int qtd_Na;
+    int research_point;
 
     TipoArma arma_ativa;
 
