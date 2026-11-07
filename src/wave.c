@@ -61,7 +61,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             int centroY = height / 2;
 
             (*qtd_inimigos)[0] = init_inimigo(centroX - 30, centroY - 30, TIPO_BOSS);
-        } 
+        }
         else {
             (*total_inimigos)++;
             sq->research_point += 10;
@@ -75,8 +75,8 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
                 float distancia;
 
                 do {
-                    posX = 20 + (rand() % (640 - 2 * 20 + 1));
-                    posY = 20 + (rand() % (480 - 2 * 20 + 1));
+                    posX = 20 + (rand() % (width - 2 * 20 + 1));
+                    posY = 20 + (rand() % (height - 2 * 20 + 1));
 
                     float diffX = posX - player->x;
                     float diffY = posY - player->y;
