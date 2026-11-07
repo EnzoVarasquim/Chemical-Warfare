@@ -232,7 +232,7 @@ int main() {
                 atualizar_posicao_tiros(num_tiros, width, height);
 
                 //loop das waves
-                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player);
+                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq);
 
                 //fazer os inimigos seguirem o player
                 for (int i = 0; i < total_inimigos; i++) {
@@ -286,9 +286,10 @@ int main() {
                 if (player.vivo) {
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 140, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
                     if (wave.vitoria == true) {
                         al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), 640 / 2, 480 / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
