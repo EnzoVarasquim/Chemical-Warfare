@@ -21,14 +21,14 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
         velocidade = 2;
         vida = 10;
     }
-    //boss
+    
     if (tipo == TIPO_BOSS) {
         tamanho = 60;     
         velocidade = 0;    
         vida = 50;        
     }
 
-    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, tipo };
+    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo };
     return inimigo;
 }
 
@@ -161,7 +161,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq) {
                 tiros[i].y <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
-                inimigo->vida--;
+                inimigo->vida -= 1;
 
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;
@@ -195,5 +195,46 @@ void colisao_tela_inimigo(Inimigo* inimigo, int width, int height) {
 
     if (inimigo->y > (height - inimigo->size)) {       //baixo
         inimigo->y = (height - inimigo->size);
+    }
+}
+
+//gerar a moeda (research point)
+void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq) {
+    for (int i = 0; i < total; i++) {
+        if (!inimigos[i].vivo && inimigos[i].vida != -99 && player->vivo) {
+            if (player->x < inimigos[i].x + inimigos[i].size &&
+                player->x + player->size > inimigos[i].x &&
+                player->y < inimigos[i].y + inimigos[i].size &&
+                player->y + player->size > inimigos[i].y)
+            {
+                inimigos[i].vida = -99; //marca como recolhido para sumir
+
+                //add research point para cada tipo de inimigo morto e a moeda for coletada
+                if (inimigos[i].tipo == TIPO_ACIDO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_BASICO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_METALICO) sq->research_point++;
+            }
+        }
+    }
+}
+
+void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
+    for (int i = 0; i < total; i++) {
+        if (!inimigos[i].vivo && inimigos[i].vida != -99) {
+            //ifs ternários pra verificar a cor da moedinha para o respectivo tipo de inimigo
+            ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
+                                (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
+                                (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
+                                al_map_rgb(255, 255, 255);
+
+            //centro dos inimigos
+            float cx = inimigos[i].x + inimigos[i].size / 2;
+            float cy = inimigos[i].y + inimigos[i].size / 2;
+            float s = 12;   //tamanho do triângulo
+
+            //desenha a moeda na tela
+            al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
+            al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
+        }
     }
 }

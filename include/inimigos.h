@@ -20,6 +20,7 @@ typedef struct {
     int vel;
     int vida;
     bool vivo;
+    bool coletado;
     TipoInimigo tipo;
 } Inimigo;
 
@@ -30,5 +31,8 @@ void seguir_player(Inimigo* inimigo, Player* player);
 void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2);
 void colisao_player(Inimigo* inimigo, Player* player);
 void colisao_tela_inimigo(Inimigo* inimigo, int width, int height);
+
+void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq);
+void desenhar_moedas_mortos(Inimigo inimigos[], int total);
 
 #endif

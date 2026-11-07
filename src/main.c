@@ -193,11 +193,11 @@ int main() {
                 keyboard.d_pressed = true;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
-                inicializar_sistema_quimico(&sq);
                 init_wave(&wave);
                 total_inimigos = 5;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
+                inicializar_sistema_quimico(&sq);
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
@@ -251,6 +251,9 @@ int main() {
                     colisao_player(&qtd_inimigos[i], &player);
                 }
 
+                //atualizar a moeda 
+                atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
+
                 //checar a colisão do inimigo com os tiros
                 for (int i = 0; i < total_inimigos; i++) {
                     colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
@@ -278,6 +281,8 @@ int main() {
                         al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), qtd_inimigos[i].x - 3, qtd_inimigos[i].y - 15, ALLEGRO_ALIGN_LEFT, "%d HP", qtd_inimigos[i].vida);
                     }
                 }
+
+                desenhar_moedas_mortos(qtd_inimigos, total_inimigos);
 
                 desenhar_player(player);
                 desenhar_mira(&mouse);
