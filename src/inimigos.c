@@ -197,7 +197,8 @@ void colisao_tela_inimigo(Inimigo* inimigo, int width, int height) {
         inimigo->y = (height - inimigo->size);
     }
 }
-//gerar a moeda
+
+//gerar a moeda (research point)
 void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq) {
     for (int i = 0; i < total; i++) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99 && player->vivo) {
@@ -208,9 +209,9 @@ void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuim
             {
                 inimigos[i].vida = -99; // Marca como recolhido para sumir
 
-                if (inimigos[i].tipo == TIPO_ACIDO) sq->qtd_H++;
-                else if (inimigos[i].tipo == TIPO_BASICO) sq->qtd_Na++;
-                else if (inimigos[i].tipo == TIPO_METALICO) sq->qtd_Cl++;
+                if (inimigos[i].tipo == TIPO_ACIDO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_BASICO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_METALICO) sq->research_point++;
 
                 checar_reacoes(sq);
             }
