@@ -11,7 +11,7 @@ void init_wave(Wave* wave) {
     wave->vitoria = false;
 }
 
-void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player) {
+void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player, SistemaQuimico* sq) {
 
     if (wave->vitoria == true) {
         return;
@@ -51,6 +51,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
         //wave do boss
         if (wave->atual == wave->final) {
             *total_inimigos = 1;
+            sq->research_point += 10;
 
             //redimensiona o array para caber só 1 inimigo
             *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
@@ -63,6 +64,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
         } 
         else {
             (*total_inimigos)++;
+            sq->research_point += 10;
 
             //realoca a memória do array original para caber o novo inimigo extra
             *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
