@@ -82,7 +82,7 @@ int main() {
     }
 
     //cria a janela do jogo que pode ser redimensionada
-    al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
+    al_set_new_display_flags(ALLEGRO_MAXIMIZED | ALLEGRO_NOFRAME);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
