@@ -28,7 +28,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
         vida = 50;        
     }
 
-    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, tipo };
+    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo };
     return inimigo;
 }
 
