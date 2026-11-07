@@ -1,8 +1,8 @@
 #include <allegro5/allegro_primitives.h>
 #include "player.h"
 
-Player init_player(void) {
-    Player player = { 310, 230, 20, 5, 10, true };
+Player init_player(int width, int height) {
+    Player player = { width/2, height/2, 20, 5, 10, true };
     return player;
 }
 
@@ -33,21 +33,21 @@ void atualizar_player(Player* player, Keyboard keyboard) {
     }
 }
 
-void colisao_tela(Player* player) {
+void colisao_tela(Player* player, int width, int height) {
     if (player->x < 0) {               //esquerda
         player->x = 0;
     }
 
-    if (player->x > (640 - player->size)) {       //direita
-        player->x = (640 - player->size);
+    if (player->x > (width - player->size)) {       //direita
+        player->x = (width - player->size);
     }
 
     if (player->y < 0) {               //cima
         player->y = 0;
     }
 
-    if (player->y > (480 - player->size)) {       //baixo
-        player->y = (480 - player->size);
+    if (player->y > (height - player->size)) {       //baixo
+        player->y = (height - player->size);
     }
 }
 void tomar_dano(Player* player, int dano) {

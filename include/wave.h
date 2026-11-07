@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "inimigos.h"
 #include "player.h"
+#include "reacoes.h"
 
 typedef struct {
     int atual;
@@ -15,6 +16,6 @@ typedef struct {
 } Wave;
 
 void init_wave(Wave* wave);
-void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player);
+void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player, SistemaQuimico* sq, int width, int height);
 
 #endif

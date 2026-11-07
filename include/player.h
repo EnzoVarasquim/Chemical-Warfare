@@ -19,11 +19,11 @@ typedef struct {
     bool d_pressed;
 } Keyboard;
 
-Player init_player(void);
+Player init_player(int width, int height);
 void desenhar_player(Player player);
 void atualizar_player(Player *player, Keyboard keyboard);
 void tomar_dano(Player* player, int dano); 
-void colisao_tela(Player *player);
+void colisao_tela(Player *player, int width, int height);
 
 Keyboard init_keyboard(void);
 
