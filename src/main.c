@@ -250,6 +250,7 @@ int main() {
                 for (int i = 0; i < total_inimigos; i++) {
                     colisao_player(&qtd_inimigos[i], &player);
                 }
+
                 //atualizar a moeda 
                 atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
 
