@@ -21,7 +21,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
         velocidade = 2;
         vida = 10;
     }
-    //boss
+    
     if (tipo == TIPO_BOSS) {
         tamanho = 60;     
         velocidade = 0;    
@@ -161,7 +161,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq) {
                 tiros[i].y <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
-                inimigo->vida--;
+                inimigo->vida -= 1;
 
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;
