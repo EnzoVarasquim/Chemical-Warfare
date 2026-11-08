@@ -78,7 +78,7 @@ void desenhar_mira(Mouse* mouse) {
     al_draw_filled_circle(mouse->x, mouse->y, 4, al_map_rgb(255, 235, 120));
 }
 
-void atualizar_posicao_tiros(Tiro tiros[], int largura_tela, int altura_tela) {
+void atualizar_posicao_tiros(Tiro tiros[], int width, int height) {
     for (int i = 0; i < MAX_TIROS; i++) {
         if (!tiros[i].ativo) {
             continue;
@@ -88,7 +88,7 @@ void atualizar_posicao_tiros(Tiro tiros[], int largura_tela, int altura_tela) {
         tiros[i].y += tiros[i].vel_y;
 
         // Desativa quando sai da tela
-        if (tiros[i].x < 0 || tiros[i].x > largura_tela || tiros[i].y < 0 || tiros[i].y > altura_tela) {
+        if (tiros[i].x < width/4 || tiros[i].x > width || tiros[i].y < 0 || tiros[i].y > height) {
             tiros[i].ativo = false;
         }
     }

@@ -3,7 +3,7 @@
 #include <math.h>
 
 void init_wave(Wave* wave) {
-    wave->atual = 1;        
+    wave->atual = 9;        
     wave->final = 10;
     wave->inicio = true;    
     wave->andamento = false;
@@ -57,7 +57,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
 
             //nasce o Boss bem no centro da tela
-            int centroX = width / 2;
+            int centroX = width / 1.625;
             int centroY = height / 2;
 
             (*qtd_inimigos)[0] = init_inimigo(centroX - 30, centroY - 30, TIPO_BOSS);
@@ -75,7 +75,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
                 float distancia;
 
                 do {
-                    posX = 20 + (rand() % (width - 2 * 20 + 1));
+                    posX = (width / 4 + 20) + (rand() % (width - width / 4 - 2 * 20 + 1));
                     posY = 20 + (rand() % (height - 2 * 20 + 1));
 
                     float diffX = posX - player->x;
