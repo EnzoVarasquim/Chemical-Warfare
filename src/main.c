@@ -276,8 +276,7 @@ int main() {
         if (event.type == ALLEGRO_EVENT_TIMER) {
 
             // Esconde a mensagem de arma bloqueada depois de 30 segundos
-            if (sq.mensagem_arma_bloqueada &&
-                al_get_time() - tempo_mensagem_bloqueada >= 3.0) {
+            if (sq.mensagem_arma_bloqueada && al_get_time() - tempo_mensagem_bloqueada >= 3.0) {
                 sq.mensagem_arma_bloqueada = false;
             }
 
@@ -325,14 +324,6 @@ int main() {
             desenhar_background(width, height);
             desenhar_barra_lateral(width, height);
 
-            al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 25, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
-            al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 25, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
-            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
-            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
-            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
-            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
-            al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
-
             if (saindo) {
                 al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 1.6, height / 2.25, ALLEGRO_ALIGN_CENTER, "Saindo...");
                 al_flip_display();
@@ -353,13 +344,12 @@ int main() {
 
                 desenhar_player(player);
 
-                // Ícone da arma: desenhado depois dos personagens, em primeiro plano.
-                // Alpha baixo deixa a forma quase transparente.
+                // Ícone da arma
                 ALLEGRO_COLOR cor_preview;
                 switch (sq.arma_ativa) {
                 case TIRO_PADRAO:
                     cor_preview = al_map_rgba(220, 220, 220, 35);
-                    al_draw_filled_circle(81, 434, 17, cor_preview);
+                    al_draw_filled_circle(81, 490, 17, cor_preview);
                     break;
 
                 case ARMA_ACIDA:
@@ -380,53 +370,54 @@ int main() {
 
                 desenhar_mira(&mouse);
 
-                if (player.vivo) {
-                    // UI de Vida do Player
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
+                // UI de Vida do Player
+                al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
 
-                    // UI de Seleção de Armas
-                    const char* nome_arma = "Desconhecida";
+                // UI de Seleção de Armas
+                const char* nome_arma = "Desconhecida";
 
-                    switch (sq.arma_ativa) {
-                    case TIRO_PADRAO:
-                        nome_arma = "Padrao";
-                        break;
+                switch (sq.arma_ativa) {
+                case TIRO_PADRAO:
+                    nome_arma = "Padrao";
+                    break;
 
-                    case ARMA_ACIDA:
-                        nome_arma = "Acida";
-                        break;
+                case ARMA_ACIDA:
+                    nome_arma = "Acida";
+                    break;
 
-                    case ARMA_BASICA:
-                        nome_arma = "Basica";
-                        break;
+                case ARMA_BASICA:
+                    nome_arma = "Basica";
+                    break;
 
-                    case ARMA_METALICA:
-                        nome_arma = "Metalica";
-                        break;
-                    }
-
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
-                    
-                    // UI de Elementos Químicos
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
-
-                    // Mensagem de Feedback de Bloqueio
-                    if (sq.mensagem_arma_bloqueada) {
-                        al_draw_text(fonte_pequena, al_map_rgb(255, 50, 50), width / 2, 150, ALLEGRO_ALIGN_CENTER, "Arma nao descoberta ou elementos insuficientes!");
-                    }
+                case ARMA_METALICA:
+                    nome_arma = "Metalica";
+                    break;
                 }
 
-                // caixa do contador de wave (Design da Main)
+                al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
+                al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+                    
+                // UI de Elementos Químicos
+                al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+                al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+                al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+
+                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
+
+                //mensagem de feedback de bloqueio
+                if (sq.mensagem_arma_bloqueada) {
+                    al_draw_text(fonte_media_2, al_map_rgb(255, 50, 50), width / 1.6, 40, ALLEGRO_ALIGN_CENTER, "Arma não descoberta ou elementos insuficientes!");
+                }
+
+                //caixa do contador de wave 
                 al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
                 al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
 
-                // formatação do texto das waves (Design da Main)
+                //formatação do texto das waves
                 int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
                 
                 (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
-                                            al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
+                                                al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
 
                 if (wave.atual >= wave.final + 1) {
                     al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
