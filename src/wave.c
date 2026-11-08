@@ -57,13 +57,15 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             wave->laboratorio = true;
             *total_inimigos = 0;
             
+            player->x = width / 1.6 - 10;
+            player->y = height - 110;
         } 
         //Wave final (BOSS)
         else if (wave->atual >= wave->final) {
             wave->laboratorio = false;
 
             *total_inimigos = 1;
-            sq->research_point += 10;
+            sq->research_point += 25;
 
             //redimensiona o array para caber só 1 inimigo
             *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
