@@ -1,4 +1,3 @@
-
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "tiro.h"
@@ -88,7 +87,7 @@ void atualizar_posicao_tiros(Tiro tiros[], int width, int height) {
         tiros[i].y += tiros[i].vel_y;
 
         // Desativa quando sai da tela
-        if (tiros[i].x < width/4 || tiros[i].x > width || tiros[i].y < 0 || tiros[i].y > height) {
+        if (tiros[i].x < width / 4 || tiros[i].x > width || tiros[i].y < 0 || tiros[i].y > height) {
             tiros[i].ativo = false;
         }
     }
