@@ -34,7 +34,7 @@ Tiro init_tiro(void);
 void desenhar_tiros(Tiro tiros[]);
 void desenhar_mira(Mouse* mouse);
 
-void atualizar_posicao_tiros(Tiro tiros[], int largura_tela, int altura_tela);
+void atualizar_posicao_tiros(Tiro tiros[], int width, int height);
 
 void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[], TipoArma arma, SistemaQuimico* sq);
 
