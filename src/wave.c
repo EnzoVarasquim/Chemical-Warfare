@@ -3,9 +3,9 @@
 #include <math.h>
 
 void init_wave(Wave* wave) {
-    wave->atual = 9;        
+    wave->atual = 1;
     wave->final = 10;
-    wave->inicio = true;    
+    wave->inicio = true;
     wave->andamento = false;
     wave->finalizado = false;
     wave->vitoria = false;
