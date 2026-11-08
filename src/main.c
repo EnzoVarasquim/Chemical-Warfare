@@ -45,6 +45,9 @@ int main() {
     Wave wave;
     init_wave(&wave);
 
+    ItemLab itens_lab[3];
+    init_itens_lab(itens_lab);
+
     //aloca memória pra guardar os inimigos
     int total_inimigos = 3;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
@@ -265,9 +268,14 @@ int main() {
                 //atualizar a moeda 
                 atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
 
+                //checa se ta comprando os itens do laboratorio
+                if (wave.laboratorio) {
+                    computar_compra_item(&sq, &player, &itens_lab, width, height);
+                }
+
                 //checar a colisão do inimigo com os tiros
                 for (int i = 0; i < total_inimigos; i++) {
-                    colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
+                    colisao_tiro(&qtd_inimigos[i], num_tiros, &sq, &player);
                 }
             }
         }
@@ -315,7 +323,7 @@ int main() {
                 int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
                 
                 (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
-                                            al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
+                                                al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
 
                 if (wave.atual >= wave.final + 1) {
                     al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
@@ -335,6 +343,8 @@ int main() {
                 if (wave.laboratorio == true) {
                     al_draw_text(fonte_grande, al_map_rgb(0, 120, 255), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "LABORATÓRIO");
                     al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Compre reações com research points");
+
+                    desenhar_itens_lab(&sq, itens_lab, fonte_pequena);
 
                     al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
                     al_draw_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(50, 50, 50), 1);
