@@ -8,12 +8,22 @@
 void desenhar_background(int width, int height) {
     al_clear_to_color(al_map_rgb(0, 0, 0));
 
-    for (int x = 0; x <= width; x += 20) {
+    for (int x = width/4; x <= width; x += 20) {
         al_draw_line(x, 0, x, height, al_map_rgb(50, 50, 50), 1);
     }
     for (int y = 0; y <= height; y += 20) {
-        al_draw_line(0, y, width, y, al_map_rgb(50, 50, 50), 1);
+        al_draw_line(width/4, y, width, y, al_map_rgb(50, 50, 50), 1);
     }
+}
+void desenhar_barra_lateral(int width, int height) {
+    al_draw_filled_rectangle(0, 0, width/4, height, al_map_rgb(10, 10, 10));
+    al_draw_line(width/4 - 1, 0, width/4 - 1, height, al_map_rgb(50, 50, 50), 1);
+
+    al_draw_line(0, 80, width / 4 - 1, 80, al_map_rgb(50, 50, 50), 1);
+    al_draw_line(0, 115, width / 4 - 1, 115, al_map_rgb(50, 50, 50), 1);
+    al_draw_line(0, 190, width / 4 - 1, 190, al_map_rgb(50, 50, 50), 1);
+
+
 }
 
 void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], int width, int height) {
@@ -24,8 +34,9 @@ void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiro
         float distancia;
 
         do {
-            posX = 20 + (rand() % (width - 2 * 20 + 1));
+            posX = (width / 4 + 20) + (rand() % (width - width / 4 - 2 * 20 + 1));
             posY = 20 + (rand() % (height - 2 * 20 + 1));
+
 
             float diffX = posX - player->x;
             float diffY = posY - player->y;

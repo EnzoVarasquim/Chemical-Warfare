@@ -58,7 +58,7 @@ int main() {
 
         do {
             //sorteia a posição na tela
-            posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
+            posX = (width / 4 + tamanho_inimigo) + (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
             posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
 
             //calcula a distância entre o ponto sorteado e o player
@@ -166,7 +166,7 @@ int main() {
                 mouse.left_button = true;
 
                 if (player.vivo) {
-                    disparar_tiro(&mouse,&player,num_tiros,sq.arma_ativa,&sq);
+                    disparar_tiro(&mouse, &player, num_tiros, sq.arma_ativa, &sq);
                     al_play_sample(som_tiro, 0.1, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 }
 
@@ -263,11 +263,19 @@ int main() {
 
         //quando acaba todos os eventos de cima, isso aq desenha os elementos
         if (al_is_event_queue_empty(event_queue)) {
-            //background bonitin q eu fiz :)
+            //UI do jogo
             desenhar_background(width, height);
+            desenhar_barra_lateral(width, height);
+
+            al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 25, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
+            al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 25, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
             if (saindo) {
-                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
+                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 1.6, height / 2.25, ALLEGRO_ALIGN_CENTER, "Saindo...");
                 al_flip_display();
                 al_rest(0.5);
                 rodando = false;
@@ -287,31 +295,33 @@ int main() {
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
-                //textinhos na tela | UI
-                if (player.vivo) {
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 140, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
-
-                    if (wave.vitoria == true) {
-                        al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 2, height / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
-                        al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 2, (height / 2) + 40, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
-                    }
-
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 20, ALLEGRO_ALIGN_LEFT, "WAVE: %d", wave.atual);
-                    if (wave.atual == wave.final + 1) {
-                        al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 100, 50, ALLEGRO_ALIGN_LEFT, "BOSS");
-                    }
-                    
+                if (wave.vitoria == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
+                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
                 }
-                else {
-                    al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P");
-                    al_draw_text(fonte_media, al_map_rgb(220, 220, 220), width / 2, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
+
+                al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
+                al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
+
+                //formatação do texto das waves
+                (wave.atual < wave.final) ? al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave.atual) :
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave.atual);
+
+                if (wave.atual == wave.final + 1) {
+                    al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(50, 50, 50), 1);
+                    al_draw_filled_circle(width - 95, 57, 2, al_map_rgb(255, 50, 50));
+                    al_draw_filled_circle(width - 90, 57, 3, al_map_rgb(255, 50, 50));
+                    al_draw_filled_circle(width - 30, 57, 3, al_map_rgb(255, 50, 50));
+                    al_draw_filled_circle(width - 25, 57, 2, al_map_rgb(255, 50, 50));
+                    al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
                 }
-       
+
+                if (!player.vivo) {
+                    al_draw_text(fonte_grande, al_map_rgb(220, 10, 10), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "Você morreu");
+                    al_draw_text(fonte_media, al_map_rgb(220, 220, 220), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
+                }
+
                 al_flip_display();
             }
         }
@@ -321,7 +331,7 @@ int main() {
     //libera os inimigos da memoria
     free(qtd_inimigos);
 
-   // desliga os eventos e desisntala as biblioteca quando fecha a tela
+    //desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_sample(som_tiro);
     al_destroy_audio_stream(musica_background);
     al_destroy_event_queue(event_queue);

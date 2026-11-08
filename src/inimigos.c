@@ -181,15 +181,15 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq) {
 }
 
 void colisao_tela_inimigo(Inimigo* inimigo, int width, int height) {
-    if (inimigo->x < 0) {               //esquerda
-        inimigo->x = 0;
+    if (inimigo->x < width/4) {                       //esquerda
+        inimigo->x = width / 4;
     }
 
     if (inimigo->x > (width - inimigo->size)) {       //direita
         inimigo->x = (width - inimigo->size);
     }
 
-    if (inimigo->y < 0) {               //cima
+    if (inimigo->y < 0) {                              //cima
         inimigo->y = 0;
     }
 

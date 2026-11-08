@@ -2,7 +2,7 @@
 #include "player.h"
 
 Player init_player(int width, int height) {
-    Player player = { width/2, height/2, 20, 5, 10, true, 0.0};
+    Player player = { width / 1.625, height / 2, 20, 5, 10, true, 0.0 };
     return player;
 }
 
@@ -15,7 +15,7 @@ void desenhar_player(Player player) {
     //pisca várias quando leva danos
     if (player.tempo_ultimo_dano > 0.0 && tempo_atual - player.tempo_ultimo_dano < 0.5) {
         if (((int)(tempo_atual * 25)) % 2 == 0) {
-            cor_atual = al_map_rgb(255, 255, 255); 
+            cor_atual = al_map_rgb(255, 255, 255);
         }
     }
 
@@ -45,19 +45,19 @@ void atualizar_player(Player* player, Keyboard keyboard) {
 }
 
 void colisao_tela(Player* player, int width, int height) {
-    if (player->x < 0) {               //esquerda
-        player->x = 0;
+    if (player->x < width / 4) {                      //esquerda
+        player->x = width / 4;
     }
 
     if (player->x > (width - player->size)) {       //direita
         player->x = (width - player->size);
     }
 
-    if (player->y < 0) {               //cima
+    if (player->y < 0) {                            //cima
         player->y = 0;
     }
 
-    if (player->y > (height - player->size)) {       //baixo
+    if (player->y > (height - player->size)) {      //baixo
         player->y = (height - player->size);
     }
 }
