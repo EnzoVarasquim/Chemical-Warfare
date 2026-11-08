@@ -22,6 +22,9 @@ void desenhar_barra_lateral(int width, int height) {
     al_draw_line(0, 80, width / 4 - 1, 80, al_map_rgb(50, 50, 50), 1);
     al_draw_line(0, 115, width / 4 - 1, 115, al_map_rgb(50, 50, 50), 1);
     al_draw_line(0, 190, width / 4 - 1, 190, al_map_rgb(50, 50, 50), 1);
+    al_draw_line(0, 460, width / 4 - 1, 460, al_map_rgb(50, 50, 50), 1);
+
+
 }
 
 void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], int width, int height) {
