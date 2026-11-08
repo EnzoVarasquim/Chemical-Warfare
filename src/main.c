@@ -46,7 +46,7 @@ int main() {
     init_wave(&wave);
 
     //aloca memória pra guardar os inimigos
-    int total_inimigos = 5;
+    int total_inimigos = 3;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
@@ -203,6 +203,16 @@ int main() {
                 al_rest(1.0);
                 saindo = true;
             }
+            if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                if (wave.laboratorio && wave.andamento) {
+                    wave.laboratorio = false;
+                    wave.combates_vencidos = 0;
+                    wave.finalizado = true;
+                    wave.andamento = false;
+
+                    total_inimigos = wave.atual + 2;
+                }
+            }
         }
 
         //se soltar uma tecla
@@ -295,19 +305,17 @@ int main() {
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
-                if (wave.vitoria == true) {
-                    al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
-                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
-                }
-
+                //caixa do contador de wave
                 al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
                 al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
 
                 //formatação do texto das waves
-                (wave.atual < wave.final) ? al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave.atual) :
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave.atual);
+                int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
+                
+                (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
+                                            al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
 
-                if (wave.atual == wave.final + 1) {
+                if (wave.atual >= wave.final + 1) {
                     al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
                     al_draw_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(50, 50, 50), 1);
                     al_draw_filled_circle(width - 95, 57, 2, al_map_rgb(255, 50, 50));
@@ -315,6 +323,20 @@ int main() {
                     al_draw_filled_circle(width - 30, 57, 3, al_map_rgb(255, 50, 50));
                     al_draw_filled_circle(width - 25, 57, 2, al_map_rgb(255, 50, 50));
                     al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
+                }
+
+                if (wave.vitoria == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
+                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
+                }
+
+                if (wave.laboratorio == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 120, 255), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "LABORATÓRIO");
+                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Compre reações com research points");
+
+                    al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(50, 50, 50), 1);
+                    al_draw_text(fonte_pequena, al_map_rgb(255, 255, 255), width / 1.6, height - 37, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para sair do Laboratório");
                 }
 
                 if (!player.vivo) {
