@@ -1,6 +1,9 @@
 #ifndef REACOES_H
 #define REACOES_H
 
+#include <allegro5/allegro_font.h>
+#include "player.h"
+
 typedef enum {
     ELEMENTO_NENHUM,
     ELEMENTO_H,
@@ -26,10 +29,8 @@ typedef struct {
     int qtd_Cl;
     int qtd_Na;
     int research_point;
-
     TipoArma arma_ativa;
 
-    // Aparencia da combinacao ativa
     FormatoTiro formato_ativo;
     int cor_r;
     int cor_g;
@@ -38,7 +39,19 @@ typedef struct {
 
 } SistemaQuimico;
 
+typedef struct {
+    int ID_item;
+    const char* nome;
+    const char* desc;
+    int valor;
+} ItemLab;
+
 void inicializar_sistema_quimico(SistemaQuimico* sq);
 void checar_reacoes(SistemaQuimico* sq);
+
+void init_itens_lab(ItemLab* item);
+void desenhar_itens_lab(SistemaQuimico* sq, ItemLab* item, ALLEGRO_FONT* fonte);
+int verificar_colisao_loja(Player* player, int* item_posX, int* item_posY, int tamanho_caixa);
+void computar_compra_item(SistemaQuimico* sq, Player* p, ItemLab* itens, int width, int height);
 
 #endif
