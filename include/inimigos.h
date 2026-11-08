@@ -1,6 +1,7 @@
 #ifndef INIMIGOS_H
 #define INIMIGOS_H
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include "player.h"
 #include "tiro.h"
@@ -26,7 +27,7 @@ typedef struct {
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo);
 void desenhar_inimigo(Inimigo inimigo);
-void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq);
+void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* player);
 void seguir_player(Inimigo* inimigo, Player* player);
 void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2);
 void colisao_player(Inimigo* inimigo, Player* player);

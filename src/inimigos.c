@@ -1,4 +1,5 @@
 #include <allegro5/allegro_primitives.h>
+#include <math.h>
 #include "inimigos.h"
 
 #define MAX_TIROS 30
@@ -118,7 +119,7 @@ void colisao_player(Inimigo* inimigo, Player* player) {
         inimigo->y < player->y + player->size &&     //baixo
         inimigo->y + inimigo->size > player->y)      //cima
     {
-        //dano no player quando toca nele
+        //dá dano no player quando toca nele
         tomar_dano(player, 1);
 
         if (player->vida <= 0) {
@@ -150,7 +151,7 @@ void colisao_player(Inimigo* inimigo, Player* player) {
 }
 
 //colissão do tiro com o inimigo
-void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq) {
+void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* player) {
     if (!inimigo->vivo) return;
 
     for (int i = 0; i < MAX_TIROS; i++) {
@@ -161,7 +162,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq) {
                 tiros[i].y <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
-                inimigo->vida -= 1;
+                inimigo->vida -= player->dano;
 
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;
