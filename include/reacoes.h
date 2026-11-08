@@ -50,8 +50,8 @@ typedef struct {
     TipoArma arma_desbloqueada;
     int tempo_mensagem_desbloqueio;
 
-
-
+	
+    
 } SistemaQuimico;
 
 void inicializar_sistema_quimico(SistemaQuimico* sq);
