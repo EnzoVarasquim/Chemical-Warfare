@@ -42,6 +42,9 @@ int main() {
     SistemaQuimico sq;
     inicializar_sistema_quimico(&sq);
 
+    // Controle do tempo da mensagem de arma bloqueada
+    double tempo_mensagem_bloqueada = 0.0;
+
     Wave wave;
     init_wave(&wave);
 
@@ -199,6 +202,7 @@ int main() {
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
                 reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
                 inicializar_sistema_quimico(&sq);
+                tempo_mensagem_bloqueada = 0.0;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
@@ -218,6 +222,8 @@ int main() {
 
         //se soltar uma tecla
         if (event.type == ALLEGRO_EVENT_KEY_UP) {
+
+            //movimentação do player
             if (event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_W) {
                 keyboard.w_pressed = false;
             }
@@ -230,10 +236,51 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT || event.keyboard.keycode == ALLEGRO_KEY_D) {
                 keyboard.d_pressed = false;
             }
+
+            // Seleção de armas
+            if (event.keyboard.keycode == ALLEGRO_KEY_1) {
+                sq.mensagem_arma_bloqueada = false;
+                selecionar_arma(&sq, TIRO_PADRAO);
+                if (sq.mensagem_arma_bloqueada) {
+                    tempo_mensagem_bloqueada = al_get_time();
+                }
+            }
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_2) {
+                sq.mensagem_arma_bloqueada = false;
+                selecionar_arma(&sq, ARMA_ACIDA);
+                if (sq.mensagem_arma_bloqueada) {
+                    tempo_mensagem_bloqueada = al_get_time();
+                }
+            }
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_3) {
+                sq.mensagem_arma_bloqueada = false;
+                selecionar_arma(&sq, ARMA_BASICA);
+                if (sq.mensagem_arma_bloqueada) {
+                    tempo_mensagem_bloqueada = al_get_time();
+                }
+            }
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_4) {
+                sq.mensagem_arma_bloqueada = false;
+                selecionar_arma(&sq, ARMA_METALICA);
+                if (sq.mensagem_arma_bloqueada) {
+                    tempo_mensagem_bloqueada = al_get_time();
+                }
+            }
+
         }
 
         //atualizando os dados em tempo real ;P
         if (event.type == ALLEGRO_EVENT_TIMER) {
+
+            // Esconde a mensagem de arma bloqueada depois de 30 segundos
+            if (sq.mensagem_arma_bloqueada &&
+                al_get_time() - tempo_mensagem_bloqueada >= 3.0) {
+                sq.mensagem_arma_bloqueada = false;
+            }
+
             if (!wave.vitoria) {
                 //player
                 atualizar_player(&player, keyboard);
@@ -305,13 +352,77 @@ int main() {
                 desenhar_moedas_mortos(qtd_inimigos, total_inimigos);
 
                 desenhar_player(player);
+
+                // Ícone da arma: desenhado depois dos personagens, em primeiro plano.
+                // Alpha baixo deixa a forma quase transparente.
+                ALLEGRO_COLOR cor_preview;
+                switch (sq.arma_ativa) {
+                case TIRO_PADRAO:
+                    cor_preview = al_map_rgba(220, 220, 220, 35);
+                    al_draw_filled_circle(81, 434, 17, cor_preview);
+                    break;
+
+                case ARMA_ACIDA:
+                    cor_preview = al_map_rgba(80, 255, 80, 35);
+                    al_draw_filled_triangle(81, 410, 62, 452, 100, 452, cor_preview);
+                    break;
+
+                case ARMA_BASICA:
+                    cor_preview = al_map_rgba(80, 180, 255, 35);
+                    al_draw_filled_rectangle(65, 418, 97, 450, cor_preview);
+                    break;
+
+                case ARMA_METALICA:
+                    cor_preview = al_map_rgba(180, 70, 255, 35);
+                    al_draw_filled_circle(81, 434, 13, cor_preview);
+                    break;
+                }
+
                 desenhar_mira(&mouse);
 
-                //caixa do contador de wave
+                if (player.vivo) {
+                    // UI de Vida do Player
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
+
+                    // UI de Seleção de Armas
+                    const char* nome_arma = "Desconhecida";
+
+                    switch (sq.arma_ativa) {
+                    case TIRO_PADRAO:
+                        nome_arma = "Padrao";
+                        break;
+
+                    case ARMA_ACIDA:
+                        nome_arma = "Acida";
+                        break;
+
+                    case ARMA_BASICA:
+                        nome_arma = "Basica";
+                        break;
+
+                    case ARMA_METALICA:
+                        nome_arma = "Metalica";
+                        break;
+                    }
+
+                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
+                    
+                    // UI de Elementos Químicos
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+
+                    // Mensagem de Feedback de Bloqueio
+                    if (sq.mensagem_arma_bloqueada) {
+                        al_draw_text(fonte_pequena, al_map_rgb(255, 50, 50), width / 2, 150, ALLEGRO_ALIGN_CENTER, "Arma nao descoberta ou elementos insuficientes!");
+                    }
+                }
+
+                // caixa do contador de wave (Design da Main)
                 al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
                 al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
 
-                //formatação do texto das waves
+                // formatação do texto das waves (Design da Main)
                 int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
                 
                 (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
@@ -355,7 +466,7 @@ int main() {
     //libera os inimigos da memoria
     free(qtd_inimigos);
 
-    //desliga os eventos e desisntala as biblioteca quando fecha a tela
+    // desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_sample(som_tiro);
     al_destroy_audio_stream(musica_background);
     al_destroy_event_queue(event_queue);
