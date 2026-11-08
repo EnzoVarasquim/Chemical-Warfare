@@ -46,7 +46,7 @@ int main() {
     init_wave(&wave);
 
     //aloca memória pra guardar os inimigos
-    int total_inimigos = 5;
+    int total_inimigos = 3;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
@@ -87,7 +87,8 @@ int main() {
     al_set_window_title(display, "Chemical Warfare");
 
     ALLEGRO_FONT* fonte_grande = al_load_font("assets/fonts/font.ttf", 24, 0);
-    ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
+    ALLEGRO_FONT* fonte_media_1 = al_load_font("assets/fonts/font.ttf", 18, 0);
+    ALLEGRO_FONT* fonte_media_2 = al_load_font("assets/fonts/font.ttf", 16, 0);
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
     //debugs
@@ -203,6 +204,16 @@ int main() {
                 al_rest(1.0);
                 saindo = true;
             }
+            if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                if (wave.laboratorio && wave.andamento) {
+                    wave.laboratorio = false;
+                    wave.combates_vencidos = 0;
+                    wave.finalizado = true;
+                    wave.andamento = false;
+
+                    total_inimigos = wave.atual + 2;
+                }
+            }
         }
 
         //se soltar uma tecla
@@ -267,12 +278,13 @@ int main() {
             desenhar_background(width, height);
             desenhar_barra_lateral(width, height);
 
-            al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 25, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
-            al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 25, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
+            al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 25, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
+            al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 25, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
             al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
             al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
             al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
             al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+            al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
 
             if (saindo) {
                 al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 1.6, height / 2.25, ALLEGRO_ALIGN_CENTER, "Saindo...");
@@ -295,31 +307,43 @@ int main() {
                 desenhar_player(player);
                 desenhar_mira(&mouse);
 
-                if (wave.vitoria == true) {
-                    al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
-                    al_draw_text(fonte_media, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
-                }
-
+                //caixa do contador de wave
                 al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
                 al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
 
                 //formatação do texto das waves
-                (wave.atual < wave.final) ? al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave.atual) :
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave.atual);
+                int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
+                
+                (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
+                                            al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
 
-                if (wave.atual == wave.final + 1) {
+                if (wave.atual >= wave.final + 1) {
                     al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
                     al_draw_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(50, 50, 50), 1);
                     al_draw_filled_circle(width - 95, 57, 2, al_map_rgb(255, 50, 50));
                     al_draw_filled_circle(width - 90, 57, 3, al_map_rgb(255, 50, 50));
                     al_draw_filled_circle(width - 30, 57, 3, al_map_rgb(255, 50, 50));
                     al_draw_filled_circle(width - 25, 57, 2, al_map_rgb(255, 50, 50));
-                    al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
+                    al_draw_text(fonte_media_1, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
+                }
+
+                if (wave.vitoria == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
+                    al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
+                }
+
+                if (wave.laboratorio == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 120, 255), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "LABORATÓRIO");
+                    al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Compre reações com research points");
+
+                    al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(50, 50, 50), 1);
+                    al_draw_text(fonte_pequena, al_map_rgb(255, 255, 255), width / 1.6, height - 37, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para sair do Laboratório");
                 }
 
                 if (!player.vivo) {
                     al_draw_text(fonte_grande, al_map_rgb(220, 10, 10), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "Você morreu");
-                    al_draw_text(fonte_media, al_map_rgb(220, 220, 220), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
+                    al_draw_text(fonte_media_1, al_map_rgb(220, 220, 220), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
                 }
 
                 al_flip_display();
@@ -338,7 +362,8 @@ int main() {
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_font(fonte_grande);
-    al_destroy_font(fonte_media);
+    al_destroy_font(fonte_media_1);
+    al_destroy_font(fonte_media_2);
     al_destroy_font(fonte_pequena);
 
     al_uninstall_mouse();

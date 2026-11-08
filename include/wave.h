@@ -13,6 +13,8 @@ typedef struct {
     bool andamento;
     bool finalizado;
     bool vitoria;
+    bool laboratorio;
+    int combates_vencidos;
 } Wave;
 
 void init_wave(Wave* wave);

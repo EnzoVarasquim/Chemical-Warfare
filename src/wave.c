@@ -4,11 +4,13 @@
 
 void init_wave(Wave* wave) {
     wave->atual = 1;
-    wave->final = 10;
+    wave->final = 21;           //fazendo os calculos a quantidade real de waves é 12 :)
     wave->inicio = true;
     wave->andamento = false;
     wave->finalizado = false;
     wave->vitoria = false;
+    wave->laboratorio = false;
+    wave->combates_vencidos = 0;
 }
 
 void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player, SistemaQuimico* sq, int width, int height) {
@@ -33,23 +35,33 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
         }
 
         //se nenhum estiver vivo, a wave acaba
-        if (vivos == 0) {
+        if (vivos == 0 && wave->laboratorio == false) {
             //se for a wave final, o jogo acaba
-            if (wave->atual == wave->final + 1) {
+            if (wave->atual >= wave->final + 1) {
                 wave->vitoria = true;
                 wave->andamento = false;
                 wave->finalizado = false;
                 return;
             }
 
+            wave->combates_vencidos++;
+            wave->atual++;
             wave->finalizado = true;
             wave->andamento = false;
         }
     }
 
     if (wave->finalizado == true) {
-        //wave do boss
-        if (wave->atual == wave->final) {
+        //Wave do Laboratório (LOJA)
+        if (wave->combates_vencidos == 3 && wave->atual != wave->final) {
+            wave->laboratorio = true;
+            *total_inimigos = 0;
+            
+        } 
+        //Wave final (BOSS)
+        else if (wave->atual >= wave->final) {
+            wave->laboratorio = false;
+
             *total_inimigos = 1;
             sq->research_point += 10;
 
@@ -61,8 +73,12 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             int centroY = height / 2;
 
             (*qtd_inimigos)[0] = init_inimigo(centroX - 30, centroY - 30, TIPO_BOSS);
+            
         }
+        //Waves normais
         else {
+            wave->laboratorio = false;
+
             (*total_inimigos)++;
             sq->research_point += 10;
 
