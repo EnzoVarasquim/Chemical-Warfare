@@ -31,13 +31,13 @@ int main() {
     al_init_acodec_addon();
 
     //tela
-    int width = 640;
-    int height = 480;
+    int width = 960;
+    int height = 540;
 
     bool rodando = true;
     bool saindo = false;
 
-    Player player = init_player();
+    Player player = init_player(width, height);
 
     SistemaQuimico sq;
     inicializar_sistema_quimico(&sq);
@@ -48,23 +48,23 @@ int main() {
     Wave wave;
     init_wave(&wave);
 
-    //aloca memória pra guardar os inimigos (dps tem q mudar pra quantidade aumentar por wave)
+    //aloca memória pra guardar os inimigos
     int total_inimigos = 3;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
 
-    // Inicializa cada inimigo garantindo que não nasça em cima do player
+    //inicializa cada inimigo garantindo que não nasça em cima do player
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
         int posX, posY;
         float distancia;
 
         do {
-            // Sorteia a posição na tela
-            posX = tamanho_inimigo + (rand() % (width - 2 * tamanho_inimigo + 1));
+            //sorteia a posição na tela
+            posX = (width / 4 + tamanho_inimigo) + (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
             posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
 
-            // Calcula a distância entre o ponto sorteado e o player
+            //calcula a distância entre o ponto sorteado e o player
             float diffX = posX - player.x;
             float diffY = posY - player.y;
             distancia = sqrtf(diffX * diffX + diffY * diffY);
@@ -84,15 +84,17 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
-    al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
+    //cria a janela do jogo que pode ser redimensionada
+    al_set_new_display_flags(ALLEGRO_MAXIMIZED | ALLEGRO_NOFRAME);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
     al_set_window_title(display, "Chemical Warfare");
 
     ALLEGRO_FONT* fonte_grande = al_load_font("assets/fonts/font.ttf", 24, 0);
-    ALLEGRO_FONT* fonte_media = al_load_font("assets/fonts/font.ttf", 18, 0);
+    ALLEGRO_FONT* fonte_media_1 = al_load_font("assets/fonts/font.ttf", 18, 0);
+    ALLEGRO_FONT* fonte_media_2 = al_load_font("assets/fonts/font.ttf", 16, 0);
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
-    //debug
+    //debugs
     printf("Diretorio de trabalho: %s\n", al_get_current_directory());
 
     if (!al_install_audio()) {
@@ -195,16 +197,26 @@ int main() {
                 keyboard.d_pressed = true;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros);
+                init_wave(&wave);
+                total_inimigos = 5;
+                qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
                 inicializar_sistema_quimico(&sq);
                 tempo_mensagem_bloqueada = 0.0;
-                init_wave(&wave);
-                total_inimigos = 3;
-                qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
                 saindo = true;
+            }
+            if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                if (wave.laboratorio && wave.andamento) {
+                    wave.laboratorio = false;
+                    wave.combates_vencidos = 0;
+                    wave.finalizado = true;
+                    wave.andamento = false;
+
+                    total_inimigos = wave.atual + 2;
+                }
             }
         }
 
@@ -272,13 +284,13 @@ int main() {
             if (!wave.vitoria) {
                 //player
                 atualizar_player(&player, keyboard);
-                colisao_tela(&player);
+                colisao_tela(&player, width, height);
 
                 //tiros
                 atualizar_posicao_tiros(num_tiros, width, height);
 
                 //loop das waves
-                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player);
+                sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq, width, height);
 
                 //fazer os inimigos seguirem o player
                 for (int i = 0; i < total_inimigos; i++) {
@@ -297,6 +309,9 @@ int main() {
                     colisao_player(&qtd_inimigos[i], &player);
                 }
 
+                //atualizar a moeda 
+                atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
+
                 //checar a colisão do inimigo com os tiros
                 for (int i = 0; i < total_inimigos; i++) {
                     colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
@@ -306,11 +321,20 @@ int main() {
 
         //quando acaba todos os eventos de cima, isso aq desenha os elementos
         if (al_is_event_queue_empty(event_queue)) {
-            //background bonitin q eu fiz :)
-            desenhar_background();
+            //UI do jogo
+            desenhar_background(width, height);
+            desenhar_barra_lateral(width, height);
+
+            al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 25, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
+            al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 25, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %d", sq.arma_ativa);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
+            al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+            al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
 
             if (saindo) {
-                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, height / 3, ALLEGRO_ALIGN_CENTER, "Saindo...");
+                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 1.6, height / 2.25, ALLEGRO_ALIGN_CENTER, "Saindo...");
                 al_flip_display();
                 al_rest(0.5);
                 rodando = false;
@@ -324,6 +348,8 @@ int main() {
                         al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), qtd_inimigos[i].x - 3, qtd_inimigos[i].y - 15, ALLEGRO_ALIGN_LEFT, "%d HP", qtd_inimigos[i].vida);
                     }
                 }
+
+                desenhar_moedas_mortos(qtd_inimigos, total_inimigos);
 
                 desenhar_player(player);
 
@@ -354,10 +380,11 @@ int main() {
 
                 desenhar_mira(&mouse);
 
-                //textinhos na tela | UI
                 if (player.vivo) {
+                    // UI de Vida do Player
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 20, ALLEGRO_ALIGN_LEFT, "HP: %d", player.vida);
 
+                    // UI de Seleção de Armas
                     const char* nome_arma = "Desconhecida";
 
                     switch (sq.arma_ativa) {
@@ -379,29 +406,55 @@ int main() {
                     }
 
                     al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
+                    
+                    // UI de Elementos Químicos
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 80, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 100, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 20, 120, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
+                    // Mensagem de Feedback de Bloqueio
                     if (sq.mensagem_arma_bloqueada) {
-
                         al_draw_text(fonte_pequena, al_map_rgb(255, 50, 50), width / 2, 150, ALLEGRO_ALIGN_CENTER, "Arma nao descoberta ou elementos insuficientes!");
                     }
-
-                    if (wave.vitoria == true) {
-                        al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), 640 / 2, 480 / 2, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
-                        al_draw_text(fonte_media, al_map_rgb(255, 255, 255), 640 / 2, (480 / 2) + 40, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
-                    }
-
-                    al_draw_textf(fonte_media, al_map_rgb(255, 255, 255), width - 100, 20, ALLEGRO_ALIGN_LEFT, "WAVE: %d", wave.atual);
-                    if (wave.atual == wave.final + 1) {
-                        al_draw_text(fonte_media, al_map_rgb(255, 50, 50), width - 100, 50, ALLEGRO_ALIGN_LEFT, "BOSS");
-                    }
-
                 }
-                else {
-                    al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 2, 60, ALLEGRO_ALIGN_CENTER, "Morreu :P");
-                    al_draw_text(fonte_media, al_map_rgb(220, 220, 220), width / 2, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
+
+                // caixa do contador de wave (Design da Main)
+                al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
+                al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
+
+                // formatação do texto das waves (Design da Main)
+                int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
+                
+                (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
+                                            al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
+
+                if (wave.atual >= wave.final + 1) {
+                    al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(50, 50, 50), 1);
+                    al_draw_filled_circle(width - 95, 57, 2, al_map_rgb(255, 50, 50));
+                    al_draw_filled_circle(width - 90, 57, 3, al_map_rgb(255, 50, 50));
+                    al_draw_filled_circle(width - 30, 57, 3, al_map_rgb(255, 50, 50));
+                    al_draw_filled_circle(width - 25, 57, 2, al_map_rgb(255, 50, 50));
+                    al_draw_text(fonte_media_1, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
+                }
+
+                if (wave.vitoria == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
+                    al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
+                }
+
+                if (wave.laboratorio == true) {
+                    al_draw_text(fonte_grande, al_map_rgb(0, 120, 255), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "LABORATÓRIO");
+                    al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Compre reações com research points");
+
+                    al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(50, 50, 50), 1);
+                    al_draw_text(fonte_pequena, al_map_rgb(255, 255, 255), width / 1.6, height - 37, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para sair do Laboratório");
+                }
+
+                if (!player.vivo) {
+                    al_draw_text(fonte_grande, al_map_rgb(220, 10, 10), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "Você morreu");
+                    al_draw_text(fonte_media_1, al_map_rgb(220, 220, 220), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
                 }
 
                 al_flip_display();
@@ -420,7 +473,8 @@ int main() {
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_font(fonte_grande);
-    al_destroy_font(fonte_media);
+    al_destroy_font(fonte_media_1);
+    al_destroy_font(fonte_media_2);
     al_destroy_font(fonte_pequena);
 
     al_uninstall_mouse();
