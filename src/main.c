@@ -352,29 +352,35 @@ int main() {
 
                 desenhar_player(player);
 
-                // Ícone da arma
+                // Ícone da arma ativa
                 ALLEGRO_COLOR cor_preview;
                 switch (sq.arma_ativa) {
                 case TIRO_PADRAO:
                     cor_preview = al_map_rgba(220, 220, 220, 35);
-                    al_draw_filled_circle(81, 490, 17, cor_preview);
+                    al_draw_filled_circle(29, 500, 15, cor_preview);
                     break;
 
                 case ARMA_ACIDA:
                     cor_preview = al_map_rgba(80, 255, 80, 35);
-                    al_draw_filled_triangle(81, 410, 62, 452, 100, 452, cor_preview);
+                    al_draw_filled_triangle(91, 484, 74, 516, 108, 516, cor_preview);
                     break;
 
                 case ARMA_BASICA:
                     cor_preview = al_map_rgba(80, 180, 255, 35);
-                    al_draw_filled_rectangle(65, 418, 97, 450, cor_preview);
+                    al_draw_filled_rectangle(138, 486, 166, 514, cor_preview);
                     break;
 
                 case ARMA_METALICA:
                     cor_preview = al_map_rgba(180, 70, 255, 35);
-                    al_draw_filled_circle(81, 434, 13, cor_preview);
+                    al_draw_filled_circle(207, 500, 11, cor_preview);
                     break;
                 }
+
+                // Ícone das armas desativadas
+                al_draw_circle(29, 500, 15, al_map_rgba(220, 220, 220, 35), 1);                      // padrao
+                al_draw_triangle(91, 484, 74, 516, 108, 516, al_map_rgba(220, 220, 220, 35), 1);     // acida
+                al_draw_rectangle(138, 486, 166, 514, al_map_rgba(220, 220, 220, 35), 1);            // basica
+                al_draw_circle(207, 500, 11, al_map_rgba(220, 220, 220, 35), 1);                     // metalica
 
                 desenhar_mira(&mouse);
 
