@@ -57,6 +57,7 @@ typedef struct {
     const char* nome;
     const char* desc;
     int valor;
+    int contador_compra;
 } ItemLab;
 
 void inicializar_sistema_quimico(SistemaQuimico* sq);
@@ -67,6 +68,6 @@ void atualizar_aparencia_arma(SistemaQuimico* sq);
 void init_itens_lab(ItemLab* item);
 void desenhar_itens_lab(SistemaQuimico* sq, ItemLab* item, ALLEGRO_FONT* fonte);
 int verificar_colisao_loja(Player* player, int* item_posX, int* item_posY, int tamanho_caixa);
-void computar_compra_item(SistemaQuimico* sq, Player* p, ItemLab* itens, int width, int height);
+void computar_compra_item(SistemaQuimico* sq, Player* player, ItemLab* itens, int width, int height);
 
 #endif
