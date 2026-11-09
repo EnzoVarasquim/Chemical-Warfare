@@ -108,7 +108,6 @@ bool selecionar_arma(SistemaQuimico* sq, TipoArma arma) {
     return false;
 }
 
-
 // Verifica as combinações químicas e desbloqueia armas
 void checar_reacoes(SistemaQuimico* sq) {
 
@@ -235,7 +234,7 @@ void computar_compra_item(SistemaQuimico* sq, Player* player, ItemLab* itens, in
             //aplica o efeito no player baseado no ID do item comprado
             switch (item_comprado.ID_item) {
             case 0: // Neutralizacao (Cura)
-                player->vida += 1; 
+                    player->vida += 1; 
                 break;
 
             case 1: // Sintese HCl (Dano+)

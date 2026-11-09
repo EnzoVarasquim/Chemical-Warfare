@@ -46,12 +46,9 @@ typedef struct {
     // Mensagem de seleção inválida
     bool mensagem_arma_bloqueada;
 
-
     // Aviso de nova arma
     TipoArma arma_desbloqueada;
     int tempo_mensagem_desbloqueio;
-
-	
     
 } SistemaQuimico;
 
@@ -66,8 +63,6 @@ void inicializar_sistema_quimico(SistemaQuimico* sq);
 void checar_reacoes(SistemaQuimico* sq);
 bool selecionar_arma(SistemaQuimico* sq, TipoArma arma);
 void atualizar_aparencia_arma(SistemaQuimico* sq);
-
-
 
 void init_itens_lab(ItemLab* item);
 void desenhar_itens_lab(SistemaQuimico* sq, ItemLab* item, ALLEGRO_FONT* fonte);
