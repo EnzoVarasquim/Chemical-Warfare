@@ -416,7 +416,18 @@ int main() {
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
+                // UI das reações do laboratório
                 al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
+
+                int linha_atual = 0;
+                for (int i = 0; i < 3; i++) {
+                    if (itens_lab[i].contador_compra > 0) {
+                        int posY = 230 + (linha_atual * 20);
+
+                        al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, posY, ALLEGRO_ALIGN_LEFT, "* %s (x%d)", itens_lab[i].nome,itens_lab[i].contador_compra);
+                        linha_atual++;
+                    }
+                }
 
                 //mensagem de feedback de bloqueio
                 if (sq.mensagem_arma_bloqueada) {
