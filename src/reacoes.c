@@ -141,9 +141,9 @@ void checar_reacoes(SistemaQuimico* sq) {
 
 //dados de cada item da loja
 static const ItemLab pool_fixo[3] = {
-    {0, "Neutralizacao (Cura)", "HCl + NaOH -> NaCl + H2O", 10},
-    {1, "Sintese HCl (Dano+)", "H2 + Cl2 -> 2 HCl", 15},
-    {2, "Oxidacao Fe (Vel+)", "4Fe + 3O2 -> 2Fe2O3", 12}
+    {0, "Neutralizacao (Cura)", "HCl + NaOH -> NaCl + H2O", 10, 0},
+    {1, "Sintese HCl (Dano+)", "H2 + Cl2 -> 2 HCl", 15, 0},
+    {2, "Oxidacao Fe (Vel+)", "4Fe + 3O2 -> 2Fe2O3", 12, 0}
 };
 
 void init_itens_lab(ItemLab* item) {
@@ -155,6 +155,7 @@ void init_itens_lab(ItemLab* item) {
         item[i].nome = pool_fixo[i].nome;
         item[i].desc = pool_fixo[i].desc;
         item[i].valor = pool_fixo[i].valor;
+        item[i].contador_compra = pool_fixo[i].contador_compra;
     }
 }
 
@@ -223,18 +224,18 @@ void computar_compra_item(SistemaQuimico* sq, Player* player, ItemLab* itens, in
 
     // Se houver colisão (index_item válido)
     if (index_item != -1) {
-        ItemLab item_comprado = itens[index_item];
-
         //verifica se o jogador tem pontinhos suficiente
-        if (sq->research_point >= item_comprado.valor) {
+        if (sq->research_point >= itens[index_item].valor) {
 
             //reduz o custo do item do saldo do player
-            sq->research_point -= item_comprado.valor;
+            sq->research_point -= itens[index_item].valor;
+
+            itens[index_item].contador_compra++;
 
             //aplica o efeito no player baseado no ID do item comprado
-            switch (item_comprado.ID_item) {
+            switch (itens[index_item].ID_item) {
             case 0: // Neutralizacao (Cura)
-                    player->vida += 1; 
+                player->vida += 1; 
                 break;
 
             case 1: // Sintese HCl (Dano+)
