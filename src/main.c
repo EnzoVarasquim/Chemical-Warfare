@@ -48,6 +48,9 @@ int main() {
     Wave wave;
     init_wave(&wave);
 
+    ItemLab itens_lab[3];
+    init_itens_lab(itens_lab);
+
     //aloca memória pra guardar os inimigos
     int total_inimigos = 3;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
@@ -311,9 +314,14 @@ int main() {
                 //atualizar a moeda 
                 atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
 
+                //checa se ta comprando os itens do laboratorio
+                if (wave.laboratorio) {
+                    computar_compra_item(&sq, &player, &itens_lab, width, height);
+                }
+
                 //checar a colisão do inimigo com os tiros
                 for (int i = 0; i < total_inimigos; i++) {
-                    colisao_tiro(&qtd_inimigos[i], num_tiros, &sq);
+                    colisao_tiro(&qtd_inimigos[i], num_tiros, &sq, &player);
                 }
             }
         }
@@ -344,29 +352,35 @@ int main() {
 
                 desenhar_player(player);
 
-                // Ícone da arma
+                // Ícone da arma ativa
                 ALLEGRO_COLOR cor_preview;
                 switch (sq.arma_ativa) {
                 case TIRO_PADRAO:
                     cor_preview = al_map_rgba(220, 220, 220, 35);
-                    al_draw_filled_circle(81, 490, 17, cor_preview);
+                    al_draw_filled_circle(29, 500, 15, cor_preview);
                     break;
 
                 case ARMA_ACIDA:
                     cor_preview = al_map_rgba(80, 255, 80, 35);
-                    al_draw_filled_triangle(81, 410, 62, 452, 100, 452, cor_preview);
+                    al_draw_filled_triangle(91, 484, 74, 516, 108, 516, cor_preview);
                     break;
 
                 case ARMA_BASICA:
                     cor_preview = al_map_rgba(80, 180, 255, 35);
-                    al_draw_filled_rectangle(65, 418, 97, 450, cor_preview);
+                    al_draw_filled_rectangle(138, 486, 166, 514, cor_preview);
                     break;
 
                 case ARMA_METALICA:
                     cor_preview = al_map_rgba(180, 70, 255, 35);
-                    al_draw_filled_circle(81, 434, 13, cor_preview);
+                    al_draw_filled_circle(207, 500, 11, cor_preview);
                     break;
                 }
+
+                // Ícone das armas desativadas
+                al_draw_circle(29, 500, 15, al_map_rgba(220, 220, 220, 35), 1);                      // padrao
+                al_draw_triangle(91, 484, 74, 516, 108, 516, al_map_rgba(220, 220, 220, 35), 1);     // acida
+                al_draw_rectangle(138, 486, 166, 514, al_map_rgba(220, 220, 220, 35), 1);            // basica
+                al_draw_circle(207, 500, 11, al_map_rgba(220, 220, 220, 35), 1);                     // metalica
 
                 desenhar_mira(&mouse);
 
@@ -402,7 +416,18 @@ int main() {
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
 
+                // UI das reações do laboratório
                 al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
+
+                int linha_atual = 0;
+                for (int i = 0; i < 3; i++) {
+                    if (itens_lab[i].contador_compra > 0) {
+                        int posY = 230 + (linha_atual * 20);
+
+                        al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, posY, ALLEGRO_ALIGN_LEFT, "* %s (x%d)", itens_lab[i].nome,itens_lab[i].contador_compra);
+                        linha_atual++;
+                    }
+                }
 
                 //mensagem de feedback de bloqueio
                 if (sq.mensagem_arma_bloqueada) {
@@ -437,6 +462,8 @@ int main() {
                 if (wave.laboratorio == true) {
                     al_draw_text(fonte_grande, al_map_rgb(0, 120, 255), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "LABORATÓRIO");
                     al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Compre reações com research points");
+
+                    desenhar_itens_lab(&sq, itens_lab, fonte_pequena);
 
                     al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
                     al_draw_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(50, 50, 50), 1);
