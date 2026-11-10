@@ -28,7 +28,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     if (tipo == TIPO_BOSS) {
         tamanho = 60;     
         velocidade = 1;    
-        vida = 50;        
+        vida = 150;        
     }
 
     Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo };
@@ -250,8 +250,8 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
 
     double agora = al_get_time();
 
-    // Intervalo de 0.25 segundos
-    if (agora - ultimo_disparo < 0.25) return;
+    // Intervalo de 0.05 segundos
+    if (agora - ultimo_disparo < 0.05) return;
 
     for (int i = 0; i < MAX_TIROS; i++) {
 
@@ -267,8 +267,8 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
             float angulo = ((float)rand() / RAND_MAX) * 2.0f * 3.14159265f;
 
             // Velocidade baixa
-            t->vel_x = cosf(angulo) * 1.5f;
-            t->vel_y = sinf(angulo) * 1.5f;
+            t->vel_x = cosf(angulo) * 10.0f;
+            t->vel_y = sinf(angulo) * 10.0f;
 
             // Aparencia do projetil
             t->size = 5;
