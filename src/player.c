@@ -2,7 +2,7 @@
 #include "player.h"
 
 Player init_player(int width, int height) {
-    Player player = { width / 1.625, height / 2, 20, 5, 10, true, 0.0 };
+    Player player = { width / 1.625, height / 2, 20, 5, 10, true, 0.0, 1 };
     return player;
 }
 
@@ -45,7 +45,7 @@ void atualizar_player(Player* player, Keyboard keyboard) {
 }
 
 void colisao_tela(Player* player, int width, int height) {
-    if (player->x < width / 4) {                      //esquerda
+    if (player->x < width / 4) {                    //esquerda
         player->x = width / 4;
     }
 
