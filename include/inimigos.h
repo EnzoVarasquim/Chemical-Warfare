@@ -35,4 +35,6 @@ void colisao_tela_inimigo(Inimigo* inimigo, int width, int height);
 void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq);
 void desenhar_moedas_mortos(Inimigo inimigos[], int total);
 
+void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]);
+void colisao_tiro_boss(Tiro tiros_boss[], Player* player);
 #endif

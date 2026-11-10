@@ -1,5 +1,7 @@
 #include <allegro5/allegro_primitives.h>
 #include "inimigos.h"
+#include <stdlib.h>
+#include <math.h>
 
 #define MAX_TIROS 30
 
@@ -24,7 +26,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     
     if (tipo == TIPO_BOSS) {
         tamanho = 60;     
-        velocidade = 0;    
+        velocidade = 1;    
         vida = 50;        
     }
 
@@ -235,6 +237,77 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
             //desenha a moeda na tela
             al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
             al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
+        }
+    }
+}
+// Disparos aleatorios do boss
+void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
+
+    if (!boss->vivo || boss->tipo != TIPO_BOSS) return;
+
+    static double ultimo_disparo = 0;
+
+    double agora = al_get_time();
+
+    // Intervalo de 3 segundos
+    if (agora - ultimo_disparo < 1.0) return;
+
+    for (int i = 0; i < MAX_TIROS; i++) {
+
+        if (!tiros_boss[i].ativo) {
+
+            Tiro* t = &tiros_boss[i];
+
+            // Posicao inicial no centro do boss
+            t->x = boss->x + boss->size / 2;
+            t->y = boss->y + boss->size / 2;
+
+            // Direcao aleatoria
+            float angulo = ((float)rand() / RAND_MAX) * 2.0f * 3.14159265f;
+
+            // Velocidade baixa
+            t->vel_x = cosf(angulo) * 1.5f;
+            t->vel_y = sinf(angulo) * 1.5f;
+
+            // Aparencia do projetil
+            t->size = 5;
+            t->formato = FORMATO_CIRCULO;
+
+            t->cor_r = 255;
+            t->cor_g = 69;
+            t->cor_b = 0;
+
+            t->ativo = true;
+
+            ultimo_disparo = agora;
+            break;
+        }
+    }
+}
+
+
+// Colisao do tiro do boss com o jogador
+void colisao_tiro_boss(Tiro tiros_boss[], Player* player) {
+
+    if (!player->vivo) return;
+
+    for (int i = 0; i < MAX_TIROS; i++) {
+
+        if (!tiros_boss[i].ativo) continue;
+
+        if (tiros_boss[i].x + tiros_boss[i].size >= player->x &&
+            tiros_boss[i].x - tiros_boss[i].size <= player->x + player->size &&
+            tiros_boss[i].y + tiros_boss[i].size >= player->y &&
+            tiros_boss[i].y - tiros_boss[i].size <= player->y + player->size) {
+
+            tiros_boss[i].ativo = false;
+
+            tomar_dano(player, 1);
+
+            if (player->vida <= 0) {
+                player->vivo = false;
+                return;
+            }
         }
     }
 }

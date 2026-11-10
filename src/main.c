@@ -17,6 +17,7 @@
 #include "wave.h"
 
 #define MAX_TIROS 30
+Tiro tiros_boss[MAX_TIROS];
 
 int main() {
     srand(time(NULL));
@@ -81,6 +82,10 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
+	// percorre o array dos tiros do boss 
+    for (int i = 0; i < MAX_TIROS; i++) {
+        tiros_boss[i] = init_tiro();
+    }
     //cria a janela do jogo que pode ser redimensionada
     al_set_new_display_flags(ALLEGRO_MAXIMIZED | ALLEGRO_NOFRAME);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
@@ -198,6 +203,9 @@ int main() {
                 total_inimigos = 5;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
                 reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
+                for (int i = 0; i < MAX_TIROS; i++) {
+                    tiros_boss[i].ativo = false;
+                }
                 inicializar_sistema_quimico(&sq);
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -241,6 +249,8 @@ int main() {
 
                 //tiros
                 atualizar_posicao_tiros(num_tiros, width, height);
+				//tiros do boss
+                atualizar_posicao_tiros(tiros_boss, width, height);
 
                 //loop das waves
                 sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq, width, height);
@@ -249,6 +259,16 @@ int main() {
                 for (int i = 0; i < total_inimigos; i++) {
                     seguir_player(&qtd_inimigos[i], &player);
                 }
+
+                // Disparos do boss
+                for (int i = 0; i < total_inimigos; i++) {
+                    if (qtd_inimigos[i].tipo == TIPO_BOSS) {
+                        disparar_tiro_boss(&qtd_inimigos[i], tiros_boss);
+                    }
+                }
+
+                // Colisao dos tiros do boss com o player
+                colisao_tiro_boss(tiros_boss, &player);
 
                 //checar a colisão entre os inimigos
                 for (int i = 0; i < total_inimigos; i++) {
@@ -294,6 +314,8 @@ int main() {
             }
             else {
                 desenhar_tiros(num_tiros);
+
+                desenhar_tiros(tiros_boss);
 
                 for (int i = 0; i < total_inimigos; i++) {
                     if (qtd_inimigos[i].vivo) {
