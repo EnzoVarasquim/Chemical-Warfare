@@ -249,13 +249,13 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
 
     double agora = al_get_time();
 
-    // Intervalo de 3 segundos
-    if (agora - ultimo_disparo < 1.0) return;
+    // Intervalo de 0.25 segundos
+    if (agora - ultimo_disparo < 0.25) return;
 
     for (int i = 0; i < MAX_TIROS; i++) {
 
         if (!tiros_boss[i].ativo) {
-
+            
             Tiro* t = &tiros_boss[i];
 
             // Posicao inicial no centro do boss
