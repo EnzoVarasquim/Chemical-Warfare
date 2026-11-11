@@ -164,7 +164,24 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
                 tiros[i].y <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
-                inimigo->vida -= player->dano;
+
+                int dano_final = player->dano;
+
+                //interações diferentes dependendo do tipo de tiro que colidindo com um tipo de inimigo
+                if (sq->arma_ativa == ARMA_ACIDA) {
+                    if (inimigo->tipo == TIPO_METALICO) dano_final *= 2;    
+                    if (inimigo->tipo == TIPO_ACIDO) dano_final = 0;      //imune
+                }
+                if (sq->arma_ativa == ARMA_BASICA) {
+                    if (inimigo->tipo == TIPO_ACIDO) dano_final *= 2;
+                    if (inimigo->tipo == TIPO_BASICO) dano_final = 0;     //imune
+                }
+                if (sq->arma_ativa == ARMA_METALICA) {
+                    if (inimigo->tipo == TIPO_BASICO) dano_final *= 2;
+                    if (inimigo->tipo == TIPO_ACIDO || inimigo->tipo == TIPO_METALICO) dano_final = 0;      //imune
+                }
+
+                inimigo->vida -= dano_final;
 
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;

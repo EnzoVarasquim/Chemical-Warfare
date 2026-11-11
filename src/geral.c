@@ -15,6 +15,15 @@ void desenhar_background(int width, int height) {
         al_draw_line(width/4, y, width, y, al_map_rgb(50, 50, 50), 1);
     }
 }
+
+void desenhar_icones_quimica(int width, int height) {
+    al_draw_line(0, 300, width / 4 - 1, 300, al_map_rgb(50, 50, 50), 1);
+
+    al_draw_filled_rectangle(25, 330, 45, 350, al_map_rgb(0, 255, 0));
+    al_draw_filled_rectangle(25, 370, 45, 390, al_map_rgb(255, 0, 255));
+    al_draw_filled_rectangle(25, 410, 45, 430, al_map_rgb(100, 100, 100));
+}
+
 void desenhar_barra_lateral(int width, int height) {
     al_draw_filled_rectangle(0, 0, width/4, height, al_map_rgb(10, 10, 10));
     al_draw_line(width/4 - 1, 0, width/4 - 1, height, al_map_rgb(50, 50, 50), 1);
@@ -22,9 +31,10 @@ void desenhar_barra_lateral(int width, int height) {
     al_draw_line(0, 80, width / 4 - 1, 80, al_map_rgb(50, 50, 50), 1);
     al_draw_line(0, 115, width / 4 - 1, 115, al_map_rgb(50, 50, 50), 1);
     al_draw_line(0, 190, width / 4 - 1, 190, al_map_rgb(50, 50, 50), 1);
+
+    desenhar_icones_quimica(width, height);
+
     al_draw_line(0, 460, width / 4 - 1, 460, al_map_rgb(50, 50, 50), 1);
-
-
 }
 
 void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], int width, int height) {

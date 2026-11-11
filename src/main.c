@@ -451,6 +451,11 @@ int main() {
                     }
                 }
 
+                // UI nome dos inimigos do lado do icone deles
+                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 330, ALLEGRO_ALIGN_LEFT, "Ácido");
+                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 370, ALLEGRO_ALIGN_LEFT, "Básico");
+                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 410, ALLEGRO_ALIGN_LEFT, "Metálico");
+
                 //mensagem de feedback de bloqueio
                 if (sq.mensagem_arma_bloqueada) {
                     al_draw_text(fonte_media_2, al_map_rgb(255, 50, 50), width / 1.6, 40, ALLEGRO_ALIGN_CENTER, "Arma não descoberta ou elementos insuficientes!");
