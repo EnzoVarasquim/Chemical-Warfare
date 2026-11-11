@@ -1,3 +1,4 @@
+
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "tiro.h"
@@ -14,7 +15,6 @@ Tiro init_tiro(void) {
     tiro.ativo = false;
     tiro.formato = FORMATO_CIRCULO;
 
-    // Tiro padrao branco
     tiro.cor_r = 255;
     tiro.cor_g = 255;
     tiro.cor_b = 255;
@@ -36,7 +36,6 @@ void desenhar_tiros(Tiro tiros[]) {
         ALLEGRO_COLOR cor = al_map_rgb(t->cor_r, t->cor_g, t->cor_b);
 
         switch (t->formato) {
-
         case FORMATO_CIRCULO:
             al_draw_filled_circle(t->x, t->y, t->size, cor);
             break;
@@ -49,15 +48,12 @@ void desenhar_tiros(Tiro tiros[]) {
             float angulo = atan2f(t->vel_y, t->vel_x);
             float tamanho = t->size * 1.2f;
 
-            // Ponta do triangulo
             float frente_x = t->x + cosf(angulo) * tamanho;
             float frente_y = t->y + sinf(angulo) * tamanho;
 
-            // Parte traseira
             float tras_x = t->x - cosf(angulo) * tamanho * 0.7f;
             float tras_y = t->y - sinf(angulo) * tamanho * 0.7f;
 
-            // Largura do triangulo
             float lado_x = sinf(angulo) * tamanho * 0.6f;
             float lado_y = -cosf(angulo) * tamanho * 0.6f;
 
@@ -86,8 +82,10 @@ void atualizar_posicao_tiros(Tiro tiros[], int width, int height) {
         tiros[i].x += tiros[i].vel_x;
         tiros[i].y += tiros[i].vel_y;
 
-        // Desativa quando sai da tela
-        if (tiros[i].x < width / 4 || tiros[i].x > width || tiros[i].y < 0 || tiros[i].y > height) {
+        if (tiros[i].x - tiros[i].size <= width / 4 ||
+            tiros[i].x + tiros[i].size >= width ||
+            tiros[i].y - tiros[i].size <= 0 ||
+            tiros[i].y + tiros[i].size >= height) {
             tiros[i].ativo = false;
         }
     }
@@ -105,11 +103,9 @@ void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[], TipoArma arma, Si
 
         Tiro* t = &tiros[i];
 
-        // Posicao inicial no centro do jogador
         t->x = player->x + player->size / 2.0f;
         t->y = player->y + player->size / 2.0f;
 
-        // Calcula a direcao do disparo
         float dx = mouse->x - t->x;
         float dy = mouse->y - t->y;
         float distancia = sqrtf(dx * dx + dy * dy);
@@ -123,14 +119,12 @@ void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[], TipoArma arma, Si
             t->vel_y = 0.0f;
         }
 
-        // Tiro padrao branco
         t->formato = FORMATO_CIRCULO;
         t->cor_r = 255;
         t->cor_g = 255;
         t->cor_b = 255;
         t->size = 2;
 
-        // Aparencia das armas quimicas
         if (arma != TIRO_PADRAO) {
             t->formato = sq->formato_ativo;
             t->cor_r = sq->cor_r;
@@ -138,24 +132,20 @@ void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[], TipoArma arma, Si
             t->cor_b = sq->cor_b;
             t->size = sq->tamanho_ativo;
 
-            // Circulos quimicos roxos
             if (t->formato == FORMATO_CIRCULO) {
                 t->cor_r = 160;
                 t->cor_g = 32;
                 t->cor_b = 240;
             }
 
-            // Quadrados menores
             if (t->formato == FORMATO_QUADRADO) {
                 t->size *= 0.5f;
             }
 
-            // Triangulos menores
             if (t->formato == FORMATO_TRIANGULO) {
                 t->size *= 0.5f;
             }
 
-            // Evita tamanho invalido
             if (t->size <= 0) {
                 t->size = 2;
             }

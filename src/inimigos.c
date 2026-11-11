@@ -1,3 +1,4 @@
+
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "inimigos.h"
@@ -14,7 +15,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     }
     if (tipo == TIPO_BASICO) {
         tamanho = 20;
-        velocidade = 2.5;
+        velocidade = 2;
         vida = 7;
     }
     if (tipo == TIPO_METALICO) {
@@ -22,11 +23,11 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
         velocidade = 2;
         vida = 10;
     }
-    
+
     if (tipo == TIPO_BOSS) {
-        tamanho = 60;     
-        velocidade = 4;    
-        vida = 150;        
+        tamanho = 60;
+        velocidade = 4;
+        vida = 150;
     }
 
     Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo };
@@ -37,89 +38,103 @@ void desenhar_inimigo(Inimigo inimigo) {
     if (!inimigo.vivo) return;
 
     ALLEGRO_COLOR cor;
+
     switch (inimigo.tipo) {
     case TIPO_ACIDO:
-        cor = al_map_rgb(0, 255, 0);       // Verde pra Ácido
+        cor = al_map_rgb(0, 255, 0);
         break;
     case TIPO_BASICO:
-        cor = al_map_rgb(255, 0, 255);     // Magenta pra Base
+        cor = al_map_rgb(255, 0, 255);
         break;
     case TIPO_METALICO:
-        cor = al_map_rgb(100, 100, 100);   // Cinza pra Metal
+        cor = al_map_rgb(100, 100, 100);
         break;
     case TIPO_BOSS:
-        cor = al_map_rgb(255, 69, 0);      // Laranja Escuro pro Boss
+        cor = al_map_rgb(255, 69, 0);
         break;
     default:
-        cor = al_map_rgb(255, 255, 255);   // Branco caso dê bug
+        cor = al_map_rgb(255, 255, 255);
         break;
     }
 
-    al_draw_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 255, 255), 2);
-    al_draw_filled_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, cor);
+    al_draw_rectangle(
+        inimigo.x,
+        inimigo.y,
+        inimigo.x + inimigo.size,
+        inimigo.y + inimigo.size,
+        al_map_rgb(255, 255, 255),
+        2
+    );
+
+    al_draw_filled_rectangle(
+        inimigo.x,
+        inimigo.y,
+        inimigo.x + inimigo.size,
+        inimigo.y + inimigo.size,
+        cor
+    );
 }
 
 void seguir_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
 
-    float velocidade = inimigo->vel;
+    float velocidade = (float)inimigo->vel;
 
-    if (inimigo->x < player->x + player->size)     //direita
-        inimigo->x += velocidade;
+    float inimigo_centro_x = inimigo->x + inimigo->size / 2.0f;
+    float inimigo_centro_y = inimigo->y + inimigo->size / 2.0f;
 
-    if (inimigo->x + inimigo->size > player->x)    //esquerda
-        inimigo->x -= velocidade;
+    float player_centro_x = player->x + player->size / 2.0f;
+    float player_centro_y = player->y + player->size / 2.0f;
 
-    if (inimigo->y + inimigo->size > player->y)    //cima
-        inimigo->y -= velocidade;
+    float dx = player_centro_x - inimigo_centro_x;
+    float dy = player_centro_y - inimigo_centro_y;
 
-    if (inimigo->y < player->y + player->size)     //baixo
-        inimigo->y += velocidade;
+    float distancia = sqrtf(dx * dx + dy * dy);
+
+    if (distancia > 0.0f) {
+        inimigo->x += (dx / distancia) * velocidade;
+        inimigo->y += (dy / distancia) * velocidade;
+    }
 }
 
-//colisão entre inimigos
+// Colisão entre inimigos
 void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
     if (!inimigo1->vivo || !inimigo2->vivo) return;
 
-    //checa colisao
     if (inimigo1->x < inimigo2->x + inimigo2->size &&
         inimigo1->x + inimigo1->size > inimigo2->x &&
         inimigo1->y < inimigo2->y + inimigo2->size &&
         inimigo1->y + inimigo1->size > inimigo2->y)
     {
-        //eles se empurram quando colidem no eixo X 
         if (inimigo1->x < inimigo2->x) {
-            inimigo1->x -= 3; 
-            inimigo2->x += 3; 
-        }                  
-        else {             
-            inimigo1->x += 3; 
-            inimigo2->x -= 3; 
+            inimigo1->x -= 3;
+            inimigo2->x += 3;
+        }
+        else {
+            inimigo1->x += 3;
+            inimigo2->x -= 3;
         }
 
-        //empurram quando colidem no eixo Y 
         if (inimigo1->y < inimigo2->y) {
-            inimigo1->y -= 3; 
-            inimigo2->y += 3; 
-        }                  
-        else {             
-            inimigo1->y += 3; 
-            inimigo2->y -= 3; 
+            inimigo1->y -= 3;
+            inimigo2->y += 3;
+        }
+        else {
+            inimigo1->y += 3;
+            inimigo2->y -= 3;
         }
     }
 }
 
-//colisão do player com o inimigo
+// Colisão do player com o inimigo
 void colisao_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
 
-    //checa colisao
-    if (inimigo->x < player->x + player->size &&     //direita
-        inimigo->x + inimigo->size > player->x &&    //esquerda
-        inimigo->y < player->y + player->size &&     //baixo
-        inimigo->y + inimigo->size > player->y)      //cima
+    if (inimigo->x < player->x + player->size &&
+        inimigo->x + inimigo->size > player->x &&
+        inimigo->y < player->y + player->size &&
+        inimigo->y + inimigo->size > player->y)
     {
-        //dá dano no player quando toca nele
         tomar_dano(player, 1);
 
         if (player->vida <= 0) {
@@ -127,30 +142,41 @@ void colisao_player(Inimigo* inimigo, Player* player) {
             return;
         }
 
-        //faz com q o inimigo n entre dentro do player
-        if (inimigo->x == player->x) {
-            inimigo->x -= 3; //previni um bug dele ficar parado no lugar sem fazer nada
-        }
-        else if (inimigo->x < player->x) {
-            inimigo->x -= 3; 
-        }
-        else {
-            inimigo->x += 3;
-        }
+        int sobreposicao_x =
+            (inimigo->x + inimigo->size < player->x + player->size
+                ? inimigo->x + inimigo->size
+                : player->x + player->size)
+            -
+            (inimigo->x > player->x
+                ? inimigo->x
+                : player->x);
 
-        if (inimigo->y == player->y) {
-            inimigo->y -= 3; //previni um bug dele ficar parado no lugar sem fazer nada
-        }
-        else if (inimigo->y < player->y) {
-            inimigo->y -= 1;
+        int sobreposicao_y =
+            (inimigo->y + inimigo->size < player->y + player->size
+                ? inimigo->y + inimigo->size
+                : player->y + player->size)
+            -
+            (inimigo->y > player->y
+                ? inimigo->y
+                : player->y);
+
+        // Separa o inimigo apenas o necessário.
+        if (sobreposicao_x < sobreposicao_y) {
+            if (inimigo->x < player->x)
+                inimigo->x -= sobreposicao_x;
+            else
+                inimigo->x += sobreposicao_x;
         }
         else {
-            inimigo->y += 1;
+            if (inimigo->y < player->y)
+                inimigo->y -= sobreposicao_y;
+            else
+                inimigo->y += sobreposicao_y;
         }
     }
 }
 
-//colissão do tiro com o inimigo
+// Colisão do tiro com o inimigo
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* player) {
     if (!inimigo->vivo) return;
 
@@ -168,10 +194,12 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
                     inimigo->vida = 0;
                     inimigo->vivo = false;
 
-                    // Adiciona direto no inventário numérico
-                    if (inimigo->tipo == TIPO_ACIDO) sq->qtd_H++;
-                    else if (inimigo->tipo == TIPO_BASICO) sq->qtd_Na++;
-                    else if (inimigo->tipo == TIPO_METALICO) sq->qtd_Cl++;
+                    if (inimigo->tipo == TIPO_ACIDO)
+                        sq->qtd_H++;
+                    else if (inimigo->tipo == TIPO_BASICO)
+                        sq->qtd_Na++;
+                    else if (inimigo->tipo == TIPO_METALICO)
+                        sq->qtd_Cl++;
 
                     checar_reacoes(sq);
                     break;
@@ -182,24 +210,24 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
 }
 
 void colisao_tela_inimigo(Inimigo* inimigo, int width, int height) {
-    if (inimigo->x < width/4) {                       //esquerda
+    if (inimigo->x < width / 4) {
         inimigo->x = width / 4;
     }
 
-    if (inimigo->x > (width - inimigo->size)) {       //direita
+    if (inimigo->x > (width - inimigo->size)) {
         inimigo->x = (width - inimigo->size);
     }
 
-    if (inimigo->y < 0) {                              //cima
+    if (inimigo->y < 0) {
         inimigo->y = 0;
     }
 
-    if (inimigo->y > (height - inimigo->size)) {       //baixo
+    if (inimigo->y > (height - inimigo->size)) {
         inimigo->y = (height - inimigo->size);
     }
 }
 
-//gerar a moeda (research point)
+// Gerar a moeda (research point)
 void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq) {
     for (int i = 0; i < total; i++) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99 && player->vivo) {
@@ -208,12 +236,14 @@ void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuim
                 player->y < inimigos[i].y + inimigos[i].size &&
                 player->y + player->size > inimigos[i].y)
             {
-                inimigos[i].vida = -99; //marca como recolhido para sumir
+                inimigos[i].vida = -99;
 
-                //add research point para cada tipo de inimigo morto e a moeda for coletada
-                if (inimigos[i].tipo == TIPO_ACIDO) sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_BASICO) sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_METALICO) sq->research_point++;
+                if (inimigos[i].tipo == TIPO_ACIDO)
+                    sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_BASICO)
+                    sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_METALICO)
+                    sq->research_point++;
             }
         }
     }
@@ -222,20 +252,30 @@ void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuim
 void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
     for (int i = 0; i < total; i++) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99) {
-            //ifs ternários pra verificar a cor da moedinha para o respectivo tipo de inimigo
-            ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
-                                (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
-                                (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
-                                al_map_rgb(255, 255, 255);
+            ALLEGRO_COLOR cor =
+                (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
+                (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
+                (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
+                al_map_rgb(255, 255, 255);
 
-            //centro dos inimigos
             float cx = inimigos[i].x + inimigos[i].size / 2;
             float cy = inimigos[i].y + inimigos[i].size / 2;
-            float s = 12;   //tamanho do triângulo
+            float s = 12;
 
-            //desenha a moeda na tela
-            al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
-            al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
+            al_draw_filled_triangle(
+                cx, cy - s / 2,
+                cx - s / 2, cy + s / 2,
+                cx + s / 2, cy + s / 2,
+                cor
+            );
+
+            al_draw_triangle(
+                cx, cy - s / 2,
+                cx - s / 2, cy + s / 2,
+                cx + s / 2, cy + s / 2,
+                al_map_rgb(255, 255, 255),
+                1
+            );
         }
     }
 }
