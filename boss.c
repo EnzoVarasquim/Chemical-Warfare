@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -10,13 +11,13 @@
 
 #define VIDA_FASE_2 75
 
-#define VELOCIDADE_TIRO_BOSS 4.0f
-#define VELOCIDADE_TIRO_FASE_1 5.0f
+#define VELOCIDADE_TIRO_BOSS 5.0f
+#define VELOCIDADE_TIRO_FASE_1 7.0f
 #define RAIO_TIRO 6.0f
 
-#define INTERVALO_FASE_1 0.9
+#define INTERVALO_FASE_1 0.25
 #define ALCANCE_CONE 320.0f
-#define ABERTURA_CONE (PI / 2.0f)
+#define ABERTURA_CONE (PI / 5.0f)
 
 #define INTERVALO_FASE_2 0.16
 #define ROTACAO_FASE_2 0.22f
@@ -115,7 +116,13 @@ static void atualizar_fase1(AtaqueBoss* ataque, Inimigo* boss, Player* player, d
     ataque->angulo_visao = atan2f(dy, dx);
 
     if (player_dentro_cone(ataque, boss, player) && agora >= ataque->proximo_disparo) {
-        criar_tiro(ataque, centro_x, centro_y, ataque->angulo_visao, VELOCIDADE_TIRO_FASE_1);
+        float distancia_frente = boss->size / 2.0f + RAIO_TIRO + 2.0f;
+
+        float tiro_x = centro_x + cosf(ataque->angulo_visao) * distancia_frente;
+        float tiro_y = centro_y + sinf(ataque->angulo_visao) * distancia_frente;
+
+        criar_tiro(ataque, tiro_x, tiro_y, ataque->angulo_visao, VELOCIDADE_TIRO_FASE_1);
+
         ataque->proximo_disparo = agora + INTERVALO_FASE_1;
     }
 }
@@ -152,7 +159,13 @@ void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, in
     if (agora >= ataque->proximo_disparo) {
         for (int i = 0; i < TIROS_RADIAIS_FASE_2; i++) {
             float angulo = ataque->angulo + i * (2.0f * PI / TIROS_RADIAIS_FASE_2);
-            criar_tiro(ataque, centro_x, centro_y, angulo, VELOCIDADE_TIRO_BOSS);
+
+            float distancia_frente = boss->size / 2.0f + RAIO_TIRO + 2.0f;
+
+            float tiro_x = centro_x + cosf(angulo) * distancia_frente;
+            float tiro_y = centro_y + sinf(angulo) * distancia_frente;
+
+            criar_tiro(ataque, tiro_x, tiro_y, angulo, VELOCIDADE_TIRO_BOSS);
         }
 
         ataque->angulo += ROTACAO_FASE_2;
