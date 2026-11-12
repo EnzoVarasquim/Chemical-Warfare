@@ -11,7 +11,12 @@
 #define VIDA_FASE_2 75
 
 #define VELOCIDADE_TIRO_BOSS 4.0f
+#define VELOCIDADE_TIRO_FASE_1 5.0f
 #define RAIO_TIRO 6.0f
+
+#define INTERVALO_FASE_1 0.9
+#define ALCANCE_CONE 320.0f
+#define ABERTURA_CONE (PI / 2.0f)
 
 #define INTERVALO_FASE_2 0.16
 #define ROTACAO_FASE_2 0.22f
@@ -28,6 +33,7 @@ static void centralizar_boss(Inimigo* boss, int width, int height)
 void init_ataque_boss(AtaqueBoss* ataque)
 {
     ataque->angulo = 0.0f;
+    ataque->angulo_visao = 0.0f;
     ataque->proximo_disparo = 0.0;
     ataque->proximo_dano = 0.0;
 
@@ -39,14 +45,14 @@ void init_ataque_boss(AtaqueBoss* ataque)
     }
 }
 
-static void criar_tiro(AtaqueBoss* ataque, float x, float y, float angulo)
+static void criar_tiro(AtaqueBoss* ataque, float x, float y, float angulo, float velocidade)
 {
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
         if (!ataque->tiros[i].ativo) {
             ataque->tiros[i].x = x;
             ataque->tiros[i].y = y;
-            ataque->tiros[i].vel_x = cosf(angulo) * VELOCIDADE_TIRO_BOSS;
-            ataque->tiros[i].vel_y = sinf(angulo) * VELOCIDADE_TIRO_BOSS;
+            ataque->tiros[i].vel_x = cosf(angulo) * velocidade;
+            ataque->tiros[i].vel_y = sinf(angulo) * velocidade;
             ataque->tiros[i].ativo = true;
             return;
         }
@@ -73,6 +79,47 @@ static void atualizar_projeteis(AtaqueBoss* ataque, int width, int height)
     }
 }
 
+static bool player_dentro_cone(AtaqueBoss* ataque, Inimigo* boss, Player* player)
+{
+    float centro_x = boss->x + boss->size / 2.0f;
+    float centro_y = boss->y + boss->size / 2.0f;
+
+    float player_x = player->x + player->size / 2.0f;
+    float player_y = player->y + player->size / 2.0f;
+
+    float dx = player_x - centro_x;
+    float dy = player_y - centro_y;
+
+    float distancia = sqrtf(dx * dx + dy * dy);
+
+    if (distancia > ALCANCE_CONE)
+        return false;
+
+    float angulo_player = atan2f(dy, dx);
+    float diferenca = atan2f(sinf(angulo_player - ataque->angulo_visao), cosf(angulo_player - ataque->angulo_visao));
+
+    return fabsf(diferenca) <= ABERTURA_CONE / 2.0f;
+}
+
+static void atualizar_fase1(AtaqueBoss* ataque, Inimigo* boss, Player* player, double agora)
+{
+    float centro_x = boss->x + boss->size / 2.0f;
+    float centro_y = boss->y + boss->size / 2.0f;
+
+    float player_x = player->x + player->size / 2.0f;
+    float player_y = player->y + player->size / 2.0f;
+
+    float dx = player_x - centro_x;
+    float dy = player_y - centro_y;
+
+    ataque->angulo_visao = atan2f(dy, dx);
+
+    if (player_dentro_cone(ataque, boss, player) && agora >= ataque->proximo_disparo) {
+        criar_tiro(ataque, centro_x, centro_y, ataque->angulo_visao, VELOCIDADE_TIRO_FASE_1);
+        ataque->proximo_disparo = agora + INTERVALO_FASE_1;
+    }
+}
+
 void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, int width, int height)
 {
     if (!boss->vivo || !player->vivo || boss->tipo != TIPO_BOSS) {
@@ -81,13 +128,12 @@ void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, in
 
     double agora = al_get_time();
 
-    // PRIMEIRA FASE: o chefe persegue o jogador.
-    // O movimento é controlado pelo main.c; não há disparos nesta fase.
     if (boss->vida > VIDA_FASE_2) {
+        atualizar_fase1(ataque, boss, player, agora);
+        atualizar_projeteis(ataque, width, height);
         return;
     }
 
-    // SEGUNDA FASE: o chefe fica centralizado e dispara em todas as direções.
     centralizar_boss(boss, width, height);
 
     float centro_x = boss->x + boss->size / 2.0f;
@@ -106,7 +152,7 @@ void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, in
     if (agora >= ataque->proximo_disparo) {
         for (int i = 0; i < TIROS_RADIAIS_FASE_2; i++) {
             float angulo = ataque->angulo + i * (2.0f * PI / TIROS_RADIAIS_FASE_2);
-            criar_tiro(ataque, centro_x, centro_y, angulo);
+            criar_tiro(ataque, centro_x, centro_y, angulo, VELOCIDADE_TIRO_BOSS);
         }
 
         ataque->angulo += ROTACAO_FASE_2;
@@ -127,7 +173,27 @@ void desenhar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss)
         return;
 
     if (boss->vida > VIDA_FASE_2) {
-        return;
+        float centro_x = boss->x + boss->size / 2.0f;
+        float centro_y = boss->y + boss->size / 2.0f;
+
+        al_draw_filled_pieslice(
+            centro_x,
+            centro_y,
+            ALCANCE_CONE,
+            ataque->angulo_visao - ABERTURA_CONE / 2.0f,
+            ABERTURA_CONE,
+            al_map_rgba(255, 70, 70, 65)
+        );
+
+        al_draw_pieslice(
+            centro_x,
+            centro_y,
+            ALCANCE_CONE,
+            ataque->angulo_visao - ABERTURA_CONE / 2.0f,
+            ABERTURA_CONE,
+            al_map_rgba(255, 100, 100, 180),
+            2.0f
+        );
     }
 
     ALLEGRO_COLOR cor = al_map_rgb(80, 190, 255);

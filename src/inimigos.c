@@ -1,4 +1,3 @@
-
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "inimigos.h"
@@ -57,22 +56,9 @@ void desenhar_inimigo(Inimigo inimigo) {
         break;
     }
 
-    al_draw_rectangle(
-        inimigo.x,
-        inimigo.y,
-        inimigo.x + inimigo.size,
-        inimigo.y + inimigo.size,
-        al_map_rgb(255, 255, 255),
-        2
-    );
+    al_draw_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 255, 255), 2);
 
-    al_draw_filled_rectangle(
-        inimigo.x,
-        inimigo.y,
-        inimigo.x + inimigo.size,
-        inimigo.y + inimigo.size,
-        cor
-    );
+    al_draw_filled_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, cor);
 }
 
 void seguir_player(Inimigo* inimigo, Player* player) {
@@ -262,20 +248,9 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
             float cy = inimigos[i].y + inimigos[i].size / 2;
             float s = 12;
 
-            al_draw_filled_triangle(
-                cx, cy - s / 2,
-                cx - s / 2, cy + s / 2,
-                cx + s / 2, cy + s / 2,
-                cor
-            );
+            al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
 
-            al_draw_triangle(
-                cx, cy - s / 2,
-                cx - s / 2, cy + s / 2,
-                cx + s / 2, cy + s / 2,
-                al_map_rgb(255, 255, 255),
-                1
-            );
+            al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
         }
     }
 }

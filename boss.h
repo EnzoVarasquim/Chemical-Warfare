@@ -17,6 +17,7 @@ typedef struct {
 
 typedef struct {
     float angulo;
+    float angulo_visao;
     double proximo_disparo;
     double proximo_dano;
 
