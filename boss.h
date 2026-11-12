@@ -1,4 +1,3 @@
-
 #ifndef BOSS_H
 #define BOSS_H
 
@@ -28,24 +27,8 @@ typedef struct {
 } AtaqueBoss;
 
 void init_ataque_boss(AtaqueBoss* ataque);
-
-void atualizar_ataque_boss(
-    AtaqueBoss* ataque,
-    Inimigo* boss,
-    Player* player,
-    int width,
-    int height
-);
-
-void desenhar_ataque_boss(
-    AtaqueBoss* ataque,
-    Inimigo* boss
-);
-
-void colisao_ataque_boss(
-    AtaqueBoss* ataque,
-    Inimigo* boss,
-    Player* player
-);
+void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, int width, int height);
+void desenhar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss);
+void colisao_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player);
 
 #endif

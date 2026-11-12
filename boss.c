@@ -21,9 +21,7 @@ static void centralizar_boss(Inimigo* boss, int width, int height)
 {
     float limite_esquerdo = width / 4.0f;
 
-    boss->x = (int)(limite_esquerdo +
-        (width - limite_esquerdo - boss->size) / 2.0f);
-
+    boss->x = (int)(limite_esquerdo + (width - limite_esquerdo - boss->size) / 2.0f);
     boss->y = (int)((height - boss->size) / 2.0f);
 }
 
@@ -41,34 +39,22 @@ void init_ataque_boss(AtaqueBoss* ataque)
     }
 }
 
-static void criar_tiro(
-    AtaqueBoss* ataque,
-    float x,
-    float y,
-    float angulo
-) {
+static void criar_tiro(AtaqueBoss* ataque, float x, float y, float angulo)
+{
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
         if (!ataque->tiros[i].ativo) {
             ataque->tiros[i].x = x;
             ataque->tiros[i].y = y;
-
-            ataque->tiros[i].vel_x =
-                cosf(angulo) * VELOCIDADE_TIRO_BOSS;
-
-            ataque->tiros[i].vel_y =
-                sinf(angulo) * VELOCIDADE_TIRO_BOSS;
-
+            ataque->tiros[i].vel_x = cosf(angulo) * VELOCIDADE_TIRO_BOSS;
+            ataque->tiros[i].vel_y = sinf(angulo) * VELOCIDADE_TIRO_BOSS;
             ataque->tiros[i].ativo = true;
             return;
         }
     }
 }
 
-static void atualizar_projeteis(
-    AtaqueBoss* ataque,
-    int width,
-    int height
-) {
+static void atualizar_projeteis(AtaqueBoss* ataque, int width, int height)
+{
     float limite_esquerdo = width / 4.0f;
 
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
@@ -81,25 +67,15 @@ static void atualizar_projeteis(
         float x = ataque->tiros[i].x;
         float y = ataque->tiros[i].y;
 
-        if (x - RAIO_TIRO <= limite_esquerdo ||
-            x + RAIO_TIRO >= width ||
-            y - RAIO_TIRO <= 0 ||
-            y + RAIO_TIRO >= height) {
+        if (x - RAIO_TIRO <= limite_esquerdo || x + RAIO_TIRO >= width || y - RAIO_TIRO <= 0 || y + RAIO_TIRO >= height) {
             ataque->tiros[i].ativo = false;
         }
     }
 }
 
-void atualizar_ataque_boss(
-    AtaqueBoss* ataque,
-    Inimigo* boss,
-    Player* player,
-    int width,
-    int height
-) {
-    if (!boss->vivo ||
-        !player->vivo ||
-        boss->tipo != TIPO_BOSS) {
+void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, int width, int height)
+{
+    if (!boss->vivo || !player->vivo || boss->tipo != TIPO_BOSS) {
         return;
     }
 
@@ -129,9 +105,7 @@ void atualizar_ataque_boss(
 
     if (agora >= ataque->proximo_disparo) {
         for (int i = 0; i < TIROS_RADIAIS_FASE_2; i++) {
-            float angulo = ataque->angulo +
-                i * (2.0f * PI / TIROS_RADIAIS_FASE_2);
-
+            float angulo = ataque->angulo + i * (2.0f * PI / TIROS_RADIAIS_FASE_2);
             criar_tiro(ataque, centro_x, centro_y, angulo);
         }
 
@@ -147,20 +121,16 @@ void atualizar_ataque_boss(
     atualizar_projeteis(ataque, width, height);
 }
 
-void desenhar_ataque_boss(
-    AtaqueBoss* ataque,
-    Inimigo* boss
-) {
+void desenhar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss)
+{
     if (!boss->vivo || boss->tipo != TIPO_BOSS)
         return;
-
-    ALLEGRO_COLOR cor;
 
     if (boss->vida > VIDA_FASE_2) {
         return;
     }
 
-    cor = al_map_rgb(80, 190, 255);
+    ALLEGRO_COLOR cor = al_map_rgb(80, 190, 255);
 
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
         if (!ataque->tiros[i].ativo)
@@ -170,21 +140,13 @@ void desenhar_ataque_boss(
         float y = ataque->tiros[i].y;
 
         al_draw_filled_circle(x, y, RAIO_TIRO, cor);
-        al_draw_circle(
-            x, y, RAIO_TIRO,
-            al_map_rgb(255, 255, 255), 1
-        );
+        al_draw_circle(x, y, RAIO_TIRO, al_map_rgb(255, 255, 255), 1);
     }
 }
 
-void colisao_ataque_boss(
-    AtaqueBoss* ataque,
-    Inimigo* boss,
-    Player* player
-) {
-    if (!boss->vivo ||
-        !player->vivo ||
-        boss->tipo != TIPO_BOSS) {
+void colisao_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player)
+{
+    if (!boss->vivo || !player->vivo || boss->tipo != TIPO_BOSS) {
         return;
     }
 
@@ -200,15 +162,8 @@ void colisao_ataque_boss(
         float x = ataque->tiros[i].x;
         float y = ataque->tiros[i].y;
 
-        float px = fmaxf(
-            player->x,
-            fminf(x, player->x + player->size)
-        );
-
-        float py = fmaxf(
-            player->y,
-            fminf(y, player->y + player->size)
-        );
+        float px = fmaxf(player->x, fminf(x, player->x + player->size));
+        float py = fmaxf(player->y, fminf(y, player->y + player->size));
 
         float dx = x - px;
         float dy = y - py;
