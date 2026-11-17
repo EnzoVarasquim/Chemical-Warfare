@@ -30,8 +30,6 @@ int main() {
     al_init_primitives_addon();
     al_init_font_addon();
     al_init_ttf_addon();
-    al_install_audio();
-    al_init_acodec_addon();
 
     //tela
     int width = 1366;
@@ -172,20 +170,37 @@ int main() {
     //som do tiro
     ALLEGRO_SAMPLE* som_tiro = al_load_sample("assets/sounds/som_tiro_lase.ogg");
 
-    //musica de fundo
+    //musica do menu inicial
+    ALLEGRO_AUDIO_STREAM* musica_menu = al_load_audio_stream("assets/sounds/musica-menu.ogg", 4, 2048);
+
+    //musica principal do jogo
     ALLEGRO_AUDIO_STREAM* musica_background = al_load_audio_stream("assets/sounds/musica_background.ogg", 4, 2048);
 
     if (!som_tiro) {
         printf("ERRO: nao conseguiu carregar o som!\n");
         return 1;
     }
-    if (!musica_background) {
-        printf("ERRO: nao conseguiu carregar a musica!\n");
+    if (!musica_menu) {
+        printf("ERRO: nao conseguiu carregar a musica do menu!\n");
         return 1;
     }
 
+    if (!musica_background) {
+        printf("ERRO: nao conseguiu carregar a musica do jogo!\n");
+        return 1;
+    }
+
+    //anexa as duas musicas ao mixer
+    al_attach_audio_stream_to_mixer(musica_menu, al_get_default_mixer());
     al_attach_audio_stream_to_mixer(musica_background, al_get_default_mixer());
+
+    //configura as duas musicas para repetir
+    al_set_audio_stream_playmode(musica_menu, ALLEGRO_PLAYMODE_LOOP);
     al_set_audio_stream_playmode(musica_background, ALLEGRO_PLAYMODE_LOOP);
+
+    //inicia somente a musica do menu
+    al_set_audio_stream_playing(musica_menu, true);
+    al_set_audio_stream_playing(musica_background, false);
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
     al_start_timer(timer);
@@ -235,6 +250,11 @@ int main() {
                     if (mouse_x >= menu_jogar_x1 && mouse_x <= menu_jogar_x2 &&
                         mouse_y >= menu_jogar_y1 && mouse_y <= menu_jogar_y2) {
                         jogo_iniciado = true;
+
+                        //para a musica do menu e inicia a musica do jogo
+                        al_set_audio_stream_playing(musica_menu, false);
+                        al_set_audio_stream_playing(musica_background, true);
+
                         al_hide_mouse_cursor(display);
                     }
 
@@ -675,6 +695,7 @@ int main() {
 
     // desliga os eventos e desinstala as bibliotecas quando fecha a tela
     al_destroy_sample(som_tiro);
+    al_destroy_audio_stream(musica_menu);
     al_destroy_audio_stream(musica_background);
     al_destroy_event_queue(event_queue);
     al_destroy_display(display);
