@@ -136,17 +136,25 @@ int main() {
     //posições dos botões do menu
     int centro_menu_x = width / 2;
     int largura_botao = 216;
-    int altura_botao = 100;
+    int altura_botao = 80;
     int altura_titulo = al_get_font_line_height(fonte_menu_titulo);
 
+    //botão JOGAR
     int menu_jogar_x1 = centro_menu_x - largura_botao / 2;
     int menu_jogar_x2 = centro_menu_x + largura_botao / 2;
     int menu_jogar_y1 = (int)(height * 0.25f + altura_titulo * 2 + 55);
     int menu_jogar_y2 = menu_jogar_y1 + altura_botao;
 
+    //botão TUTORIAL
+    int menu_tutorial_x1 = menu_jogar_x1;
+    int menu_tutorial_x2 = menu_jogar_x2;
+    int menu_tutorial_y1 = menu_jogar_y2 + 28;
+    int menu_tutorial_y2 = menu_tutorial_y1 + altura_botao;
+
+    //botão SAIR
     int menu_sair_x1 = menu_jogar_x1;
     int menu_sair_x2 = menu_jogar_x2;
-    int menu_sair_y1 = menu_jogar_y2 + 28;
+    int menu_sair_y1 = menu_tutorial_y2 + 28;
     int menu_sair_y2 = menu_sair_y1 + altura_botao;
 
     //debugs
@@ -180,6 +188,7 @@ int main() {
         printf("ERRO: nao conseguiu carregar o som!\n");
         return 1;
     }
+
     if (!musica_menu) {
         printf("ERRO: nao conseguiu carregar a musica do menu!\n");
         return 1;
@@ -263,8 +272,10 @@ int main() {
                         mouse_y >= menu_sair_y1 && mouse_y <= menu_sair_y2) {
                         rodando = false;
                     }
-                }
 
+                    //TUTORIAL: reservado para implementação futura
+                    //O clique não executa nenhuma ação.
+                }
                 //disparo durante o jogo
                 else if (player.vivo) {
                     disparar_tiro(&mouse, &player, num_tiros, sq.arma_ativa, &sq);
@@ -284,12 +295,15 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_W) {
                 keyboard.w_pressed = true;
             }
+
             if (event.keyboard.keycode == ALLEGRO_KEY_DOWN || event.keyboard.keycode == ALLEGRO_KEY_S) {
                 keyboard.s_pressed = true;
             }
+
             if (event.keyboard.keycode == ALLEGRO_KEY_LEFT || event.keyboard.keycode == ALLEGRO_KEY_A) {
                 keyboard.a_pressed = true;
             }
+
             if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT || event.keyboard.keycode == ALLEGRO_KEY_D) {
                 keyboard.d_pressed = true;
             }
@@ -328,12 +342,15 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_UP || event.keyboard.keycode == ALLEGRO_KEY_W) {
                 keyboard.w_pressed = false;
             }
+
             if (event.keyboard.keycode == ALLEGRO_KEY_DOWN || event.keyboard.keycode == ALLEGRO_KEY_S) {
                 keyboard.s_pressed = false;
             }
+
             if (event.keyboard.keycode == ALLEGRO_KEY_LEFT || event.keyboard.keycode == ALLEGRO_KEY_A) {
                 keyboard.a_pressed = false;
             }
+
             if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT || event.keyboard.keycode == ALLEGRO_KEY_D) {
                 keyboard.d_pressed = false;
             }
@@ -507,6 +524,26 @@ int main() {
                     menu_jogar_y1 + (altura_botao -
                         al_get_font_line_height(fonte_menu_botao)) / 2.0f,
                     ALLEGRO_ALIGN_CENTER, "JOGAR");
+
+                //verifica se o mouse está sobre o botão TUTORIAL
+                bool mouse_tutorial = mouse.x >= menu_tutorial_x1 && mouse.x <= menu_tutorial_x2 &&
+                    mouse.y >= menu_tutorial_y1 && mouse.y <= menu_tutorial_y2;
+
+                //fundo do botão TUTORIAL
+                if (mouse_tutorial) {
+                    al_draw_filled_rectangle(menu_tutorial_x1, menu_tutorial_y1,
+                        menu_tutorial_x2, menu_tutorial_y2, fundo_botao);
+                }
+
+                //contorno do botão TUTORIAL
+                al_draw_rectangle(menu_tutorial_x1, menu_tutorial_y1,
+                    menu_tutorial_x2, menu_tutorial_y2, branco, 2.0f);
+
+                //texto do botão TUTORIAL
+                al_draw_text(fonte_menu_botao, branco, centro_menu_x,
+                    menu_tutorial_y1 + (altura_botao -
+                        al_get_font_line_height(fonte_menu_botao)) / 2.0f,
+                    ALLEGRO_ALIGN_CENTER, "TUTORIAL");
 
                 //verifica se o mouse está sobre o botão SAIR
                 bool mouse_sair = mouse.x >= menu_sair_x1 && mouse.x <= menu_sair_x2 &&
