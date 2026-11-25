@@ -52,6 +52,8 @@ int main() {
     ItemLab itens_lab[3];
     init_itens_lab(itens_lab);
 
+    EstrelaBonus estrela_unica = { 0, 0, 12.0f, false, false, 5 };
+
     //aloca memória pra guardar os inimigos
     int total_inimigos = 3;
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
@@ -88,7 +90,7 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
-	// percorre o array dos tiros do boss 
+    // percorre o array dos tiros do boss 
     for (int i = 0; i < MAX_TIROS; i++) {
         tiros_boss[i] = init_tiro();
     }
@@ -214,6 +216,8 @@ int main() {
                 }
                 inicializar_sistema_quimico(&sq);
                 tempo_mensagem_bloqueada = 0.0;
+                estrela_unica.ativa = false;
+                estrela_unica.coletada = false;
             }
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
@@ -298,7 +302,7 @@ int main() {
 
                 //tiros
                 atualizar_posicao_tiros(num_tiros, width, height);
-				//tiros do boss
+                //tiros do boss
                 atualizar_posicao_tiros(tiros_boss, width, height);
 
                 //loop das waves
@@ -341,8 +345,14 @@ int main() {
 
                 //checar a colisão do inimigo com os tiros
                 for (int i = 0; i < total_inimigos; i++) {
+                    bool estava_vivo = qtd_inimigos[i].vivo;
                     colisao_tiro(&qtd_inimigos[i], num_tiros, &sq, &player);
+                    if (estava_vivo && !qtd_inimigos[i].vivo) {
+                        tentar_dropar_estrela(&estrela_unica, &qtd_inimigos[i]);
+                    }
                 }
+
+                atualizar_estrela(&estrela_unica, &player, &sq);
             }
         }
 
@@ -371,6 +381,7 @@ int main() {
                 }
 
                 desenhar_moedas_mortos(qtd_inimigos, total_inimigos);
+                desenhar_estrela(estrela_unica);
 
                 desenhar_player(player);
 
@@ -432,7 +443,7 @@ int main() {
 
                 al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
-                    
+
                 // UI de Elementos Químicos
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
                 al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
@@ -446,38 +457,25 @@ int main() {
                     if (itens_lab[i].contador_compra > 0) {
                         int posY = 230 + (linha_atual * 20);
 
-                        al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, posY, ALLEGRO_ALIGN_LEFT, "* %s (x%d)", itens_lab[i].nome,itens_lab[i].contador_compra);
+                        al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, posY, ALLEGRO_ALIGN_LEFT, "* %s (x%d)", itens_lab[i].nome, itens_lab[i].contador_compra);
                         linha_atual++;
                     }
                 }
 
-                // UI nome dos inimigos do lado do icone deles
-                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 330, ALLEGRO_ALIGN_LEFT, "Ácido");
-                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 370, ALLEGRO_ALIGN_LEFT, "Básico");
-                al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 410, ALLEGRO_ALIGN_LEFT, "Metálico");
-
-                //mensagem de feedback de bloqueio
                 if (sq.mensagem_arma_bloqueada) {
                     al_draw_text(fonte_media_2, al_map_rgb(255, 50, 50), width / 1.6, 40, ALLEGRO_ALIGN_CENTER, "Arma não descoberta ou elementos insuficientes!");
                 }
 
-                //caixa do contador de wave 
                 al_draw_filled_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(0, 0, 0));
                 al_draw_rectangle(width - 105, 15, width - 15, 45, al_map_rgb(50, 50, 50), 1);
 
-                //formatação do texto das waves
                 int wave_exibida = wave.atual - ((wave.atual - 1) / 2);
-                
                 (wave.atual < wave.final - 3) ? al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 93, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida) :
-                                                al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
+                    al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width - 100, 18, ALLEGRO_ALIGN_LEFT, "WAVE %d", wave_exibida);
 
                 if (wave.atual >= wave.final + 1) {
                     al_draw_filled_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(0, 0, 0));
                     al_draw_rectangle(width - 105, 45, width - 15, 70, al_map_rgb(50, 50, 50), 1);
-                    al_draw_filled_circle(width - 95, 57, 2, al_map_rgb(255, 50, 50));
-                    al_draw_filled_circle(width - 90, 57, 3, al_map_rgb(255, 50, 50));
-                    al_draw_filled_circle(width - 30, 57, 3, al_map_rgb(255, 50, 50));
-                    al_draw_filled_circle(width - 25, 57, 2, al_map_rgb(255, 50, 50));
                     al_draw_text(fonte_media_1, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
                 }
 
@@ -489,7 +487,6 @@ int main() {
                 if (wave.laboratorio == true) {
                     al_draw_text(fonte_grande, al_map_rgb(0, 120, 255), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "LABORATÓRIO");
                     al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Compre reações com research points");
-
                     desenhar_itens_lab(&sq, itens_lab, fonte_pequena);
 
                     al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
@@ -505,13 +502,9 @@ int main() {
                 al_flip_display();
             }
         }
-
     }
 
-    //libera os inimigos da memoria
     free(qtd_inimigos);
-
-    // desliga os eventos e desisntala as biblioteca quando fecha a tela
     al_destroy_sample(som_tiro);
     al_destroy_audio_stream(musica_background);
     al_destroy_event_queue(event_queue);
@@ -525,7 +518,6 @@ int main() {
     al_uninstall_mouse();
     al_uninstall_keyboard();
     al_uninstall_audio();
-
     al_shutdown_primitives_addon();
     al_uninstall_system();
 

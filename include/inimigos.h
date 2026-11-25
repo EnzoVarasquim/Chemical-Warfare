@@ -25,6 +25,15 @@ typedef struct {
     TipoInimigo tipo;
 } Inimigo;
 
+typedef struct {
+    float x;
+    float y;
+    float raio;
+    bool ativa;
+    bool coletada;
+    int valor_research;
+} EstrelaBonus;
+
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo);
 void desenhar_inimigo(Inimigo inimigo);
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* player);
@@ -38,4 +47,8 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total);
 
 void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]);
 void colisao_tiro_boss(Tiro tiros_boss[], Player* player);
+
+void tentar_dropar_estrela(EstrelaBonus* estrela, Inimigo* inimigo);
+void atualizar_estrela(EstrelaBonus* estrela, Player* player, SistemaQuimico* sq);
+void desenhar_estrela(EstrelaBonus estrela);
 #endif

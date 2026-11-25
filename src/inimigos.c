@@ -1,13 +1,16 @@
+#include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include "inimigos.h"
-#include <stdlib.h>
-#include <math.h>
 
 #define MAX_TIROS 30
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
-    int tamanho, velocidade, vida;
+    int tamanho = 20;
+    float velocidade = 2.0f;
+    int vida = 5;
 
     if (tipo == TIPO_ACIDO) {
         tamanho = 20;
@@ -24,11 +27,11 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
         velocidade = 2;
         vida = 10;
     }
-    
+
     if (tipo == TIPO_BOSS) {
-        tamanho = 60;     
-        velocidade = 1;    
-        vida = 150;        
+        tamanho = 60;
+        velocidade = 1;
+        vida = 150;
     }
 
     Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo };
@@ -91,22 +94,22 @@ void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
     {
         //eles se empurram quando colidem no eixo X 
         if (inimigo1->x < inimigo2->x) {
-            inimigo1->x -= 3; 
-            inimigo2->x += 3; 
-        }                  
-        else {             
-            inimigo1->x += 3; 
-            inimigo2->x -= 3; 
+            inimigo1->x -= 3;
+            inimigo2->x += 3;
+        }
+        else {
+            inimigo1->x += 3;
+            inimigo2->x -= 3;
         }
 
         //empurram quando colidem no eixo Y 
         if (inimigo1->y < inimigo2->y) {
-            inimigo1->y -= 3; 
-            inimigo2->y += 3; 
-        }                  
-        else {             
-            inimigo1->y += 3; 
-            inimigo2->y -= 3; 
+            inimigo1->y -= 3;
+            inimigo2->y += 3;
+        }
+        else {
+            inimigo1->y += 3;
+            inimigo2->y -= 3;
         }
     }
 }
@@ -134,7 +137,7 @@ void colisao_player(Inimigo* inimigo, Player* player) {
             inimigo->x -= 3; //previni um bug dele ficar parado no lugar sem fazer nada
         }
         else if (inimigo->x < player->x) {
-            inimigo->x -= 3; 
+            inimigo->x -= 3;
         }
         else {
             inimigo->x += 3;
@@ -169,7 +172,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
 
                 //interações diferentes dependendo do tipo de tiro que colidindo com um tipo de inimigo
                 if (sq->arma_ativa == ARMA_ACIDA) {
-                    if (inimigo->tipo == TIPO_METALICO) dano_final *= 2;    
+                    if (inimigo->tipo == TIPO_METALICO) dano_final *= 2;
                     if (inimigo->tipo == TIPO_ACIDO) dano_final = 0;      //imune
                 }
                 if (sq->arma_ativa == ARMA_BASICA) {
@@ -201,7 +204,7 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
 }
 
 void colisao_tela_inimigo(Inimigo* inimigo, int width, int height) {
-    if (inimigo->x < width/4) {                       //esquerda
+    if (inimigo->x < width / 4) {                       //esquerda
         inimigo->x = width / 4;
     }
 
@@ -243,9 +246,9 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99) {
             //ifs ternários pra verificar a cor da moedinha para o respectivo tipo de inimigo
             ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
-                                (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
-                                (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
-                                al_map_rgb(255, 255, 255);
+                (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
+                (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
+                al_map_rgb(255, 255, 255);
 
             //centro dos inimigos
             float cx = inimigos[i].x + inimigos[i].size / 2;
@@ -258,6 +261,7 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
         }
     }
 }
+
 // Disparos aleatorios do boss
 void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
 
@@ -273,7 +277,7 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
     for (int i = 0; i < MAX_TIROS; i++) {
 
         if (!tiros_boss[i].ativo) {
-            
+
             Tiro* t = &tiros_boss[i];
 
             // Posicao inicial no centro do boss
@@ -303,7 +307,6 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
     }
 }
 
-
 // Colisao do tiro do boss com o jogador
 void colisao_tiro_boss(Tiro tiros_boss[], Player* player) {
 
@@ -328,4 +331,75 @@ void colisao_tiro_boss(Tiro tiros_boss[], Player* player) {
             }
         }
     }
+}
+
+static void desenhar_forma_estrela(float cx, float cy, float raio_ext, float raio_int, float rotacao, ALLEGRO_COLOR cor_fill, ALLEGRO_COLOR cor_borda) {
+    float vertices[20];
+    for (int i = 0; i < 10; i++) {
+        float r = (i % 2 == 0) ? raio_ext : raio_int;
+        float angulo = rotacao + (i * ALLEGRO_PI / 5.0f) - (ALLEGRO_PI / 2.0f);
+        vertices[i * 2] = cx + cosf(angulo) * r;
+        vertices[i * 2 + 1] = cy + sinf(angulo) * r;
+    }
+    al_draw_filled_polygon(vertices, 10, cor_fill);
+    al_draw_polygon(vertices, 10, ALLEGRO_LINE_JOIN_ROUND, cor_borda, 1.5f, 0.0f);
+}
+
+void tentar_dropar_estrela(EstrelaBonus* estrela, Inimigo* inimigo) {
+    if (!estrela->ativa && !estrela->coletada) {
+        if (rand() % 30 == 0) {
+            estrela->x = inimigo->x + inimigo->size / 2.0f;
+            estrela->y = inimigo->y + inimigo->size / 2.0f;
+            estrela->raio = 12.0f;
+            estrela->ativa = true;
+            estrela->coletada = false;
+            estrela->valor_research = 5;
+        }
+    }
+}
+
+void atualizar_estrela(EstrelaBonus* estrela, Player* player, SistemaQuimico* sq) {
+    if (!estrela->ativa || estrela->coletada || !player->vivo) return;
+
+    float hitbox = estrela->raio;
+    if (player->x < estrela->x + hitbox &&
+        player->x + player->size > estrela->x - hitbox &&
+        player->y < estrela->y + hitbox &&
+        player->y + player->size > estrela->y - hitbox) {
+
+        estrela->ativa = false;
+        estrela->coletada = true;
+        sq->research_point += estrela->valor_research;
+    }
+}
+
+void desenhar_estrela(EstrelaBonus estrela) {
+    if (!estrela.ativa || estrela.coletada) return;
+
+    double tempo = al_get_time();
+
+    ALLEGRO_COLOR palheta[6] = {
+        al_map_rgb(255, 230, 0),
+        al_map_rgb(255, 50, 50),
+        al_map_rgb(50, 255, 100),
+        al_map_rgb(50, 180, 255),
+        al_map_rgb(255, 80, 255),
+        al_map_rgb(255, 140, 0)
+    };
+
+    int indice_cor = ((int)(tempo * 12.0)) % 6;
+    ALLEGRO_COLOR cor_atual = palheta[indice_cor];
+
+    float pulso = 1.0f + 0.18f * sinf((float)(tempo * 8.0));
+    float rotacao = (float)(tempo * 2.5);
+
+    desenhar_forma_estrela(
+        estrela.x,
+        estrela.y,
+        estrela.raio * pulso,
+        (estrela.raio * 0.45f) * pulso,
+        rotacao,
+        cor_atual,
+        al_map_rgb(255, 255, 255)
+    );
 }
