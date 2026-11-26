@@ -15,7 +15,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     }
     else if (tipo == TIPO_BASICO) {
         tamanho = 20;
-        velocidade = 2.5;
+        velocidade = 2;
         vida = 7;
     }
     else if (tipo == TIPO_METALICO) {
@@ -42,6 +42,7 @@ void desenhar_inimigo(Inimigo inimigo) {
     if (!inimigo.vivo) return;
 
     ALLEGRO_COLOR cor;
+
     switch (inimigo.tipo) {
     case TIPO_ACIDO:
         cor = al_map_rgb(0, 255, 0);
@@ -64,27 +65,33 @@ void desenhar_inimigo(Inimigo inimigo) {
     }
 
     al_draw_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, al_map_rgb(255, 255, 255), 2);
+
     al_draw_filled_rectangle(inimigo.x, inimigo.y, inimigo.x + inimigo.size, inimigo.y + inimigo.size, cor);
 }
 
 void seguir_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
 
-    float velocidade = inimigo->vel;
+    float velocidade = (float)inimigo->vel;
 
-    if (inimigo->x < player->x + player->size)
-        inimigo->x += velocidade;
+    float inimigo_centro_x = inimigo->x + inimigo->size / 2.0f;
+    float inimigo_centro_y = inimigo->y + inimigo->size / 2.0f;
 
-    if (inimigo->x + inimigo->size > player->x)
-        inimigo->x -= velocidade;
+    float player_centro_x = player->x + player->size / 2.0f;
+    float player_centro_y = player->y + player->size / 2.0f;
 
-    if (inimigo->y + inimigo->size > player->y)
-        inimigo->y -= velocidade;
+    float dx = player_centro_x - inimigo_centro_x;
+    float dy = player_centro_y - inimigo_centro_y;
 
-    if (inimigo->y < player->y + player->size)
-        inimigo->y += velocidade;
+    float distancia = sqrtf(dx * dx + dy * dy);
+
+    if (distancia > 0.0f) {
+        inimigo->x += (dx / distancia) * velocidade;
+        inimigo->y += (dy / distancia) * velocidade;
+    }
 }
 
+// Colisão entre inimigos
 void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
     if (!inimigo1->vivo || !inimigo2->vivo) return;
 
@@ -128,28 +135,41 @@ void colisao_player(Inimigo* inimigo, Player* player) {
             return;
         }
 
-        if (inimigo->x == player->x) {
-            inimigo->x -= 3;
-        }
-        else if (inimigo->x < player->x) {
-            inimigo->x -= 3;
-        }
-        else {
-            inimigo->x += 3;
-        }
+        int sobreposicao_x =
+            (inimigo->x + inimigo->size < player->x + player->size
+                ? inimigo->x + inimigo->size
+                : player->x + player->size)
+            -
+            (inimigo->x > player->x
+                ? inimigo->x
+                : player->x);
 
-        if (inimigo->y == player->y) {
-            inimigo->y -= 3;
-        }
-        else if (inimigo->y < player->y) {
-            inimigo->y -= 3;
+        int sobreposicao_y =
+            (inimigo->y + inimigo->size < player->y + player->size
+                ? inimigo->y + inimigo->size
+                : player->y + player->size)
+            -
+            (inimigo->y > player->y
+                ? inimigo->y
+                : player->y);
+
+        // Separa o inimigo apenas o necessário.
+        if (sobreposicao_x < sobreposicao_y) {
+            if (inimigo->x < player->x)
+                inimigo->x -= sobreposicao_x;
+            else
+                inimigo->x += sobreposicao_x;
         }
         else {
-            inimigo->y += 3;
+            if (inimigo->y < player->y)
+                inimigo->y -= sobreposicao_y;
+            else
+                inimigo->y += sobreposicao_y;
         }
     }
 }
 
+// Colisão do tiro com o inimigo
 void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* player) {
     if (!inimigo->vivo) return;
 
@@ -248,6 +268,7 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
             float s = 12;
 
             al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
+
             al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
         }
     }
