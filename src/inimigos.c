@@ -1,32 +1,37 @@
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "inimigos.h"
+#include <stdlib.h>
 
 #define MAX_TIROS 30
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
-    int tamanho, velocidade, vida;
+    int tamanho = 20, velocidade = 2, vida = 5;
 
     if (tipo == TIPO_ACIDO) {
         tamanho = 20;
         velocidade = 3;
         vida = 5;
     }
-    if (tipo == TIPO_BASICO) {
+    else if (tipo == TIPO_BASICO) {
         tamanho = 20;
         velocidade = 2;
         vida = 7;
     }
-    if (tipo == TIPO_METALICO) {
+    else if (tipo == TIPO_METALICO) {
         tamanho = 20;
         velocidade = 2;
         vida = 10;
     }
-
-    if (tipo == TIPO_BOSS) {
+    else if (tipo == TIPO_BOSS) {
         tamanho = 60;
-        velocidade = 3;
+        velocidade = 1;
         vida = 150;
+    }
+    else if (tipo == TIPO_ATIRADOR) {
+        tamanho = 20;
+        velocidade = 0; 
+        vida = 5;
     }
 
     Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo };
@@ -50,6 +55,9 @@ void desenhar_inimigo(Inimigo inimigo) {
         break;
     case TIPO_BOSS:
         cor = al_map_rgb(255, 69, 0);
+        break;
+    case TIPO_ATIRADOR:
+        cor = al_map_rgb(0, 191, 255);      
         break;
     default:
         cor = al_map_rgb(255, 255, 255);
@@ -112,7 +120,6 @@ void colisao_inimigos(Inimigo* inimigo1, Inimigo* inimigo2) {
     }
 }
 
-// Colisão do player com o inimigo
 void colisao_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
 
@@ -174,18 +181,33 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
                 tiros[i].y <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
-                inimigo->vida -= player->dano;
+
+                int dano_final = player->dano;
+
+                //interações diferentes dependendo do tipo de tiro que colidindo com um tipo de inimigo
+                if (sq->arma_ativa == ARMA_ACIDA) {
+                    if (inimigo->tipo == TIPO_METALICO) dano_final *= 2;    
+                    if (inimigo->tipo == TIPO_ACIDO) dano_final = 0;      //imune
+                }
+                if (sq->arma_ativa == ARMA_BASICA) {
+                    if (inimigo->tipo == TIPO_ACIDO) dano_final *= 2;
+                    if (inimigo->tipo == TIPO_BASICO) dano_final = 0;     //imune
+                }
+                if (sq->arma_ativa == ARMA_METALICA) {
+                    if (inimigo->tipo == TIPO_BASICO) dano_final *= 2;
+                    if (inimigo->tipo == TIPO_ACIDO || inimigo->tipo == TIPO_METALICO) dano_final = 0;      //imune
+                }
+
+                inimigo->vida -= dano_final;
 
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;
                     inimigo->vivo = false;
 
-                    if (inimigo->tipo == TIPO_ACIDO)
-                        sq->qtd_H++;
-                    else if (inimigo->tipo == TIPO_BASICO)
-                        sq->qtd_Na++;
-                    else if (inimigo->tipo == TIPO_METALICO)
-                        sq->qtd_Cl++;
+                    if (inimigo->tipo == TIPO_ACIDO) sq->qtd_H++;
+                    else if (inimigo->tipo == TIPO_BASICO) sq->qtd_Na++;
+                    else if (inimigo->tipo == TIPO_METALICO) sq->qtd_Cl++;
+                    else if (inimigo->tipo == TIPO_ATIRADOR) sq->qtd_H++;
 
                     checar_reacoes(sq);
                     break;
@@ -213,7 +235,6 @@ void colisao_tela_inimigo(Inimigo* inimigo, int width, int height) {
     }
 }
 
-// Gerar a moeda (research point)
 void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq) {
     for (int i = 0; i < total; i++) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99 && player->vivo) {
@@ -224,12 +245,10 @@ void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuim
             {
                 inimigos[i].vida = -99;
 
-                if (inimigos[i].tipo == TIPO_ACIDO)
-                    sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_BASICO)
-                    sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_METALICO)
-                    sq->research_point++;
+                if (inimigos[i].tipo == TIPO_ACIDO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_BASICO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_METALICO) sq->research_point++;
+                else if (inimigos[i].tipo == TIPO_ATIRADOR) sq->research_point++;
             }
         }
     }
@@ -238,10 +257,10 @@ void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuim
 void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
     for (int i = 0; i < total; i++) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99) {
-            ALLEGRO_COLOR cor =
-                (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
+            ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
                 (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
                 (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
+                (inimigos[i].tipo == TIPO_ATIRADOR) ? al_map_rgb(0, 190, 255) :
                 al_map_rgb(255, 255, 255);
 
             float cx = inimigos[i].x + inimigos[i].size / 2;
@@ -251,6 +270,103 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
             al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
 
             al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
+        }
+    }
+}
+
+void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
+    if (!boss->vivo || boss->tipo != TIPO_BOSS) return;
+
+    static double ultimo_disparo = 0;
+    double agora = al_get_time();
+
+    if (agora - ultimo_disparo < 0.05) return;
+
+    for (int i = 0; i < MAX_TIROS; i++) {
+        if (!tiros_boss[i].ativo) {
+            Tiro* t = &tiros_boss[i];
+
+            t->x = boss->x + boss->size / 2;
+            t->y = boss->y + boss->size / 2;
+
+            float angulo = ((float)rand() / RAND_MAX) * 2.0f * 3.14159265f;
+
+            t->vel_x = cosf(angulo) * 10.0f;
+            t->vel_y = sinf(angulo) * 10.0f;
+
+            t->size = 5;
+            t->formato = FORMATO_CIRCULO;
+
+            t->cor_r = 255;
+            t->cor_g = 69;
+            t->cor_b = 0;
+
+            t->ativo = true;
+
+            ultimo_disparo = agora;
+            break;
+        }
+    }
+}
+
+void colisao_tiro_boss(Tiro tiros_boss[], Player* player) {
+    if (!player->vivo) return;
+
+    for (int i = 0; i < MAX_TIROS; i++) {
+        if (!tiros_boss[i].ativo) continue;
+
+        if (tiros_boss[i].x + tiros_boss[i].size >= player->x &&
+            tiros_boss[i].x - tiros_boss[i].size <= player->x + player->size &&
+            tiros_boss[i].y + tiros_boss[i].size >= player->y &&
+            tiros_boss[i].y - tiros_boss[i].size <= player->y + player->size) {
+
+            tiros_boss[i].ativo = false;
+
+            tomar_dano(player, 1);
+
+            if (player->vida <= 0) {
+                player->vivo = false;
+                return;
+            }
+        }
+    }
+}
+
+void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]) {
+    if (!inimigo->vivo || !player->vivo || inimigo->tipo != TIPO_ATIRADOR) return;
+
+    static double tempo_ultimo_tiro = 0.0;
+
+    if (al_get_time() - tempo_ultimo_tiro >= 1.0) { // Dispara a cada 1.0 segundo
+        for (int i = 0; i < MAX_TIROS; i++) {
+            if (!tiros[i].ativo) {
+                tiros[i].x = inimigo->x + inimigo->size / 2;
+                tiros[i].y = inimigo->y + inimigo->size / 2;
+                tiros[i].ativo = true;
+
+                // Calcula a direção exata para o player
+                float dx = (player->x + player->size / 2) - tiros[i].x;
+                float dy = (player->y + player->size / 2) - tiros[i].y;
+                float distancia = sqrtf(dx * dx + dy * dy);
+
+                if (distancia > 0) {
+                    tiros[i].vel_x = (dx / distancia) * 4.5f;
+                    tiros[i].vel_y = (dy / distancia) * 4.5f;
+                }
+                else {
+                    tiros[i].vel_x = 0.0f;
+                    tiros[i].vel_y = 4.5f;
+                }
+
+                tiros[i].formato = FORMATO_CIRCULO;
+                tiros[i].cor_r = 0;
+                tiros[i].cor_g = 190;
+                tiros[i].cor_b = 255;
+                tiros[i].size = 4;
+
+                tempo_ultimo_tiro = al_get_time();
+                break;
+            }
         }
     }
 }
