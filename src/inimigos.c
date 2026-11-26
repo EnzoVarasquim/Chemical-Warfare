@@ -174,9 +174,9 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
     for (int i = 0; i < MAX_TIROS; i++) {
         if (tiros[i].ativo) {
             if (tiros[i].x + tiros[i].size >= inimigo->x &&
-                tiros[i].x <= inimigo->x + inimigo->size &&
+                tiros[i].x - tiros[i].size <= inimigo->x + inimigo->size &&
                 tiros[i].y + tiros[i].size >= inimigo->y &&
-                tiros[i].y <= inimigo->y + inimigo->size)
+                tiros[i].y - tiros[i].size <= inimigo->y + inimigo->size)
             {
                 tiros[i].ativo = false;
 
