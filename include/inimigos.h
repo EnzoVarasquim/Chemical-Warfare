@@ -11,7 +11,8 @@ typedef enum {
     TIPO_ACIDO,
     TIPO_BASICO,
     TIPO_METALICO,
-    TIPO_BOSS
+    TIPO_BOSS,
+    TIPO_ATIRADOR
 } TipoInimigo;
 
 typedef struct {
@@ -38,4 +39,7 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total);
 
 void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]);
 void colisao_tiro_boss(Tiro tiros_boss[], Player* player);
+
+void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]);
+
 #endif

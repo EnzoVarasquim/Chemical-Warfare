@@ -37,17 +37,17 @@ void desenhar_barra_lateral(int width, int height) {
     al_draw_line(0, 460, width / 4 - 1, 460, al_map_rgb(50, 50, 50), 1);
 }
 
-void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], int width, int height) {
+void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], Wave* wave, int width, int height) {
     *player = init_player(width, height);
 
     for (int i = 0; i < total_inimigos; i++) {
+        int tamanho_inimigo = 20;
         int posX, posY;
         float distancia;
 
         do {
-            posX = (width / 4 + 20) + (rand() % (width - width / 4 - 2 * 20 + 1));
-            posY = 20 + (rand() % (height - 2 * 20 + 1));
-
+            posX = (width / 4 + tamanho_inimigo) + (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
+            posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
 
             float diffX = posX - player->x;
             float diffY = posY - player->y;
@@ -55,8 +55,19 @@ void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiro
 
         } while (distancia < 150.0f);
 
-        TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
-        qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
+        TipoInimigo tipo;
+
+        if (wave->atual >= wave->final + 1 && i == 0) {
+            tipo = TIPO_BOSS;
+        }
+        else if (i == 0) {
+            tipo = TIPO_ATIRADOR; // O primeiro inimigo das waves normais será o atirador
+        }
+        else {
+            tipo = (TipoInimigo)(rand() % 3); // Os restantes continuam a ser os normais (Ácido, Básico, Metálico)
+        }
+
+        qtd_inimigos[i] = init_inimigo(posX, posY, tipo);
     }
 
     for (int i = 0; i < MAX_TIROS; i++) {

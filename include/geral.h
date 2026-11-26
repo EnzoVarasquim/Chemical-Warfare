@@ -5,6 +5,7 @@
 #include "player.h"
 #include "inimigos.h"
 #include "tiro.h"
+#include "wave.h"
 
 void desenhar_background(int width, int height);
 void desenhar_icones_quimica(int width, int height);
