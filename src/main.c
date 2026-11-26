@@ -420,7 +420,7 @@ int main() {
 
                     if (qtd_inimigos[i].tipo == TIPO_BOSS) {
                         // fase 1: persegue; fase 2: o boss.c o centraliza e ele fica parado
-                        if (qtd_inimigos[i].vida > 75) {
+                        if (qtd_inimigos[i].vida > VIDA_FASE_2) {
                             qtd_inimigos[i].vel = 4;
                             seguir_player(&qtd_inimigos[i], &player);
                         }
@@ -643,6 +643,40 @@ int main() {
                     // Mensagem de feedback de bloqueio.
                     if (sq.mensagem_arma_bloqueada) {
                         al_draw_text(fonte_media_2, al_map_rgb(255, 50, 50), width / 1.6, 40, ALLEGRO_ALIGN_CENTER, "Arma não descoberta ou elementos insuficientes!");
+                    }
+
+                    // Pop-up de arma desbloqueada (3 segundos, sem pausar o jogo)
+                    if (sq.arma_desbloqueada != TIRO_PADRAO &&
+                        al_get_time() - sq.tempo_mensagem_desbloqueio < 3.0) {
+
+                        const char* titulo_popup = "";
+                        const char* dica_popup = "";
+                        ALLEGRO_COLOR cor_popup = al_map_rgb(255, 255, 255);
+
+                        switch (sq.arma_desbloqueada) {
+                        case ARMA_ACIDA:
+                            titulo_popup = "Arma Acida Desbloqueada - HCl";
+                            dica_popup = "Pressione 2 para equipar";
+                            cor_popup = al_map_rgb(80, 255, 80);
+                            break;
+                        case ARMA_BASICA:
+                            titulo_popup = "Arma Basica Desbloqueada - NaOH";
+                            dica_popup = "Pressione 3 para equipar";
+                            cor_popup = al_map_rgb(80, 180, 255);
+                            break;
+                        case ARMA_METALICA:
+                            titulo_popup = "Arma Metalica Desbloqueada - NaCl";
+                            dica_popup = "Pressione 4 para equipar";
+                            cor_popup = al_map_rgb(180, 70, 255);
+                            break;
+                        default:
+                            break;
+                        }
+
+                        al_draw_filled_rectangle(width / 1.6 - 190, 120, width / 1.6 + 190, 170, al_map_rgb(0, 0, 0));
+                        al_draw_rectangle(width / 1.6 - 190, 120, width / 1.6 + 190, 170, cor_popup, 2);
+                        al_draw_text(fonte_media_2, cor_popup, width / 1.6, 128, ALLEGRO_ALIGN_CENTER, titulo_popup);
+                        al_draw_text(fonte_pequena, al_map_rgb(255, 255, 255), width / 1.6, 150, ALLEGRO_ALIGN_CENTER, dica_popup);
                     }
 
                     //caixa do contador de wave
