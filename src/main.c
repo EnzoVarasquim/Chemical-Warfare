@@ -254,7 +254,9 @@ int main() {
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_register_event_source(event_queue, al_get_mouse_event_source());
 
-    al_show_mouse_cursor(display);
+    // Mantém o cursor do mouse oculto desde o menu inicial.
+    // A navegação do menu é feita somente pelo teclado.
+    al_hide_mouse_cursor(display);
 
     while (rodando) {
         ALLEGRO_EVENT event;
