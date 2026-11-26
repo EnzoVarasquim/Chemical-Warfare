@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
@@ -528,7 +527,7 @@ int main() {
                     // Primeira fase: chefe persegue o player rapidamente.
                     // Segunda fase: chefe permanece parado no centro.
                     if (qtd_inimigos[i].tipo == TIPO_BOSS) {
-                        if (qtd_inimigos[i].vida > 75) {
+                        if (qtd_inimigos[i].vida > qtd_inimigos[i].vida / 2) {
                             qtd_inimigos[i].vel = 4;
                             seguir_player(&qtd_inimigos[i], &player);
                         }
@@ -563,7 +562,7 @@ int main() {
 
                     if (qtd_inimigos[i].vivo &&
                         qtd_inimigos[i].tipo == TIPO_BOSS &&
-                        qtd_inimigos[i].vida <= 75) {
+                        qtd_inimigos[i].vida <= qtd_inimigos[i].vida / 2) {
 
                         float limite_esquerdo = width / 4.0f;
 
@@ -608,56 +607,36 @@ int main() {
                 al_clear_to_color(al_map_rgb(0, 0, 0));
 
                 //título CHEMICAL
-                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f,
-                    ALLEGRO_ALIGN_CENTER, "CHEMICAL");
+                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f, ALLEGRO_ALIGN_CENTER, "CHEMICAL");
 
                 //título WARFARE
-                al_draw_text(fonte_menu_titulo, branco, centro_menu_x,
-                    height * 0.12f + altura_titulo, ALLEGRO_ALIGN_CENTER, "WARFARE");
+                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f + altura_titulo, ALLEGRO_ALIGN_CENTER, "WARFARE");
 
                 // Destaque da opção selecionada pelo teclado.
                 if (opcao_menu == 0) {
-                    al_draw_filled_rectangle(menu_jogar_x1, menu_jogar_y1,
-                        menu_jogar_x2, menu_jogar_y2, fundo_botao);
+                    al_draw_filled_rectangle(menu_jogar_x1, menu_jogar_y1, menu_jogar_x2, menu_jogar_y2, fundo_botao);
                 }
                 else if (opcao_menu == 1) {
-                    al_draw_filled_rectangle(menu_tutorial_x1, menu_tutorial_y1,
-                        menu_tutorial_x2, menu_tutorial_y2, fundo_botao);
+                    al_draw_filled_rectangle(menu_tutorial_x1, menu_tutorial_y1, menu_tutorial_x2, menu_tutorial_y2, fundo_botao);
                 }
                 else if (opcao_menu == 2) {
-                    al_draw_filled_rectangle(menu_sair_x1, menu_sair_y1,
-                        menu_sair_x2, menu_sair_y2, fundo_botao);
+                    al_draw_filled_rectangle(menu_sair_x1, menu_sair_y1, menu_sair_x2, menu_sair_y2, fundo_botao);
                 }
 
                 //contorno do botão JOGAR
-                al_draw_rectangle(menu_jogar_x1, menu_jogar_y1,
-                    menu_jogar_x2, menu_jogar_y2, branco, 2.0f);
-
+                al_draw_rectangle(menu_jogar_x1, menu_jogar_y1, menu_jogar_x2, menu_jogar_y2, branco, 2.0f);
                 //texto do botão JOGAR
-                al_draw_text(fonte_menu_botao, branco, centro_menu_x,
-                    menu_jogar_y1 + (altura_botao -
-                        al_get_font_line_height(fonte_menu_botao)) / 2.0f,
-                    ALLEGRO_ALIGN_CENTER, "JOGAR");
+                al_draw_text(fonte_menu_botao, branco, centro_menu_x, menu_jogar_y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, "JOGAR");
 
                 //contorno do botão TUTORIAL
-                al_draw_rectangle(menu_tutorial_x1, menu_tutorial_y1,
-                    menu_tutorial_x2, menu_tutorial_y2, branco, 2.0f);
-
+                al_draw_rectangle(menu_tutorial_x1, menu_tutorial_y1, menu_tutorial_x2, menu_tutorial_y2, branco, 2.0f);
                 //texto do botão TUTORIAL
-                al_draw_text(fonte_menu_botao, branco, centro_menu_x,
-                    menu_tutorial_y1 + (altura_botao -
-                        al_get_font_line_height(fonte_menu_botao)) / 2.0f,
-                    ALLEGRO_ALIGN_CENTER, "TUTORIAL");
+                al_draw_text(fonte_menu_botao, branco, centro_menu_x, menu_tutorial_y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, "TUTORIAL");
 
                 //contorno do botão SAIR
-                al_draw_rectangle(menu_sair_x1, menu_sair_y1,
-                    menu_sair_x2, menu_sair_y2, branco, 2.0f);
-
+                al_draw_rectangle(menu_sair_x1, menu_sair_y1, menu_sair_x2, menu_sair_y2, branco, 2.0f);
                 //texto do botão SAIR
-                al_draw_text(fonte_menu_botao, branco, centro_menu_x,
-                    menu_sair_y1 + (altura_botao -
-                        al_get_font_line_height(fonte_menu_botao)) / 2.0f,
-                    ALLEGRO_ALIGN_CENTER, "SAIR");
+                al_draw_text(fonte_menu_botao, branco, centro_menu_x, menu_sair_y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, "SAIR");
 
                 al_flip_display();
             }

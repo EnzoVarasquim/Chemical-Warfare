@@ -25,7 +25,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
 
     if (tipo == TIPO_BOSS) {
         tamanho = 60;
-        velocidade = 4;
+        velocidade = 3;
         vida = 150;
     }
 

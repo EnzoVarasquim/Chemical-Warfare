@@ -30,7 +30,6 @@
 #define TIROS_RADIAIS_FASE_2 8
 
 // centraliza o boss na tela, iniciar a segunda fase
-
 static void centralizar_boss(Inimigo* boss, int width, int height)
 {
     float limite_esquerdo = width / 4.0f;
@@ -40,7 +39,6 @@ static void centralizar_boss(Inimigo* boss, int width, int height)
 }
 
 // inicializa o sistema de ataque do boss
-
 void init_ataque_boss(AtaqueBoss* ataque)
 {
     ataque->angulo = 0.0f;
@@ -58,7 +56,6 @@ void init_ataque_boss(AtaqueBoss* ataque)
 }
 
 // cria um tiro do boss
-
 static void criar_tiro(AtaqueBoss* ataque, float x, float y, float angulo, float velocidade)
 {
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
@@ -78,7 +75,6 @@ static void criar_tiro(AtaqueBoss* ataque, float x, float y, float angulo, float
 }
 
 // cria um tiro na frente do boss
-
 static void criar_tiro_na_frente(AtaqueBoss* ataque, Inimigo* boss, float angulo, float velocidade)
 {
     float centro_x = boss->x + boss->size / 2.0f;
@@ -93,7 +89,6 @@ static void criar_tiro_na_frente(AtaqueBoss* ataque, Inimigo* boss, float angulo
 }
 
 // movimento dos projeteis do boss
-
 static void atualizar_projeteis(AtaqueBoss* ataque, int width, int height)
 {
     float limite_esquerdo = width / 4.0f;
@@ -120,7 +115,6 @@ static void atualizar_projeteis(AtaqueBoss* ataque, int width, int height)
 }
 
 // verifica se o player esta dentro do cone
-
 static bool player_dentro_cone(AtaqueBoss* ataque, Inimigo* boss, Player* player)
 {
     float centro_x = boss->x + boss->size / 2.0f;
@@ -139,16 +133,13 @@ static bool player_dentro_cone(AtaqueBoss* ataque, Inimigo* boss, Player* player
 
     float angulo_player = atan2f(dy, dx);
 
-    float diferenca = atan2f(
-        sinf(angulo_player - ataque->angulo_visao),
-        cosf(angulo_player - ataque->angulo_visao)
+    float diferenca = atan2f(sinf(angulo_player - ataque->angulo_visao), cosf(angulo_player - ataque->angulo_visao)
     );
 
     return fabsf(diferenca) <= ABERTURA_CONE / 2.0f;
 }
 
 // atualiza os ataques da fase 1
-
 static void atualizar_fase1(AtaqueBoss* ataque, Inimigo* boss, Player* player, double agora)
 {
     float centro_x = boss->x + boss->size / 2.0f;
@@ -165,19 +156,13 @@ static void atualizar_fase1(AtaqueBoss* ataque, Inimigo* boss, Player* player, d
     if (player_dentro_cone(ataque, boss, player) &&
         agora >= ataque->proximo_disparo) {
 
-        criar_tiro_na_frente(
-            ataque,
-            boss,
-            ataque->angulo_visao,
-            VELOCIDADE_TIRO_FASE_1
-        );
+        criar_tiro_na_frente(ataque, boss, ataque->angulo_visao, VELOCIDADE_TIRO_FASE_1);
 
         ataque->proximo_disparo = agora + INTERVALO_FASE_1;
     }
 }
 
 // atualiza o ataque do boss
-
 void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, int width, int height)
 {
     if (!boss->vivo || !player->vivo || boss->tipo != TIPO_BOSS)
@@ -186,25 +171,20 @@ void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, in
     double agora = al_get_time();
 
     // fase 1
-
     if (boss->vida > VIDA_FASE_2) {
-
         atualizar_fase1(ataque, boss, player, agora);
-
         atualizar_projeteis(ataque, width, height);
 
         return;
     }
 
     // fase 2
-
     centralizar_boss(boss, width, height);
 
     float centro_x = boss->x + boss->size / 2.0f;
     float centro_y = boss->y + boss->size / 2.0f;
 
     if (!ataque->fase2_ativada) {
-
         ataque->fase2_ativada = true;
 
         for (int i = 0; i < MAX_TIROS_BOSS; i++) {
@@ -215,18 +195,11 @@ void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, in
     }
 
     if (agora >= ataque->proximo_disparo) {
-
         for (int i = 0; i < TIROS_RADIAIS_FASE_2; i++) {
-
             float angulo = ataque->angulo +
                 i * (2.0f * PI / TIROS_RADIAIS_FASE_2);
 
-            criar_tiro_na_frente(
-                ataque,
-                boss,
-                angulo,
-                VELOCIDADE_TIRO_BOSS
-            );
+            criar_tiro_na_frente(ataque, boss, angulo, VELOCIDADE_TIRO_BOSS);
         }
 
         ataque->angulo += ROTACAO_FASE_2;
@@ -241,36 +214,14 @@ void atualizar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player, in
 }
 
 // desenha o ataque do boss
-
 void desenhar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss)
 {
-    if (!boss->vivo || boss->tipo != TIPO_BOSS)
-        return;
-
-    // cone transparente com contorno branco
-
-    if (boss->vida > VIDA_FASE_2) {
-
-        float centro_x = boss->x + boss->size / 2.0f;
-        float centro_y = boss->y + boss->size / 2.0f;
-
-        al_draw_pieslice(
-            centro_x,
-            centro_y,
-            ALCANCE_CONE,
-            ataque->angulo_visao - ABERTURA_CONE / 2.0f,
-            ABERTURA_CONE,
-            al_map_rgba(255, 255, 255, 150),
-            1.5f
-        );
-    }
+    if (!boss->vivo || boss->tipo != TIPO_BOSS) return;
 
     // cor dos projeteis
-
     ALLEGRO_COLOR cor = al_map_rgb(80, 190, 255);
 
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
-
         if (!ataque->tiros[i].ativo)
             continue;
 
@@ -278,14 +229,7 @@ void desenhar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss)
         float y = ataque->tiros[i].y;
 
         al_draw_filled_circle(x, y, RAIO_TIRO, cor);
-
-        al_draw_circle(
-            x,
-            y,
-            RAIO_TIRO,
-            al_map_rgb(255, 255, 255),
-            1
-        );
+        al_draw_circle(x, y, RAIO_TIRO, al_map_rgb(255, 255, 255), 1);
     }
 }
 
@@ -293,13 +237,10 @@ void desenhar_ataque_boss(AtaqueBoss* ataque, Inimigo* boss)
 
 void colisao_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player)
 {
-    if (!boss->vivo || !player->vivo || boss->tipo != TIPO_BOSS)
-        return;
+    if (!boss->vivo || !player->vivo || boss->tipo != TIPO_BOSS) return;
 
     double agora = al_get_time();
-
     bool pode_danar = agora >= ataque->proximo_dano;
-
     bool acertou = false;
 
     for (int i = 0; i < MAX_TIROS_BOSS; i++) {
@@ -328,9 +269,7 @@ void colisao_ataque_boss(AtaqueBoss* ataque, Inimigo* boss, Player* player)
     }
 
     if (acertou) {
-
         tomar_dano(player, 1);
-
         if (player->vida <= 0)
             player->vivo = false;
 
