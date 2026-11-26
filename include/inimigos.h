@@ -24,6 +24,7 @@ typedef struct {
     bool vivo;
     bool coletado;
     TipoInimigo tipo;
+    double tempo_ultimo_tiro;
 } Inimigo;
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo);
@@ -41,5 +42,6 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]);
 void colisao_tiro_boss(Tiro tiros_boss[], Player* player);
 
 void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]);
+void colisao_tiro_atirador(Tiro tiros_atirador[], Player* player);
 
 #endif

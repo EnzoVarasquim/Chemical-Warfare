@@ -3,8 +3,6 @@
 #include <math.h>
 #include "geral.h"
 
-#define MAX_TIROS 30
-
 void desenhar_background(int width, int height) {
     al_clear_to_color(al_map_rgb(0, 0, 0));
 

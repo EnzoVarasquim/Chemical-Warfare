@@ -18,8 +18,7 @@
 #include "wave.h"
 #include "boss.h"
 
-#define MAX_TIROS 30
-Tiro tiros_boss[MAX_TIROS];
+Tiro tiros_atirador[MAX_TIROS];
 
 int main() {
     srand(time(NULL));
@@ -57,37 +56,6 @@ int main() {
 
     int total_inimigos = 5; // Mantém a contagem original de inimigos por wave
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
-
-    //inicializa cada inimigo garantindo que não nasça em cima do player
-    for (int i = 0; i < total_inimigos; i++) {
-        int tamanho_inimigo = 20;
-        int posX, posY;
-        float distancia;
-
-        do {
-            posX = (width / 4 + tamanho_inimigo) + (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
-            posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
-
-            float diffX = posX - player.x;
-            float diffY = posY - player.y;
-            distancia = sqrtf(diffX * diffX + diffY * diffY);
-
-        } while (distancia < 150.0f);
-
-        TipoInimigo tipo;
-
-        if (wave.atual >= wave.final + 1 && i == 0) {
-            tipo = TIPO_BOSS;
-        }
-        else if (i == 0) {
-            tipo = TIPO_ATIRADOR; // O primeiro inimigo das waves normais será o atirador
-        }
-        else {
-            tipo = (TipoInimigo)(rand() % 3); // Os restantes continuam a ser os normais (Ácido, Básico, Metálico)
-        }
-
-        qtd_inimigos[i] = init_inimigo(posX, posY, tipo);
-    }
 
     Mouse mouse = init_mouse();
     Keyboard keyboard = init_keyboard();
@@ -133,26 +101,6 @@ int main() {
 
     // Reposiciona o jogador no centro da área lógica 960x540.
     player = init_player(width, height);
-
-    // Inicializa os inimigos dentro da mesma área usada pelo jogo.
-    for (int i = 0; i < total_inimigos; i++) {
-        int tamanho_inimigo = 20;
-        int posX, posY;
-        float distancia;
-
-        do {
-            posX = (width / 4 + tamanho_inimigo) + (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
-            posY = tamanho_inimigo + (rand() % (height - 2 * tamanho_inimigo + 1));
-
-            float diffX = posX - player.x;
-            float diffY = posY - player.y;
-            distancia = sqrtf(diffX * diffX + diffY * diffY);
-
-        } while (distancia < 150.0f);
-
-        TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
-        qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
-    }
 
     ALLEGRO_FONT* fonte_grande = al_load_font("assets/fonts/font.ttf", 24, 0);
     ALLEGRO_FONT* fonte_media_1 = al_load_font("assets/fonts/font.ttf", 18, 0);
@@ -308,43 +256,24 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
                 // Opção JOGAR.
                 if (opcao_menu == 0) {
-                    // Reinicia todos os sistemas para começar uma partida limpa.
                     total_inimigos = 3;
-                    player = init_player(width, height);
+                    qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
                     inicializar_sistema_quimico(&sq);
                     init_wave(&wave);
                     init_ataque_boss(&ataque_boss);
                     init_itens_lab(itens_lab);
                     keyboard = init_keyboard();
+                    tempo_mensagem_bloqueada = 0.0;
+
+                    // player, inimigos (1 Atirador + sorteados) e tiros do player
+                    reset(&player, qtd_inimigos, total_inimigos, num_tiros, &wave, width, height);
+                    for (int i = 0; i < MAX_TIROS; i++) {
+                        tiros_atirador[i] = init_tiro();
+                    }
+
                     mouse.left_button = false;
                     mouse.x = player.x;
                     mouse.y = player.y;
-                    tempo_mensagem_bloqueada = 0.0;
-
-                    for (int i = 0; i < MAX_TIROS; i++) {
-                        num_tiros[i] = init_tiro();
-                    }
-
-                    // Sorteia novamente os inimigos, sem nascerem perto do jogador.
-                    for (int i = 0; i < total_inimigos; i++) {
-                        int tamanho_inimigo = 20;
-                        int posX, posY;
-                        float distancia;
-
-                        do {
-                            posX = (width / 4 + tamanho_inimigo) +
-                                (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
-                            posY = tamanho_inimigo +
-                                (rand() % (height - 2 * tamanho_inimigo + 1));
-
-                            float diffX = posX - player.x;
-                            float diffY = posY - player.y;
-                            distancia = sqrtf(diffX * diffX + diffY * diffY);
-                        } while (distancia < 150.0f);
-
-                        TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
-                        qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
-                    }
 
                     jogo_iniciado = true;
 
@@ -388,13 +317,14 @@ int main() {
             if (event.keyboard.keycode == ALLEGRO_KEY_R) {
                 init_wave(&wave);
                 init_ataque_boss(&ataque_boss);
-                total_inimigos = 5;
+                total_inimigos = 3;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
                 reset(&player, qtd_inimigos, total_inimigos, num_tiros, &wave, width, height);
                 for (int i = 0; i < MAX_TIROS; i++) {
-                    tiros_boss[i].ativo = false;
+                    tiros_atirador[i] = init_tiro();
                 }
                 inicializar_sistema_quimico(&sq);
+                init_itens_lab(itens_lab);
                 tempo_mensagem_bloqueada = 0.0;
             }
 
@@ -410,6 +340,7 @@ int main() {
                     wave.finalizado = true;
                     wave.andamento = false;
                     total_inimigos = wave.atual + 2;
+                    qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
                 }
             }
         }
@@ -470,7 +401,7 @@ int main() {
                 colisao_tela(&player, width, height);
 
                 atualizar_posicao_tiros(num_tiros, width, height);
-                atualizar_posicao_tiros(tiros_boss, width, height);
+                atualizar_posicao_tiros(tiros_atirador, width, height);
 
                 sistema_waves(&wave, &qtd_inimigos, &total_inimigos, &player, &sq, width, height);
 
@@ -484,17 +415,18 @@ int main() {
 
                 // Movimento dos inimigos e do chefe
                 for (int i = 0; i < total_inimigos; i++) {
-
                     if (!qtd_inimigos[i].vivo)
                         continue;
 
-                    // Primeira fase: chefe persegue o player rapidamente.
-                    // Segunda fase: chefe permanece parado no centro.
                     if (qtd_inimigos[i].tipo == TIPO_BOSS) {
-                        if (qtd_inimigos[i].vida > qtd_inimigos[i].vida / 2) {
+                        // fase 1: persegue; fase 2: o boss.c o centraliza e ele fica parado
+                        if (qtd_inimigos[i].vida > 75) {
                             qtd_inimigos[i].vel = 4;
                             seguir_player(&qtd_inimigos[i], &player);
                         }
+                    }
+                    else if (qtd_inimigos[i].tipo == TIPO_ATIRADOR) {
+                        disparar_tiro_atirador(&qtd_inimigos[i], &player, tiros_atirador);
                     }
                     else {
                         seguir_player(&qtd_inimigos[i], &player);
@@ -520,23 +452,6 @@ int main() {
                     colisao_player(&qtd_inimigos[i], &player);
                 }
 
-                // Reposiciona o chefe no centro somente na segunda fase.
-                for (int i = 0; i < total_inimigos; i++) {
-
-                    if (qtd_inimigos[i].vivo &&
-                        qtd_inimigos[i].tipo == TIPO_BOSS &&
-                        qtd_inimigos[i].vida <= qtd_inimigos[i].vida / 2) {
-
-                        float limite_esquerdo = width / 4.0f;
-
-                        qtd_inimigos[i].x = (int)(limite_esquerdo +
-                            (width - limite_esquerdo - qtd_inimigos[i].size) / 2.0f);
-
-                        qtd_inimigos[i].y = (int)(
-                            (height - qtd_inimigos[i].size) / 2.0f);
-                    }
-                }
-
                 //atualizar a moeda
                 atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
 
@@ -547,6 +462,8 @@ int main() {
                 for (int i = 0; i < total_inimigos; i++) {
                     colisao_tiro(&qtd_inimigos[i], num_tiros, &sq, &player);
                 }
+
+                colisao_tiro_atirador(tiros_atirador, &player);
             }
         }
 
@@ -621,6 +538,7 @@ int main() {
                 }
                 else {
                     desenhar_tiros(num_tiros);
+                    desenhar_tiros(tiros_atirador);
 
                     for (int i = 0; i < total_inimigos; i++) {
                         if (qtd_inimigos[i].vivo) {
