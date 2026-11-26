@@ -32,8 +32,8 @@ int main() {
     al_init_ttf_addon();
 
     //tela
-    int width = 1366;
-    int height = 768;
+    int width = 960;
+    int height = 540;
 
     bool rodando = true;
     bool saindo = false;
@@ -92,19 +92,45 @@ int main() {
         num_tiros[i] = init_tiro();
     }
 
-    //cria a janela do jogo em tela cheia
-    al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+    // Usa a mesma configuração de tela da versão sem menu.
+    // Mantém a área lógica do jogo em 960x540 para preservar
+    // as posições do player, inimigos e interface.
+    al_set_new_display_flags(ALLEGRO_MAXIMIZED | ALLEGRO_NOFRAME);
     ALLEGRO_DISPLAY* display = al_create_display(width, height);
+
+    if (!display) {
+        printf("Erro ao criar a janela do jogo!\n");
+        free(qtd_inimigos);
+        return 1;
+    }
+
     al_set_window_title(display, "Chemical Warfare");
 
-    //pega a resolução real do monitor
-    width = al_get_display_width(display);
-    height = al_get_display_height(display);
+    // Escala exclusiva do MENU. O jogo continua usando sua área lógica 960x540.
+    int largura_display = al_get_display_width(display);
+    int altura_display = al_get_display_height(display);
 
-    //reposiciona o player no centro da resolução real
+    // Mantém a proporção do menu e centraliza em qualquer resolução.
+    float escala_menu = fminf(
+        (float)largura_display / (float)width,
+        (float)altura_display / (float)height
+    );
+
+    float margem_menu_x = (largura_display - (width * escala_menu)) / 2.0f;
+    float margem_menu_y = (altura_display - (height * escala_menu)) / 2.0f;
+
+    // Conversão do mouse usada pelo jogo (não alterar a lógica do gameplay).
+    float escala_mouse_x = (float)width / (float)largura_display;
+    float escala_mouse_y = (float)height / (float)altura_display;
+
+    // Coordenadas do mouse exclusivas para os cliques e o destaque do menu.
+    float menu_mouse_x = -1.0f;
+    float menu_mouse_y = -1.0f;
+
+    // Reposiciona o jogador no centro da área lógica 960x540.
     player = init_player(width, height);
 
-    //reposiciona os inimigos para a resolução real
+    // Inicializa os inimigos dentro da mesma área usada pelo jogo.
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
         int posX, posY;
@@ -130,31 +156,31 @@ int main() {
     ALLEGRO_FONT* fonte_pequena = al_load_font("assets/fonts/font.ttf", 12, 0);
 
     //fontes do menu
-    ALLEGRO_FONT* fonte_menu_titulo = al_load_font("assets/fonts/font.ttf", 72, 0);
-    ALLEGRO_FONT* fonte_menu_botao = al_load_font("assets/fonts/font.ttf", 40, 0);
+    ALLEGRO_FONT* fonte_menu_titulo = al_load_font("assets/fonts/font.ttf", 56, 0);
+    ALLEGRO_FONT* fonte_menu_botao = al_load_font("assets/fonts/font.ttf", 28, 0);
 
-    //posições dos botões do menu
+    // Posições do menu ajustadas para a área lógica de 960x540.
     int centro_menu_x = width / 2;
     int largura_botao = 216;
-    int altura_botao = 80;
+    int altura_botao = 54;
     int altura_titulo = al_get_font_line_height(fonte_menu_titulo);
 
-    //botão JOGAR
+    // Botão JOGAR
     int menu_jogar_x1 = centro_menu_x - largura_botao / 2;
     int menu_jogar_x2 = centro_menu_x + largura_botao / 2;
-    int menu_jogar_y1 = (int)(height * 0.25f + altura_titulo * 2 + 55);
+    int menu_jogar_y1 = (int)(height * 0.49f);
     int menu_jogar_y2 = menu_jogar_y1 + altura_botao;
 
-    //botão TUTORIAL
+    // Botão TUTORIAL
     int menu_tutorial_x1 = menu_jogar_x1;
     int menu_tutorial_x2 = menu_jogar_x2;
-    int menu_tutorial_y1 = menu_jogar_y2 + 28;
+    int menu_tutorial_y1 = menu_jogar_y2 + 14;
     int menu_tutorial_y2 = menu_tutorial_y1 + altura_botao;
 
-    //botão SAIR
+    // Botão SAIR
     int menu_sair_x1 = menu_jogar_x1;
     int menu_sair_x2 = menu_jogar_x2;
-    int menu_sair_y1 = menu_tutorial_y2 + 28;
+    int menu_sair_y1 = menu_tutorial_y2 + 14;
     int menu_sair_y2 = menu_sair_y1 + altura_botao;
 
     //debugs
@@ -239,10 +265,33 @@ int main() {
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             rodando = false;
 
+        // Se a janela mudar de tamanho, recalcula a escala do menu.
+        if (event.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
+            al_acknowledge_resize(display);
+
+            largura_display = al_get_display_width(display);
+            altura_display = al_get_display_height(display);
+
+            escala_menu = fminf(
+                (float)largura_display / (float)width,
+                (float)altura_display / (float)height
+            );
+
+            margem_menu_x = (largura_display - (width * escala_menu)) / 2.0f;
+            margem_menu_y = (altura_display - (height * escala_menu)) / 2.0f;
+
+            escala_mouse_x = (float)width / (float)largura_display;
+            escala_mouse_y = (float)height / (float)altura_display;
+        }
+
         //atribui a posição do mouse pra variavel
         if (event.type == ALLEGRO_EVENT_MOUSE_AXES) {
-            mouse.x = event.mouse.x;
-            mouse.y = event.mouse.y;
+            mouse.x = (int)(event.mouse.x * escala_mouse_x);
+            mouse.y = (int)(event.mouse.y * escala_mouse_y);
+
+            // Coordenadas do menu: levam em conta escala e centralização.
+            menu_mouse_x = (event.mouse.x - margem_menu_x) / escala_menu;
+            menu_mouse_y = (event.mouse.y - margem_menu_y) / escala_menu;
         }
 
         //clique do mouse
@@ -252,15 +301,53 @@ int main() {
 
                 //verifica os cliques do menu
                 if (!jogo_iniciado) {
-                    int mouse_x = event.mouse.x;
-                    int mouse_y = event.mouse.y;
+                    int mouse_x = (int)((event.mouse.x - margem_menu_x) / escala_menu);
+                    int mouse_y = (int)((event.mouse.y - margem_menu_y) / escala_menu);
 
                     //botão JOGAR
                     if (mouse_x >= menu_jogar_x1 && mouse_x <= menu_jogar_x2 &&
                         mouse_y >= menu_jogar_y1 && mouse_y <= menu_jogar_y2) {
+                        // Reinicia todos os sistemas para começar uma partida limpa.
+                        total_inimigos = 3;
+                        player = init_player(width, height);
+                        inicializar_sistema_quimico(&sq);
+                        init_wave(&wave);
+                        init_ataque_boss(&ataque_boss);
+                        init_itens_lab(itens_lab);
+                        keyboard = init_keyboard();
+                        mouse.left_button = false;
+                        mouse.x = player.x;
+                        mouse.y = player.y;
+                        tempo_mensagem_bloqueada = 0.0;
+
+                        for (int i = 0; i < MAX_TIROS; i++) {
+                            num_tiros[i] = init_tiro();
+                        }
+
+                        // Sorteia novamente os inimigos, sem nascerem perto do jogador.
+                        for (int i = 0; i < total_inimigos; i++) {
+                            int tamanho_inimigo = 20;
+                            int posX, posY;
+                            float distancia;
+
+                            do {
+                                posX = (width / 4 + tamanho_inimigo) +
+                                    (rand() % (width - width / 4 - 2 * tamanho_inimigo + 1));
+                                posY = tamanho_inimigo +
+                                    (rand() % (height - 2 * tamanho_inimigo + 1));
+
+                                float diffX = posX - player.x;
+                                float diffY = posY - player.y;
+                                distancia = sqrtf(diffX * diffX + diffY * diffY);
+                            } while (distancia < 150.0f);
+
+                            TipoInimigo tipo_aleatorio = (TipoInimigo)(rand() % 3);
+                            qtd_inimigos[i] = init_inimigo(posX, posY, tipo_aleatorio);
+                        }
+
                         jogo_iniciado = true;
 
-                        //para a musica do menu e inicia a musica do jogo
+                        // Para a música do menu e inicia a música do jogo.
                         al_set_audio_stream_playing(musica_menu, false);
                         al_set_audio_stream_playing(musica_background, true);
 
@@ -495,19 +582,26 @@ int main() {
                 ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
                 ALLEGRO_COLOR fundo_botao = al_map_rgb(35, 35, 35);
 
+                // A transformação afeta somente o desenho do menu.
+                ALLEGRO_TRANSFORM transformacao_menu;
+                al_identity_transform(&transformacao_menu);
+                al_translate_transform(&transformacao_menu, margem_menu_x, margem_menu_y);
+                al_scale_transform(&transformacao_menu, escala_menu, escala_menu);
+                al_use_transform(&transformacao_menu);
+
                 al_clear_to_color(al_map_rgb(0, 0, 0));
 
                 //título CHEMICAL
-                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.25f,
+                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f,
                     ALLEGRO_ALIGN_CENTER, "CHEMICAL");
 
                 //título WARFARE
                 al_draw_text(fonte_menu_titulo, branco, centro_menu_x,
-                    height * 0.25f + altura_titulo, ALLEGRO_ALIGN_CENTER, "WARFARE");
+                    height * 0.12f + altura_titulo, ALLEGRO_ALIGN_CENTER, "WARFARE");
 
                 //verifica se o mouse está sobre o botão JOGAR
-                bool mouse_jogar = mouse.x >= menu_jogar_x1 && mouse.x <= menu_jogar_x2 &&
-                    mouse.y >= menu_jogar_y1 && mouse.y <= menu_jogar_y2;
+                bool mouse_jogar = menu_mouse_x >= menu_jogar_x1 && menu_mouse_x <= menu_jogar_x2 &&
+                    menu_mouse_y >= menu_jogar_y1 && menu_mouse_y <= menu_jogar_y2;
 
                 //fundo do botão JOGAR
                 if (mouse_jogar) {
@@ -526,8 +620,8 @@ int main() {
                     ALLEGRO_ALIGN_CENTER, "JOGAR");
 
                 //verifica se o mouse está sobre o botão TUTORIAL
-                bool mouse_tutorial = mouse.x >= menu_tutorial_x1 && mouse.x <= menu_tutorial_x2 &&
-                    mouse.y >= menu_tutorial_y1 && mouse.y <= menu_tutorial_y2;
+                bool mouse_tutorial = menu_mouse_x >= menu_tutorial_x1 && menu_mouse_x <= menu_tutorial_x2 &&
+                    menu_mouse_y >= menu_tutorial_y1 && menu_mouse_y <= menu_tutorial_y2;
 
                 //fundo do botão TUTORIAL
                 if (mouse_tutorial) {
@@ -546,8 +640,8 @@ int main() {
                     ALLEGRO_ALIGN_CENTER, "TUTORIAL");
 
                 //verifica se o mouse está sobre o botão SAIR
-                bool mouse_sair = mouse.x >= menu_sair_x1 && mouse.x <= menu_sair_x2 &&
-                    mouse.y >= menu_sair_y1 && mouse.y <= menu_sair_y2;
+                bool mouse_sair = menu_mouse_x >= menu_sair_x1 && menu_mouse_x <= menu_sair_x2 &&
+                    menu_mouse_y >= menu_sair_y1 && menu_mouse_y <= menu_sair_y2;
 
                 //fundo do botão SAIR
                 if (mouse_sair) {
@@ -570,6 +664,11 @@ int main() {
 
             //JOGO
             else {
+                // Garante que o gameplay continue com a transformação original.
+                ALLEGRO_TRANSFORM transformacao_jogo;
+                al_identity_transform(&transformacao_jogo);
+                al_use_transform(&transformacao_jogo);
+
                 //UI do jogo
                 desenhar_background(width, height);
                 desenhar_barra_lateral(width, height);
@@ -675,7 +774,15 @@ int main() {
                         }
                     }
 
-                    //mensagem de feedback de bloqueio
+                    // Identificação dos tipos de inimigos na barra lateral.
+                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 330,
+                        ALLEGRO_ALIGN_LEFT, "Ácido");
+                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 370,
+                        ALLEGRO_ALIGN_LEFT, "Básico");
+                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 410,
+                        ALLEGRO_ALIGN_LEFT, "Metálico");
+
+                    // Mensagem de feedback de bloqueio.
                     if (sq.mensagem_arma_bloqueada) {
                         al_draw_text(fonte_media_2, al_map_rgb(255, 50, 50), width / 1.6, 40, ALLEGRO_ALIGN_CENTER, "Arma não descoberta ou elementos insuficientes!");
                     }
