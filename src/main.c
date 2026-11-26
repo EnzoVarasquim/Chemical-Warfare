@@ -169,7 +169,7 @@ int main() {
                 init_wave(&wave);
                 total_inimigos = 5;
                 qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros, width, height);
+                reset(&player, qtd_inimigos, total_inimigos, num_tiros, &wave, width, height);
                 for (int i = 0; i < MAX_TIROS; i++) {
                     tiros_boss[i].ativo = false;
                 }
@@ -237,14 +237,12 @@ int main() {
                     seguir_player(&qtd_inimigos[i], &player);
                 }
 
-                // Disparos do boss (intocado)
                 for (int i = 0; i < total_inimigos; i++) {
                     if (qtd_inimigos[i].tipo == TIPO_BOSS) {
                         disparar_tiro_boss(&qtd_inimigos[i], tiros_boss);
                     }
                 }
 
-                // Disparos do Atirador
                 for (int i = 0; i < total_inimigos; i++) {
                     if (qtd_inimigos[i].tipo == TIPO_ATIRADOR) {
                         disparar_tiro_atirador(&qtd_inimigos[i], &player, tiros_boss);

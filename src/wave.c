@@ -60,7 +60,7 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             player->x = width / 1.6 - 10;
             player->y = height - 110;
         }
-        //Wave final (BOSS) - Intocada e isolada
+        //Wave final (BOSS)
         else if (wave->atual >= wave->final) {
             wave->laboratorio = false;
 

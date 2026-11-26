@@ -4,6 +4,7 @@
 #include "player.h"
 #include "inimigos.h"
 #include "tiro.h"
+#include "wave.h"
 
 void desenhar_background(int width, int height);
 void desenhar_barra_lateral(int width, int height);

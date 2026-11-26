@@ -30,7 +30,7 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     }
     else if (tipo == TIPO_ATIRADOR) {
         tamanho = 20;
-        velocidade = 0; // Fica estático
+        velocidade = 0; 
         vida = 5;
     }
 
@@ -56,7 +56,7 @@ void desenhar_inimigo(Inimigo inimigo) {
         cor = al_map_rgb(255, 69, 0);
         break;
     case TIPO_ATIRADOR:
-        cor = al_map_rgb(0, 191, 255);      // Azul Céu para o Atirador
+        cor = al_map_rgb(0, 191, 255);      
         break;
     default:
         cor = al_map_rgb(255, 255, 255);
@@ -69,7 +69,6 @@ void desenhar_inimigo(Inimigo inimigo) {
 
 void seguir_player(Inimigo* inimigo, Player* player) {
     if (!inimigo->vivo || !player->vivo) return;
-    if (inimigo->tipo == TIPO_ATIRADOR) return; // Atirador fica parado
 
     float velocidade = inimigo->vel;
 
@@ -143,10 +142,10 @@ void colisao_player(Inimigo* inimigo, Player* player) {
             inimigo->y -= 3;
         }
         else if (inimigo->y < player->y) {
-            inimigo->y -= 1;
+            inimigo->y -= 3;
         }
         else {
-            inimigo->y += 1;
+            inimigo->y += 3;
         }
     }
 }
@@ -224,6 +223,7 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
             ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
                 (inimigos[i].tipo == TIPO_BASICO) ? al_map_rgb(255, 0, 255) :
                 (inimigos[i].tipo == TIPO_METALICO) ? al_map_rgb(100, 100, 100) :
+                (inimigos[i].tipo == TIPO_ATIRADOR) ? al_map_rgb(0, 190, 255) :
                 al_map_rgb(255, 255, 255);
 
             float cx = inimigos[i].x + inimigos[i].size / 2;
@@ -236,7 +236,6 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
     }
 }
 
-// Disparos do boss (100% intocado)
 void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
     if (!boss->vivo || boss->tipo != TIPO_BOSS) return;
 
@@ -272,7 +271,6 @@ void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]) {
     }
 }
 
-// Colisao do tiro do boss com o jogador (intocado)
 void colisao_tiro_boss(Tiro tiros_boss[], Player* player) {
     if (!player->vivo) return;
 
@@ -296,13 +294,12 @@ void colisao_tiro_boss(Tiro tiros_boss[], Player* player) {
     }
 }
 
-// Disparos do Atirador (Agora aponta e atira diretamente no player)
 void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]) {
     if (!inimigo->vivo || !player->vivo || inimigo->tipo != TIPO_ATIRADOR) return;
 
     static double tempo_ultimo_tiro = 0.0;
 
-    if (al_get_time() - tempo_ultimo_tiro >= 1.5) { // Dispara a cada 1.5 segundos
+    if (al_get_time() - tempo_ultimo_tiro >= 1.0) { // Dispara a cada 1.0 segundo
         for (int i = 0; i < MAX_TIROS; i++) {
             if (!tiros[i].ativo) {
                 tiros[i].x = inimigo->x + inimigo->size / 2;
@@ -315,17 +312,17 @@ void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]) {
                 float distancia = sqrtf(dx * dx + dy * dy);
 
                 if (distancia > 0) {
-                    tiros[i].vel_x = (dx / distancia) * 4.0f;
-                    tiros[i].vel_y = (dy / distancia) * 4.0f;
+                    tiros[i].vel_x = (dx / distancia) * 4.5f;
+                    tiros[i].vel_y = (dy / distancia) * 4.5f;
                 }
                 else {
                     tiros[i].vel_x = 0.0f;
-                    tiros[i].vel_y = 4.0f;
+                    tiros[i].vel_y = 4.5f;
                 }
 
                 tiros[i].formato = FORMATO_CIRCULO;
                 tiros[i].cor_r = 0;
-                tiros[i].cor_g = 191;
+                tiros[i].cor_g = 190;
                 tiros[i].cor_b = 255;
                 tiros[i].size = 4;
 
