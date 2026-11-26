@@ -103,16 +103,21 @@ void disparar_tiro(Mouse* mouse, Player* player, Tiro tiros[], TipoArma arma, Si
 
         Tiro* t = &tiros[i];
 
-        t->x = player->x + player->size / 2.0f;
-        t->y = player->y + player->size / 2.0f;
+        // origem exata no centro do player
+        float origem_x = player->x + player->size / 2.0f;
+        float origem_y = player->y + player->size / 2.0f;
 
-        float dx = mouse->x - t->x;
-        float dy = mouse->y - t->y;
-        float distancia = sqrtf(dx * dx + dy * dy);
+        t->x = origem_x;
+        t->y = origem_y;
 
-        if (distancia > 0.0f) {
-            t->vel_x = (dx / distancia) * 8.0f;
-            t->vel_y = (dy / distancia) * 8.0f;
+        // direção exata até o mouse
+        float dx = mouse->x - origem_x;
+        float dy = mouse->y - origem_y;
+
+        if (dx != 0.0f || dy != 0.0f) {
+            float angulo = atan2f(dy, dx);
+            t->vel_x = cosf(angulo) * 8.0f;
+            t->vel_y = sinf(angulo) * 8.0f;
         }
         else {
             t->vel_x = 0.0f;
