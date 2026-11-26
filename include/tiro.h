@@ -9,8 +9,8 @@
 #define MAX_TIROS 30
 
 typedef struct {
-    int x;
-    int y;
+    float x;
+    float y;
     float size;
     float vel_x;
     float vel_y;
