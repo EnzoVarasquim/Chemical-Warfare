@@ -6,6 +6,7 @@
 #include "player.h"
 
 #define MAX_TIROS_BOSS 180
+#define VIDA_FASE_2 75
 
 typedef struct {
     float x;
