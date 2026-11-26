@@ -114,6 +114,10 @@ void checar_reacoes(SistemaQuimico* sq) {
     // ÁCIDA (HCl)
     if (sq->qtd_H >= 1 && sq->qtd_Cl >= 1) {
 
+        if (!sq->acida_desbloqueada) {
+            sq->arma_desbloqueada = ARMA_ACIDA;
+            sq->tempo_mensagem_desbloqueio = al_get_time();
+        }
         sq->acida_desbloqueada = true;
 
         sq->qtd_H -= 1;
@@ -123,6 +127,10 @@ void checar_reacoes(SistemaQuimico* sq) {
     // BÁSICA (NaOH)
     else if (sq->qtd_Na >= 1 && sq->qtd_H >= 1) {
 
+        if (!sq->basica_desbloqueada) {
+            sq->arma_desbloqueada = ARMA_BASICA;
+            sq->tempo_mensagem_desbloqueio = al_get_time();
+        }
         sq->basica_desbloqueada = true;
 
         sq->qtd_Na -= 1;
@@ -132,6 +140,10 @@ void checar_reacoes(SistemaQuimico* sq) {
     // METÁLICA (NaCl)
     else if (sq->qtd_Na >= 2 && sq->qtd_Cl >= 1) {
 
+        if (!sq->metalica_desbloqueada) {
+            sq->arma_desbloqueada = ARMA_METALICA;
+            sq->tempo_mensagem_desbloqueio = al_get_time();
+        }
         sq->metalica_desbloqueada = true;
 
         sq->qtd_Na -= 2;
