@@ -36,6 +36,7 @@ int main() {
     bool rodando = true;
     bool saindo = false;
     bool jogo_iniciado = false;
+    bool em_tutorial = false;
 
     Player player = init_player(width, height);
 
@@ -54,7 +55,7 @@ int main() {
     ItemLab itens_lab[3];
     init_itens_lab(itens_lab);
 
-    int total_inimigos = 5; // Mantém a contagem original de inimigos por wave
+    int total_inimigos = 3; // Mantém a contagem original de inimigos por wave
     Inimigo* qtd_inimigos = (Inimigo*)malloc(total_inimigos * sizeof(Inimigo));
 
     Mouse mouse = init_mouse();
@@ -195,10 +196,7 @@ int main() {
             largura_display = al_get_display_width(display);
             altura_display = al_get_display_height(display);
 
-            escala_menu = fminf(
-                (float)largura_display / (float)width,
-                (float)altura_display / (float)height
-            );
+            escala_menu = fminf((float)largura_display / (float)width, (float)altura_display / (float)height);
 
             margem_menu_x = (largura_display - (width * escala_menu)) / 2.0f;
             margem_menu_y = (altura_display - (height * escala_menu)) / 2.0f;
@@ -233,8 +231,15 @@ int main() {
             }
         }
 
+        // Tela de tutorial: ESC ou ENTER volta ao menu.
+        if (event.type == ALLEGRO_EVENT_KEY_DOWN && !jogo_iniciado && em_tutorial) {
+            if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE ||
+                event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                em_tutorial = false;
+            }
+        }
         // Navegação do menu inicial pelo teclado.
-        if (event.type == ALLEGRO_EVENT_KEY_DOWN && !jogo_iniciado) {
+        else if (event.type == ALLEGRO_EVENT_KEY_DOWN && !jogo_iniciado) {
             if (event.keyboard.keycode == ALLEGRO_KEY_W ||
                 event.keyboard.keycode == ALLEGRO_KEY_UP) {
                 opcao_menu--;
@@ -284,9 +289,9 @@ int main() {
                     al_hide_mouse_cursor(display);
                 }
 
-                // Opção TUTORIAL: reservada para implementação futura.
+                // Opção TUTORIAL
                 else if (opcao_menu == 1) {
-                    // Nenhuma ação implementada ainda.
+                    em_tutorial = true;
                 }
 
                 // Opção SAIR.
@@ -470,8 +475,21 @@ int main() {
         //quando acaba todos os eventos de cima, isso desenha os elementos
         if (al_is_event_queue_empty(event_queue)) {
 
+            //TUTORIAL
+            if (!jogo_iniciado && em_tutorial) {
+                ALLEGRO_TRANSFORM transformacao_menu;
+                al_identity_transform(&transformacao_menu);
+                al_translate_transform(&transformacao_menu, margem_menu_x, margem_menu_y);
+                al_scale_transform(&transformacao_menu, escala_menu, escala_menu);
+                al_use_transform(&transformacao_menu);
+
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                desenhar_tutorial(width, height, fonte_grande, fonte_media_2, fonte_pequena);
+                al_flip_display();
+            }
+
             //MENU INICIAL
-            if (!jogo_iniciado) {
+            else if (!jogo_iniciado) {
                 ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
                 ALLEGRO_COLOR fundo_botao = al_map_rgb(35, 35, 35);
 
@@ -554,7 +572,7 @@ int main() {
                         }
                     }
 
-                    desenhar_moedas_mortos(qtd_inimigos, total_inimigos);
+                    desenhar_moedas_mortos(qtd_inimigos, total_inimigos, fonte_pequena);
 
                     desenhar_player(player);
 
@@ -618,27 +636,26 @@ int main() {
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 145, ALLEGRO_ALIGN_LEFT, "Cl: %d", sq.qtd_Cl);
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 165, ALLEGRO_ALIGN_LEFT, "Na: %d", sq.qtd_Na);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 120, 125, ALLEGRO_ALIGN_LEFT, "O: %d", sq.qtd_O);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 120, 145, ALLEGRO_ALIGN_LEFT, "S: %d", sq.qtd_S);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 120, 165, ALLEGRO_ALIGN_LEFT, "C: %d", sq.qtd_C);
+
+                    // Progresso das receitas
+                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 196, ALLEGRO_ALIGN_LEFT, "Receitas");
+                    desenhar_progresso_receitas(&sq, fonte_pequena, 25, 218);
 
                     // UI das reações do laboratório
-                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 200, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
+                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 25, 338, ALLEGRO_ALIGN_LEFT, "Reações adquiridas");
 
                     int linha_atual = 0;
                     for (int i = 0; i < 3; i++) {
                         if (itens_lab[i].contador_compra > 0) {
-                            int posY = 230 + (linha_atual * 20);
+                            int posY = 362 + (linha_atual * 20);
 
                             al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, posY, ALLEGRO_ALIGN_LEFT, "* %s (x%d)", itens_lab[i].nome, itens_lab[i].contador_compra);
                             linha_atual++;
                         }
                     }
-
-                    // Identificação dos tipos de inimigos na barra lateral.
-                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 330,
-                        ALLEGRO_ALIGN_LEFT, "Ácido");
-                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 370,
-                        ALLEGRO_ALIGN_LEFT, "Básico");
-                    al_draw_text(fonte_media_2, al_map_rgb(255, 255, 255), 55, 410,
-                        ALLEGRO_ALIGN_LEFT, "Metálico");
 
                     // Mensagem de feedback de bloqueio.
                     if (sq.mensagem_arma_bloqueada) {
@@ -713,6 +730,17 @@ int main() {
                         al_draw_filled_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(0, 0, 0));
                         al_draw_rectangle(width - 505, height - 20, width - 215, height - 40, al_map_rgb(50, 50, 50), 1);
                         al_draw_text(fonte_pequena, al_map_rgb(255, 255, 255), width / 1.6, height - 37, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para sair do Laboratório");
+                    }
+
+                    if (wave.em_pausa == true) {
+                        double restante = TEMPO_PAUSA_WAVE - (al_get_time() - wave.tempo_inicio_pausa);
+                        int segundos = (int)restante;
+                        if (restante > segundos) {
+                            segundos++;
+                        }
+
+                        al_draw_text(fonte_grande, al_map_rgb(255, 235, 120), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "Recolha os elementos!");
+                        al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Proxima wave em %d...", segundos);
                     }
 
                     if (!player.vivo) {
