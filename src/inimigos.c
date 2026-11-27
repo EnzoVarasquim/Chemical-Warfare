@@ -5,21 +5,25 @@
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     int tamanho = 20, velocidade = 2, vida = 5;
+    Elemento elemento = ELEM_NENHUM;
 
     if (tipo == TIPO_ACIDO) {
         tamanho = 20;
         velocidade = 3;
         vida = 5;
+        elemento = ELEM_H;
     }
     else if (tipo == TIPO_BASICO) {
         tamanho = 20;
         velocidade = 2;
         vida = 7;
+        elemento = ELEM_NA;
     }
     else if (tipo == TIPO_METALICO) {
         tamanho = 20;
         velocidade = 2;
         vida = 10;
+        elemento = ELEM_CL;
     }
     else if (tipo == TIPO_BOSS) {
         tamanho = 60;
@@ -28,11 +32,15 @@ Inimigo init_inimigo(int x, int y, TipoInimigo tipo) {
     }
     else if (tipo == TIPO_ATIRADOR) {
         tamanho = 20;
-        velocidade = 0; 
+        velocidade = 0;
         vida = 5;
+
+        // O (50%), S (25%), C (25%)
+        int sorteio = rand() % 4;
+        elemento = (sorteio < 2) ? ELEM_O : (sorteio == 2 ? ELEM_S : ELEM_C);
     }
 
-    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo, al_get_time() };
+    Inimigo inimigo = { x, y, tamanho, velocidade, vida, true, false, tipo, al_get_time(), elemento };
     return inimigo;
 }
 
@@ -201,13 +209,6 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;
                     inimigo->vivo = false;
-
-                    if (inimigo->tipo == TIPO_ACIDO) sq->qtd_H++;
-                    else if (inimigo->tipo == TIPO_BASICO) sq->qtd_Na++;
-                    else if (inimigo->tipo == TIPO_METALICO) sq->qtd_Cl++;
-                    else if (inimigo->tipo == TIPO_ATIRADOR) sq->qtd_H++;
-
-                    checar_reacoes(sq);
                     break;
                 }
             }
@@ -243,16 +244,25 @@ void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuim
             {
                 inimigos[i].vida = -99;
 
-                if (inimigos[i].tipo == TIPO_ACIDO) sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_BASICO) sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_METALICO) sq->research_point++;
-                else if (inimigos[i].tipo == TIPO_ATIRADOR) sq->research_point++;
+                if (inimigos[i].tipo != TIPO_BOSS) sq->research_point++;
+
+                switch (inimigos[i].elemento) {
+                case ELEM_H:  sq->qtd_H++;  break;
+                case ELEM_CL: sq->qtd_Cl++; break;
+                case ELEM_NA: sq->qtd_Na++; break;
+                case ELEM_O:  sq->qtd_O++;  break;
+                case ELEM_S:  sq->qtd_S++;  break;
+                case ELEM_C:  sq->qtd_C++;  break;
+                default: break;
+                }
+
+                checar_reacoes(sq, player);
             }
         }
     }
 }
 
-void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
+void desenhar_moedas_mortos(Inimigo inimigos[], int total, ALLEGRO_FONT* fonte) {
     for (int i = 0; i < total; i++) {
         if (!inimigos[i].vivo && inimigos[i].vida != -99) {
             ALLEGRO_COLOR cor = (inimigos[i].tipo == TIPO_ACIDO) ? al_map_rgb(0, 255, 0) :
@@ -261,13 +271,14 @@ void desenhar_moedas_mortos(Inimigo inimigos[], int total) {
                 (inimigos[i].tipo == TIPO_ATIRADOR) ? al_map_rgb(0, 190, 255) :
                 al_map_rgb(255, 255, 255);
 
-            float cx = inimigos[i].x + inimigos[i].size / 2;
-            float cy = inimigos[i].y + inimigos[i].size / 2;
+            float cx = inimigos[i].x + inimigos[i].size / 2.0f;
+            float cy = inimigos[i].y + inimigos[i].size / 2.0f;
             float s = 12;
 
             al_draw_filled_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, cor);
-
             al_draw_triangle(cx, cy - s / 2, cx - s / 2, cy + s / 2, cx + s / 2, cy + s / 2, al_map_rgb(255, 255, 255), 1);
+
+            al_draw_text(fonte, al_map_rgb(255, 255, 255), cx, cy - s / 2 - 14, ALLEGRO_ALIGN_CENTER, simbolo_elemento(inimigos[i].elemento));
         }
     }
 }
@@ -326,12 +337,12 @@ void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]) {
     for (int i = 0; i < MAX_TIROS; i++) {
         if (tiros[i].ativo) continue;
 
-        tiros[i].x = inimigo->x + inimigo->size / 2;
-        tiros[i].y = inimigo->y + inimigo->size / 2;
+        tiros[i].x = inimigo->x + inimigo->size / 2.0f;
+        tiros[i].y = inimigo->y + inimigo->size / 2.0f;
         tiros[i].ativo = true;
 
-        float dx = (player->x + player->size / 2) - tiros[i].x;
-        float dy = (player->y + player->size / 2) - tiros[i].y;
+        float dx = (player->x + player->size / 2.0f) - tiros[i].x;
+        float dy = (player->y + player->size / 2.0f) - tiros[i].y;
         float distancia = sqrtf(dx * dx + dy * dy);
 
         if (distancia > 0) {

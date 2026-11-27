@@ -1,6 +1,7 @@
 #ifndef INIMIGOS_H
 #define INIMIGOS_H
 
+#include <allegro5/allegro_font.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "player.h"
@@ -25,6 +26,7 @@ typedef struct {
     bool coletado;
     TipoInimigo tipo;
     double tempo_ultimo_tiro;
+    Elemento elemento;
 } Inimigo;
 
 Inimigo init_inimigo(int x, int y, TipoInimigo tipo);
@@ -36,9 +38,8 @@ void colisao_player(Inimigo* inimigo, Player* player);
 void colisao_tela_inimigo(Inimigo* inimigo, int width, int height);
 
 void atualizar_moedas(Inimigo inimigos[], int total, Player* player, SistemaQuimico* sq);
-void desenhar_moedas_mortos(Inimigo inimigos[], int total);
+void desenhar_moedas_mortos(Inimigo inimigos[], int total, ALLEGRO_FONT* fonte);
 
-void disparar_tiro_boss(Inimigo* boss, Tiro tiros_boss[]);
 void colisao_tiro_boss(Tiro tiros_boss[], Player* player);
 
 void disparar_tiro_atirador(Inimigo* inimigo, Player* player, Tiro tiros[]);
