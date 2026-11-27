@@ -2,7 +2,7 @@
 #include "player.h"
 
 Player init_player(int width, int height) {
-    Player player = { width / 1.625, height / 2, 20, 5, 10, true, 0.0, 1 };
+    Player player = { (int)(width / 1.625), height / 2, 20, 5, 10, true, 0.0f, 1, 0, 1 };
     return player;
 }
 
@@ -64,9 +64,9 @@ void colisao_tela(Player* player, int width, int height) {
 void tomar_dano(Player* player, int dano) {
     if (!player->vivo) return;
 
-    // Agora usa o campo do player em vez de uma variável static trancada
     if (al_get_time() - player->tempo_ultimo_dano >= 0.5) {
         player->vida -= dano;
+        player->combo = 1;                      // levou dano: perde o combo
         player->tempo_ultimo_dano = al_get_time();
 
         if (player->vida <= 0) {
