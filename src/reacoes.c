@@ -238,14 +238,13 @@ void desenhar_progresso_receitas(SistemaQuimico* sq, ALLEGRO_FONT* fonte, int x,
                 tem = precisa;
             }
 
-            int pos_x = x + 45 + coluna * 52;
+            int pos_x = x + 42 + coluna * 56;
 
-            if (coluna == 0) {
-                al_draw_textf(fonte, cor, pos_x, pos_y, ALLEGRO_ALIGN_LEFT, "%s %d/%d", simbolo_elemento((Elemento)e), tem, precisa);
+            if (coluna > 0) {
+                al_draw_text(fonte, cor, pos_x - 9, pos_y, ALLEGRO_ALIGN_LEFT, "|");
             }
-            else {
-                al_draw_textf(fonte, cor, pos_x, pos_y, ALLEGRO_ALIGN_LEFT, "| %s %d/%d", simbolo_elemento((Elemento)e), tem, precisa);
-            }
+
+            al_draw_textf(fonte, cor, pos_x, pos_y, ALLEGRO_ALIGN_LEFT, "%s %d/%d", simbolo_elemento((Elemento)e), tem, precisa);
             coluna++;
         }
     }
