@@ -20,7 +20,8 @@
 
 Tiro tiros_atirador[MAX_TIROS];
 
-int main() {
+int main() 
+{
     srand(time(NULL));
 
     al_init();
@@ -35,8 +36,20 @@ int main() {
 
     bool rodando = true;
     bool saindo = false;
+    bool redesenhar = false;
     bool jogo_iniciado = false;
     bool em_tutorial = false;
+    bool em_ranking = false;
+    bool em_nome = false;
+    bool fim_de_jogo = false;
+    bool score_salvo = false;
+    int score_final = 0;
+
+    char nome_jogador[4] = { 0 };
+    int tamanho_nome = 0;
+
+    RegistroRanking ranking[TOP_RANKING] = { 0 };
+    int total_ranking = 0;
 
     Player player = init_player(width, height);
 
@@ -121,20 +134,7 @@ int main() {
     // Botão JOGAR
     int menu_jogar_x1 = centro_menu_x - largura_botao / 2;
     int menu_jogar_x2 = centro_menu_x + largura_botao / 2;
-    int menu_jogar_y1 = (int)(height * 0.49f);
-    int menu_jogar_y2 = menu_jogar_y1 + altura_botao;
-
-    // Botão TUTORIAL
-    int menu_tutorial_x1 = menu_jogar_x1;
-    int menu_tutorial_x2 = menu_jogar_x2;
-    int menu_tutorial_y1 = menu_jogar_y2 + 14;
-    int menu_tutorial_y2 = menu_tutorial_y1 + altura_botao;
-
-    // Botão SAIR
-    int menu_sair_x1 = menu_jogar_x1;
-    int menu_sair_x2 = menu_jogar_x2;
-    int menu_sair_y1 = menu_tutorial_y2 + 14;
-    int menu_sair_y2 = menu_sair_y1 + altura_botao;
+    int menu_jogar_y1 = (int)(height * 0.42f);
 
     //debugs
     printf("Diretorio de trabalho: %s\n", al_get_current_directory());
@@ -185,6 +185,10 @@ int main() {
     while (rodando) {
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
+
+        if (event.type == ALLEGRO_EVENT_TIMER) {
+            redesenhar = true;
+        }
 
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             rodando = false;
@@ -238,6 +242,19 @@ int main() {
                 em_tutorial = false;
             }
         }
+        // Tela de ranking: ESC ou ENTER volta ao menu.
+        else if (event.type == ALLEGRO_EVENT_KEY_DOWN && !jogo_iniciado && em_ranking) {
+            if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE ||
+                event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                em_ranking = false;
+            }
+        }
+        // Tela do nome: aqui o KEY_DOWN só trata o ESC (as letras vêm no KEY_CHAR).
+        else if (event.type == ALLEGRO_EVENT_KEY_DOWN && !jogo_iniciado && em_nome) {
+            if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                em_nome = false;
+            }
+        }
         // Navegação do menu inicial pelo teclado.
         else if (event.type == ALLEGRO_EVENT_KEY_DOWN && !jogo_iniciado) {
             if (event.keyboard.keycode == ALLEGRO_KEY_W ||
@@ -245,7 +262,7 @@ int main() {
                 opcao_menu--;
 
                 if (opcao_menu < 0) {
-                    opcao_menu = 2;
+                    opcao_menu = 3;
                 }
             }
 
@@ -253,16 +270,57 @@ int main() {
                 event.keyboard.keycode == ALLEGRO_KEY_DOWN) {
                 opcao_menu++;
 
-                if (opcao_menu > 2) {
+                if (opcao_menu > 3) {
                     opcao_menu = 0;
                 }
             }
 
             if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
-                // Opção JOGAR.
+                // JOGAR: vai para a tela de digitar o nome
                 if (opcao_menu == 0) {
-                    total_inimigos = 3;
-                    qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
+                    em_nome = true;
+                    tamanho_nome = 0;
+                    nome_jogador[0] = '\0';
+                }
+                // TUTORIAL
+                else if (opcao_menu == 1) {
+                    em_tutorial = true;
+                }
+                // RANKING
+                else if (opcao_menu == 2) {
+                    total_ranking = carregar_ranking(ranking);
+                    em_ranking = true;
+                }
+                // SAIR
+                else if (opcao_menu == 3) {
+                    rodando = false;
+                }
+            }
+        }
+
+        // Digitação do apelido (3 letras)
+        if (event.type == ALLEGRO_EVENT_KEY_CHAR && !jogo_iniciado && em_nome) {
+            int tecla = event.keyboard.keycode;
+            int letra = event.keyboard.unichar;
+
+            if (tecla == ALLEGRO_KEY_BACKSPACE) {
+                if (tamanho_nome > 0) {
+                    tamanho_nome--;
+                    nome_jogador[tamanho_nome] = '\0';
+                }
+            }
+            else if (tecla == ALLEGRO_KEY_ENTER) {
+                // só confirma com exatamente 3 letras
+                if (tamanho_nome == 3) {
+
+                    // ---- INÍCIO DA PARTIDA (corpo que estava no JOGAR) ----
+                    int novo_total = 3;
+                    Inimigo* temp = (Inimigo*)realloc(qtd_inimigos, novo_total * sizeof(Inimigo));
+                    if (temp != NULL) {
+                        qtd_inimigos = temp;
+                        total_inimigos = novo_total;
+                    }
+
                     inicializar_sistema_quimico(&sq);
                     init_wave(&wave);
                     init_ataque_boss(&ataque_boss);
@@ -270,7 +328,7 @@ int main() {
                     keyboard = init_keyboard();
                     tempo_mensagem_bloqueada = 0.0;
 
-                    // player, inimigos (1 Atirador + sorteados) e tiros do player
+                    // player (score = 0, combo = 1), inimigos e tiros do player
                     reset(&player, qtd_inimigos, total_inimigos, num_tiros, &wave, width, height);
                     for (int i = 0; i < MAX_TIROS; i++) {
                         tiros_atirador[i] = init_tiro();
@@ -280,6 +338,11 @@ int main() {
                     mouse.x = player.x;
                     mouse.y = player.y;
 
+                    fim_de_jogo = false;
+                    score_salvo = false;
+                    score_final = 0;
+
+                    em_nome = false;
                     jogo_iniciado = true;
 
                     // Para a música do menu e inicia a música do jogo.
@@ -288,15 +351,17 @@ int main() {
 
                     al_hide_mouse_cursor(display);
                 }
-
-                // Opção TUTORIAL
-                else if (opcao_menu == 1) {
-                    em_tutorial = true;
+            }
+            else if (tamanho_nome < 3) {
+                // aceita só letras; minúscula vira maiúscula
+                if (letra >= 'a' && letra <= 'z') {
+                    letra = letra - 32;
                 }
 
-                // Opção SAIR.
-                else if (opcao_menu == 2) {
-                    rodando = false;
+                if (letra >= 'A' && letra <= 'Z') {
+                    nome_jogador[tamanho_nome] = (char)letra;
+                    tamanho_nome++;
+                    nome_jogador[tamanho_nome] = '\0';
                 }
             }
         }
@@ -319,34 +384,38 @@ int main() {
                 keyboard.d_pressed = true;
             }
 
-            if (event.keyboard.keycode == ALLEGRO_KEY_R) {
-                init_wave(&wave);
-                init_ataque_boss(&ataque_boss);
-                total_inimigos = 3;
-                qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
-                reset(&player, qtd_inimigos, total_inimigos, num_tiros, &wave, width, height);
-                for (int i = 0; i < MAX_TIROS; i++) {
-                    tiros_atirador[i] = init_tiro();
+            if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                // Fim de jogo: volta ao menu principal
+                if (fim_de_jogo == true) {
+                    jogo_iniciado = false;
+                    fim_de_jogo = false;
+                    score_salvo = false;
+                    opcao_menu = 0;
+                    keyboard = init_keyboard();
+                    mouse.left_button = false;
+
+                    al_set_audio_stream_playing(musica_background, false);
+                    al_set_audio_stream_playing(musica_menu, true);
                 }
-                inicializar_sistema_quimico(&sq);
-                init_itens_lab(itens_lab);
-                tempo_mensagem_bloqueada = 0.0;
+                // Saída do Laboratório
+                else if (wave.laboratorio && wave.andamento) {
+                    wave.laboratorio = false;
+                    wave.combates_vencidos = 0;
+                    wave.finalizado = true;
+                    wave.andamento = false;
+
+                    int novo_total = wave.atual + 2;
+                    Inimigo* temp = (Inimigo*)realloc(qtd_inimigos, novo_total * sizeof(Inimigo));
+                    if (temp != NULL) {
+                        qtd_inimigos = temp;
+                        total_inimigos = novo_total;
+                    }
+                }
             }
 
             if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 al_rest(1.0);
                 saindo = true;
-            }
-
-            if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
-                if (wave.laboratorio && wave.andamento) {
-                    wave.laboratorio = false;
-                    wave.combates_vencidos = 0;
-                    wave.finalizado = true;
-                    wave.andamento = false;
-                    total_inimigos = wave.atual + 2;
-                    qtd_inimigos = (Inimigo*)realloc(qtd_inimigos, total_inimigos * sizeof(Inimigo));
-                }
             }
         }
 
@@ -470,26 +539,23 @@ int main() {
 
                 colisao_tiro_atirador(tiros_atirador, &player);
             }
+
+            // Detecta o fim da partida e salva o score UMA vez só
+            fim_de_jogo = (wave.vitoria == true || player.vivo == false);
+
+            if (fim_de_jogo == true && score_salvo == false) {
+                score_final = calcular_score_final(&player, &sq);
+                salvar_score(nome_jogador, score_final);
+                score_salvo = true;
+            }
         }
 
         //quando acaba todos os eventos de cima, isso desenha os elementos
-        if (al_is_event_queue_empty(event_queue)) {
+        if (al_is_event_queue_empty(event_queue) && redesenhar == true) {
+            redesenhar = false;
 
-            //TUTORIAL
-            if (!jogo_iniciado && em_tutorial) {
-                ALLEGRO_TRANSFORM transformacao_menu;
-                al_identity_transform(&transformacao_menu);
-                al_translate_transform(&transformacao_menu, margem_menu_x, margem_menu_y);
-                al_scale_transform(&transformacao_menu, escala_menu, escala_menu);
-                al_use_transform(&transformacao_menu);
-
-                al_clear_to_color(al_map_rgb(0, 0, 0));
-                desenhar_tutorial(width, height, fonte_grande, fonte_media_2, fonte_pequena);
-                al_flip_display();
-            }
-
-            //MENU INICIAL
-            else if (!jogo_iniciado) {
+            //TELAS DO MENU (menu, tutorial, ranking e nome)
+            if (!jogo_iniciado) {
                 ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
                 ALLEGRO_COLOR fundo_botao = al_map_rgb(35, 35, 35);
 
@@ -502,41 +568,39 @@ int main() {
 
                 al_clear_to_color(al_map_rgb(0, 0, 0));
 
-                //título CHEMICAL
-                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f, ALLEGRO_ALIGN_CENTER, "CHEMICAL");
-
-                //título WARFARE
-                al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f + altura_titulo, ALLEGRO_ALIGN_CENTER, "WARFARE");
-
-                // Destaque da opção selecionada pelo teclado.
-                if (opcao_menu == 0) {
-                    al_draw_filled_rectangle(menu_jogar_x1, menu_jogar_y1, menu_jogar_x2, menu_jogar_y2, fundo_botao);
+                if (em_tutorial == true) {
+                    desenhar_tutorial(width, height, fonte_grande, fonte_media_2, fonte_pequena);
                 }
-                else if (opcao_menu == 1) {
-                    al_draw_filled_rectangle(menu_tutorial_x1, menu_tutorial_y1, menu_tutorial_x2, menu_tutorial_y2, fundo_botao);
+                else if (em_ranking == true) {
+                    desenhar_ranking(width, height, fonte_grande, fonte_media_1, ranking, total_ranking);
                 }
-                else if (opcao_menu == 2) {
-                    al_draw_filled_rectangle(menu_sair_x1, menu_sair_y1, menu_sair_x2, menu_sair_y2, fundo_botao);
+                else if (em_nome == true) {
+                    desenhar_tela_nome(width, height, fonte_grande, fonte_menu_botao, fonte_media_2, nome_jogador, tamanho_nome);
                 }
+                else {
+                    //título
+                    al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f, ALLEGRO_ALIGN_CENTER, "CHEMICAL");
+                    al_draw_text(fonte_menu_titulo, branco, centro_menu_x, height * 0.12f + altura_titulo, ALLEGRO_ALIGN_CENTER, "WARFARE");
 
-                //contorno do botão JOGAR
-                al_draw_rectangle(menu_jogar_x1, menu_jogar_y1, menu_jogar_x2, menu_jogar_y2, branco, 2.0f);
-                //texto do botão JOGAR
-                al_draw_text(fonte_menu_botao, branco, centro_menu_x, menu_jogar_y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, "JOGAR");
+                    //botões
+                    const char* textos_menu[4] = { "JOGAR", "TUTORIAL", "RANKING", "SAIR" };
 
-                //contorno do botão TUTORIAL
-                al_draw_rectangle(menu_tutorial_x1, menu_tutorial_y1, menu_tutorial_x2, menu_tutorial_y2, branco, 2.0f);
-                //texto do botão TUTORIAL
-                al_draw_text(fonte_menu_botao, branco, centro_menu_x, menu_tutorial_y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, "TUTORIAL");
+                    for (int i = 0; i < 4; i++) {
+                        int y1 = menu_jogar_y1 + i * (altura_botao + 14);
+                        int y2 = y1 + altura_botao;
 
-                //contorno do botão SAIR
-                al_draw_rectangle(menu_sair_x1, menu_sair_y1, menu_sair_x2, menu_sair_y2, branco, 2.0f);
-                //texto do botão SAIR
-                al_draw_text(fonte_menu_botao, branco, centro_menu_x, menu_sair_y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, "SAIR");
+                        // destaque da opção selecionada
+                        if (opcao_menu == i) {
+                            al_draw_filled_rectangle(menu_jogar_x1, y1, menu_jogar_x2, y2, fundo_botao);
+                        }
+
+                        al_draw_rectangle(menu_jogar_x1, y1, menu_jogar_x2, y2, branco, 2.0f);
+                        al_draw_text(fonte_menu_botao, branco, centro_menu_x, y1 + (altura_botao - al_get_font_line_height(fonte_menu_botao)) / 2.0f, ALLEGRO_ALIGN_CENTER, textos_menu[i]);
+                    }
+                }
 
                 al_flip_display();
             }
-
             //JOGO
             else {
                 // Garante que o gameplay continue com a transformação original.
@@ -630,7 +694,8 @@ int main() {
                     }
 
                     al_draw_textf(fonte_media_2, al_map_rgb(255, 255, 255), 20, 45, ALLEGRO_ALIGN_LEFT, "Arma atual: %s", nome_arma);
-                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 90, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 84, ALLEGRO_ALIGN_LEFT, "Research points: %d", sq.research_point);
+                    al_draw_textf(fonte_pequena, al_map_rgb(255, 235, 120), 25, 99, ALLEGRO_ALIGN_LEFT, "Score: %d  Combo: x%d", player.score, player.combo);
 
                     // UI de Elementos Químicos
                     al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, 125, ALLEGRO_ALIGN_LEFT, "H: %d", sq.qtd_H);
@@ -655,11 +720,6 @@ int main() {
                             al_draw_textf(fonte_pequena, al_map_rgb(255, 255, 255), 25, posY, ALLEGRO_ALIGN_LEFT, "* %s (x%d)", itens_lab[i].nome, itens_lab[i].contador_compra);
                             linha_atual++;
                         }
-                    }
-
-                    // Mensagem de feedback de bloqueio.
-                    if (sq.mensagem_arma_bloqueada) {
-                        al_draw_text(fonte_media_2, al_map_rgb(255, 50, 50), width / 1.6, 40, ALLEGRO_ALIGN_CENTER, "Arma não descoberta ou elementos insuficientes!");
                     }
 
                     // Pop-up de arma desbloqueada (3 segundos, sem pausar o jogo)
@@ -690,10 +750,12 @@ int main() {
                             break;
                         }
 
-                        al_draw_filled_rectangle(width / 1.6 - 190, 120, width / 1.6 + 190, 170, al_map_rgb(0, 0, 0));
-                        al_draw_rectangle(width / 1.6 - 190, 120, width / 1.6 + 190, 170, cor_popup, 2);
-                        al_draw_text(fonte_media_2, cor_popup, width / 1.6, 128, ALLEGRO_ALIGN_CENTER, titulo_popup);
-                        al_draw_text(fonte_pequena, al_map_rgb(255, 255, 255), width / 1.6, 150, ALLEGRO_ALIGN_CENTER, dica_popup);
+                        desenhar_popup(width, fonte_media_2, fonte_pequena, titulo_popup, dica_popup, cor_popup);
+                    }
+
+                    // Pop-up de arma bloqueada (mesmo estilo, borda vermelha)
+                    if (sq.mensagem_arma_bloqueada) {
+                        desenhar_popup(width, fonte_media_2, fonte_pequena, "Arma Bloqueada", "Complete a reacao quimica para desbloquear", al_map_rgb(255, 50, 50));
                     }
 
                     //caixa do contador de wave
@@ -714,11 +776,6 @@ int main() {
                         al_draw_filled_circle(width - 30, 57, 3, al_map_rgb(255, 50, 50));
                         al_draw_filled_circle(width - 25, 57, 2, al_map_rgb(255, 50, 50));
                         al_draw_text(fonte_media_1, al_map_rgb(255, 50, 50), width - 82, 45, ALLEGRO_ALIGN_LEFT, "BOSS");
-                    }
-
-                    if (wave.vitoria == true) {
-                        al_draw_text(fonte_grande, al_map_rgb(0, 255, 0), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "VOCÊ VENCEU O JOGO!");
-                        al_draw_text(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Pressione R para reiniciar");
                     }
 
                     if (wave.laboratorio == true) {
@@ -743,38 +800,37 @@ int main() {
                         al_draw_textf(fonte_media_1, al_map_rgb(255, 255, 255), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Proxima wave em %d...", segundos);
                     }
 
-                    if (!player.vivo) {
-                        al_draw_text(fonte_grande, al_map_rgb(220, 10, 10), width / 1.6, 60, ALLEGRO_ALIGN_CENTER, "Você morreu");
-                        al_draw_text(fonte_media_1, al_map_rgb(220, 220, 220), width / 1.6, 90, ALLEGRO_ALIGN_CENTER, "Aperte R para reiniciar");
+                    if (fim_de_jogo == true) {
+                        desenhar_fim_de_jogo(width, fonte_grande, fonte_media_1, wave.vitoria, nome_jogador, score_final);
                     }
 
                     al_flip_display();
                 }
             }
         }
+
+        free(qtd_inimigos);
+
+        // desliga os eventos e desinstala as bibliotecas quando fecha a tela
+        al_destroy_sample(som_tiro);
+        al_destroy_audio_stream(musica_menu);
+        al_destroy_audio_stream(musica_background);
+        al_destroy_event_queue(event_queue);
+        al_destroy_display(display);
+        al_destroy_timer(timer);
+        al_destroy_font(fonte_grande);
+        al_destroy_font(fonte_media_1);
+        al_destroy_font(fonte_media_2);
+        al_destroy_font(fonte_pequena);
+        al_destroy_font(fonte_menu_titulo);
+        al_destroy_font(fonte_menu_botao);
+
+        al_uninstall_mouse();
+        al_uninstall_keyboard();
+        al_uninstall_audio();
+        al_shutdown_primitives_addon();
+        al_uninstall_system();
+
+        return 0;
     }
-
-    free(qtd_inimigos);
-
-    // desliga os eventos e desinstala as bibliotecas quando fecha a tela
-    al_destroy_sample(som_tiro);
-    al_destroy_audio_stream(musica_menu);
-    al_destroy_audio_stream(musica_background);
-    al_destroy_event_queue(event_queue);
-    al_destroy_display(display);
-    al_destroy_timer(timer);
-    al_destroy_font(fonte_grande);
-    al_destroy_font(fonte_media_1);
-    al_destroy_font(fonte_media_2);
-    al_destroy_font(fonte_pequena);
-    al_destroy_font(fonte_menu_titulo);
-    al_destroy_font(fonte_menu_botao);
-
-    al_uninstall_mouse();
-    al_uninstall_keyboard();
-    al_uninstall_audio();
-    al_shutdown_primitives_addon();
-    al_uninstall_system();
-
-    return 0;
 }
