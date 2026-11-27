@@ -190,18 +190,22 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
 
                 int dano_final = player->dano;
 
-                //interações diferentes dependendo do tipo de tiro que colidindo com um tipo de inimigo
                 if (sq->arma_ativa == ARMA_ACIDA) {
-                    if (inimigo->tipo == TIPO_METALICO) dano_final *= 2;    
-                    if (inimigo->tipo == TIPO_ACIDO) dano_final = 0;      //imune
+                    if (inimigo->tipo == TIPO_METALICO) dano_final *= 2;
+                    if (inimigo->tipo == TIPO_ACIDO) dano_final = 0;
                 }
                 if (sq->arma_ativa == ARMA_BASICA) {
                     if (inimigo->tipo == TIPO_ACIDO) dano_final *= 2;
-                    if (inimigo->tipo == TIPO_BASICO) dano_final = 0;     //imune
+                    if (inimigo->tipo == TIPO_BASICO) dano_final = 0;
                 }
                 if (sq->arma_ativa == ARMA_METALICA) {
                     if (inimigo->tipo == TIPO_BASICO) dano_final *= 2;
-                    if (inimigo->tipo == TIPO_ACIDO || inimigo->tipo == TIPO_METALICO) dano_final = 0;      //imune
+                    if (inimigo->tipo == TIPO_ACIDO || inimigo->tipo == TIPO_METALICO) dano_final = 0;
+                }
+
+                // Super efetivo: o dano ficou maior que o dano normal
+                if (dano_final > player->dano) {
+                    player->score += 25;
                 }
 
                 inimigo->vida -= dano_final;
@@ -209,6 +213,12 @@ void colisao_tiro(Inimigo* inimigo, Tiro tiros[], SistemaQuimico* sq, Player* pl
                 if (inimigo->vida <= 0) {
                     inimigo->vida = 0;
                     inimigo->vivo = false;
+
+                    // Abate com multiplicador de combo (máximo 5x)
+                    player->score += 50 * player->combo;
+                    if (player->combo < 5) {
+                        player->combo++;
+                    }
                     break;
                 }
             }
