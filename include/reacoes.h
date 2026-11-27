@@ -5,11 +5,14 @@
 #include "player.h"
 
 typedef enum {
-    ELEMENTO_NENHUM,
-    ELEMENTO_H,
-    ELEMENTO_CL,
-    ELEMENTO_NA
-} TipoElemento;
+    ELEM_H,
+    ELEM_CL,
+    ELEM_NA,
+    ELEM_O,
+    ELEM_S,
+    ELEM_C,
+    ELEM_NENHUM
+} Elemento;
 
 typedef enum {
     TIRO_PADRAO,
@@ -28,6 +31,9 @@ typedef struct {
     int qtd_H;
     int qtd_Cl;
     int qtd_Na;
+    int qtd_O;
+    int qtd_S;
+    int qtd_C;
     int research_point;
     TipoArma arma_ativa;
 
@@ -61,7 +67,10 @@ typedef struct {
 } ItemLab;
 
 void inicializar_sistema_quimico(SistemaQuimico* sq);
-void checar_reacoes(SistemaQuimico* sq);
+void checar_reacoes(SistemaQuimico* sq, Player* player);
+const char* simbolo_elemento(Elemento e);
+void desenhar_progresso_receitas(SistemaQuimico* sq, ALLEGRO_FONT* fonte, int x, int y);
+
 bool selecionar_arma(SistemaQuimico* sq, TipoArma arma);
 void atualizar_aparencia_arma(SistemaQuimico* sq);
 
