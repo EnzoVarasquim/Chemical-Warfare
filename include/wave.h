@@ -6,6 +6,8 @@
 #include "player.h"
 #include "reacoes.h"
 
+#define TEMPO_PAUSA_WAVE 3.0
+
 typedef struct {
     int atual;
     int final;
@@ -15,6 +17,8 @@ typedef struct {
     bool vitoria;
     bool laboratorio;
     int combates_vencidos;
+    bool em_pausa;
+    double tempo_inicio_pausa;
 } Wave;
 
 void init_wave(Wave* wave);

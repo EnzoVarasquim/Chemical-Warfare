@@ -1,6 +1,7 @@
 #include "wave.h"
 #include <stdlib.h> 
 #include <math.h>
+#include <allegro5/allegro.h>
 
 void init_wave(Wave* wave) {
     wave->atual = 1;
@@ -11,6 +12,8 @@ void init_wave(Wave* wave) {
     wave->vitoria = false;
     wave->laboratorio = false;
     wave->combates_vencidos = 0;
+    wave->em_pausa = false;
+    wave->tempo_inicio_pausa = 0.0;
 }
 
 void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Player* player, SistemaQuimico* sq, int width, int height) {
@@ -28,15 +31,13 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
     if (wave->andamento == true) {
         int vivos = 0;
         for (int i = 0; i < *total_inimigos; i++) {
-            //acessa o array original
             if ((*qtd_inimigos)[i].vivo) {
                 vivos++;
             }
         }
 
-        //se nenhum estiver vivo, a wave acaba
         if (vivos == 0 && wave->laboratorio == false) {
-            //se for a wave final, o jogo acaba
+            //se for a wave final, o jogo acaba (sem pausa)
             if (wave->atual >= wave->final + 1) {
                 wave->vitoria = true;
                 wave->andamento = false;
@@ -44,6 +45,20 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
                 return;
             }
 
+            //primeiro tick sem inimigos: começa a pausa e espera
+            if (wave->em_pausa == false) {
+                wave->em_pausa = true;
+                wave->tempo_inicio_pausa = al_get_time();
+                return;
+            }
+
+            //pausa ainda não acabou: continua esperando
+            if (al_get_time() - wave->tempo_inicio_pausa < TEMPO_PAUSA_WAVE) {
+                return;
+            }
+
+            //pausa acabou: segue para a próxima wave
+            wave->em_pausa = false;
             wave->combates_vencidos++;
             wave->atual++;
             wave->finalizado = true;
@@ -64,36 +79,38 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
         else if (wave->atual >= wave->final) {
             wave->laboratorio = false;
 
+            Inimigo* temp = (Inimigo*)realloc(*qtd_inimigos, 1 * sizeof(Inimigo));
+            if (temp == NULL) {
+                return;
+            }
+            *qtd_inimigos = temp;
             *total_inimigos = 1;
             sq->research_point += 25;
 
-            //redimensiona o array para caber só 1 inimigo
-            *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
-
-            //nasce o Boss bem no centro da tela
             int centroX = width / 1.625;
             int centroY = height / 2;
 
             (*qtd_inimigos)[0] = init_inimigo(centroX - 30, centroY - 30, TIPO_BOSS);
-
         }
-        //Waves normais (Garante pelo menos 2 Atiradores e o resto dos inimigos comuns)
+        //Waves normais
         else {
             wave->laboratorio = false;
 
-            (*total_inimigos)++;
+            int novo_total = *total_inimigos + 1;
+            Inimigo* temp = (Inimigo*)realloc(*qtd_inimigos, novo_total * sizeof(Inimigo));
+            if (temp == NULL) {
+                return;
+            }
+            *qtd_inimigos = temp;
+            *total_inimigos = novo_total;
             sq->research_point += 10;
 
-            //realoca a memória do array original para caber o novo inimigo extra
-            *qtd_inimigos = (Inimigo*)realloc(*qtd_inimigos, (*total_inimigos) * sizeof(Inimigo));
-
-            // Garante que pelo menos os primeiros 2 inimigos da wave são Atiradores (se houver espaço, senão ajusta)
             int num_atiradores = (*total_inimigos >= 2) ? 2 : *total_inimigos;
 
-            //spawna todos os inimigos
             for (int i = 0; i < *total_inimigos; i++) {
-                int posX, posY;
-                float distancia;
+                int posX = 0;
+                int posY = 0;
+                float distancia = 0.0f;
 
                 do {
                     posX = (width / 4 + 20) + (rand() % (width - width / 4 - 2 * 20 + 1));
@@ -107,12 +124,10 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
 
                 TipoInimigo tipo_escolhido;
 
-                // Os primeiros 2 inimigos são obrigatoriamente Atiradores
                 if (i < num_atiradores) {
                     tipo_escolhido = TIPO_ATIRADOR;
                 }
                 else {
-                    // Os restantes são sorteados entre os tipos comuns (Ácido, Básico, Metálico)
                     tipo_escolhido = (TipoInimigo)(rand() % 3);
                 }
 
@@ -120,9 +135,8 @@ void sistema_waves(Wave* wave, Inimigo** qtd_inimigos, int* total_inimigos, Play
             }
         }
 
-        //atualiza os estados para iniciar a próxima wave
         wave->atual++;
         wave->andamento = true;
         wave->finalizado = false;
     }
-}   
+}
