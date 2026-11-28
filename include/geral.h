@@ -1,6 +1,8 @@
 #ifndef GERAL_H
 #define GERAL_H
 
+#include <stdbool.h>
+#include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include "player.h"
 #include "inimigos.h"
