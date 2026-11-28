@@ -182,26 +182,33 @@ void checar_reacoes(SistemaQuimico* sq, Player* player) {
 
     if (pode_fazer(sq, REC_HCL)) {
         sintetizar_arma(sq, REC_HCL, &sq->acida_desbloqueada, ARMA_ACIDA);
+        player->score += 150;
     }
     else if (pode_fazer(sq, REC_NAOH)) {
         sintetizar_arma(sq, REC_NAOH, &sq->basica_desbloqueada, ARMA_BASICA);
+        player->score += 150;
     }
     else if (pode_fazer(sq, REC_NACL)) {
         sintetizar_arma(sq, REC_NACL, &sq->metalica_desbloqueada, ARMA_METALICA);
+        player->score += 150;
     }
     else if (pode_fazer(sq, REC_H2O)) {
         consumir(sq, REC_H2O);
         player->vida += 1;
+        player->score += 150;
     }
     else if (pode_fazer(sq, REC_CO2)) {
         consumir(sq, REC_CO2);
         player->dano += 1;
+        player->score += 150;
     }
     else if (pode_fazer(sq, REC_SO2)) {
         consumir(sq, REC_SO2);
         player->vel += 1;
+        player->score += 150;
     }
 }
+
 void desenhar_progresso_receitas(SistemaQuimico* sq, ALLEGRO_FONT* fonte, int x, int y) {
     ALLEGRO_COLOR verde = al_map_rgb(80, 255, 80);
     ALLEGRO_COLOR cinza = al_map_rgb(200, 200, 200);
@@ -238,14 +245,13 @@ void desenhar_progresso_receitas(SistemaQuimico* sq, ALLEGRO_FONT* fonte, int x,
                 tem = precisa;
             }
 
-            int pos_x = x + 45 + coluna * 52;
+            int pos_x = x + 42 + coluna * 56;
 
-            if (coluna == 0) {
-                al_draw_textf(fonte, cor, pos_x, pos_y, ALLEGRO_ALIGN_LEFT, "%s %d/%d", simbolo_elemento((Elemento)e), tem, precisa);
+            if (coluna > 0) {
+                al_draw_text(fonte, cor, pos_x - 9, pos_y, ALLEGRO_ALIGN_LEFT, "|");
             }
-            else {
-                al_draw_textf(fonte, cor, pos_x, pos_y, ALLEGRO_ALIGN_LEFT, "| %s %d/%d", simbolo_elemento((Elemento)e), tem, precisa);
-            }
+
+            al_draw_textf(fonte, cor, pos_x, pos_y, ALLEGRO_ALIGN_LEFT, "%s %d/%d", simbolo_elemento((Elemento)e), tem, precisa);
             coluna++;
         }
     }

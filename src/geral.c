@@ -1,3 +1,8 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
@@ -148,6 +153,8 @@ void desenhar_tutorial(int width, int height, ALLEGRO_FONT* fonte_titulo, ALLEGR
 
 void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiros[], Wave* wave, int width, int height) {
     *player = init_player(width, height);
+    player->score = 0;
+    player->combo = 1;
 
     for (int i = 0; i < total_inimigos; i++) {
         int tamanho_inimigo = 20;
@@ -182,4 +189,173 @@ void reset(Player* player, Inimigo qtd_inimigos[], int total_inimigos, Tiro tiro
     for (int i = 0; i < MAX_TIROS; i++) {
         tiros[i] = init_tiro();
     }
+}
+
+// Pop-up padrão (usado para arma desbloqueada e arma bloqueada)
+void desenhar_popup(int width, ALLEGRO_FONT* fonte_titulo, ALLEGRO_FONT* fonte_dica, const char* titulo, const char* dica, ALLEGRO_COLOR cor) {
+    float centro_x = width / 1.6f;
+
+    al_draw_filled_rectangle(centro_x - 190, 120, centro_x + 190, 170, al_map_rgb(0, 0, 0));
+    al_draw_rectangle(centro_x - 190, 120, centro_x + 190, 170, cor, 2);
+    al_draw_text(fonte_titulo, cor, centro_x, 128, ALLEGRO_ALIGN_CENTER, titulo);
+    al_draw_text(fonte_dica, al_map_rgb(255, 255, 255), centro_x, 150, ALLEGRO_ALIGN_CENTER, dica);
+}
+
+// Tela de Game Over / Vitória
+void desenhar_fim_de_jogo(int width, ALLEGRO_FONT* fonte_titulo, ALLEGRO_FONT* fonte_texto, bool venceu, const char* nome, int score) {
+    float centro_x = width / 1.6f;
+    ALLEGRO_COLOR cor_titulo = al_map_rgb(220, 10, 10);
+    const char* titulo = "VOCE MORREU";
+
+    if (venceu == true) {
+        cor_titulo = al_map_rgb(0, 255, 0);
+        titulo = "VOCE VENCEU O JOGO!";
+    }
+
+    al_draw_filled_rectangle(centro_x - 200, 100, centro_x + 200, 230, al_map_rgb(0, 0, 0));
+    al_draw_rectangle(centro_x - 200, 100, centro_x + 200, 230, cor_titulo, 2);
+
+    al_draw_text(fonte_titulo, cor_titulo, centro_x, 112, ALLEGRO_ALIGN_CENTER, titulo);
+    al_draw_textf(fonte_texto, al_map_rgb(255, 255, 255), centro_x, 152, ALLEGRO_ALIGN_CENTER, "Jogador: %s", nome);
+    al_draw_textf(fonte_texto, al_map_rgb(255, 235, 120), centro_x, 176, ALLEGRO_ALIGN_CENTER, "Score final: %d", score);
+    al_draw_text(fonte_texto, al_map_rgb(220, 220, 220), centro_x, 202, ALLEGRO_ALIGN_CENTER, "ENTER para voltar ao menu");
+}
+
+// Tela para digitar o apelido de 3 letras
+void desenhar_tela_nome(int width, int height, ALLEGRO_FONT* fonte_titulo, ALLEGRO_FONT* fonte_letra, ALLEGRO_FONT* fonte_texto, char nome[], int tamanho) {
+    ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
+    ALLEGRO_COLOR cinza = al_map_rgb(90, 90, 90);
+    ALLEGRO_COLOR amarelo = al_map_rgb(255, 235, 120);
+
+    float centro_x = width / 2.0f;
+    float topo_caixas = height * 0.4f;
+
+    al_draw_text(fonte_titulo, branco, centro_x, height * 0.2f, ALLEGRO_ALIGN_CENTER, "DIGITE SEU APELIDO");
+    al_draw_text(fonte_texto, cinza, centro_x, height * 0.2f + 40, ALLEGRO_ALIGN_CENTER, "3 letras, estilo arcade");
+
+    for (int i = 0; i < 3; i++) {
+        float x1 = centro_x - 105 + i * 75;
+        float y1 = topo_caixas;
+        float x2 = x1 + 60;
+        float y2 = y1 + 70;
+
+        ALLEGRO_COLOR cor_caixa = cinza;
+        if (i == tamanho) {
+            cor_caixa = amarelo;     // caixa onde a próxima letra vai entrar
+        }
+
+        al_draw_rectangle(x1, y1, x2, y2, cor_caixa, 2);
+
+        if (i < tamanho) {
+            al_draw_textf(fonte_letra, branco, (x1 + x2) / 2.0f, y1 + 19, ALLEGRO_ALIGN_CENTER, "%c", nome[i]);
+        }
+    }
+
+    al_draw_text(fonte_texto, branco, centro_x, height * 0.7f, ALLEGRO_ALIGN_CENTER, "ENTER: confirmar | BACKSPACE: apagar | ESC: voltar");
+}
+
+// Tela do ranking (Top 10)
+void desenhar_ranking(int width, int height, ALLEGRO_FONT* fonte_titulo, ALLEGRO_FONT* fonte_texto, RegistroRanking ranking[], int total) {
+    ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
+    ALLEGRO_COLOR cinza = al_map_rgb(90, 90, 90);
+    ALLEGRO_COLOR amarelo = al_map_rgb(255, 235, 120);
+
+    float centro_x = width / 2.0f;
+
+    al_draw_text(fonte_titulo, branco, centro_x, 10, ALLEGRO_ALIGN_CENTER, "RANKING - TOP 10");
+    al_draw_line(20, 46, width - 20, 46, cinza, 1);
+
+    if (total == 0) {
+        al_draw_text(fonte_texto, branco, centro_x, 200, ALLEGRO_ALIGN_CENTER, "Nenhuma partida registrada ainda.");
+    }
+
+    for (int i = 0; i < total; i++) {
+        ALLEGRO_COLOR cor = branco;
+        if (i == 0) {
+            cor = amarelo;           // o primeiro lugar fica destacado
+        }
+
+        int y = 70 + i * 36;
+
+        al_draw_textf(fonte_texto, cor, centro_x - 160, y, ALLEGRO_ALIGN_LEFT, "%d.", i + 1);
+        al_draw_textf(fonte_texto, cor, centro_x - 90, y, ALLEGRO_ALIGN_LEFT, "%s", ranking[i].nome);
+        al_draw_textf(fonte_texto, cor, centro_x + 160, y, ALLEGRO_ALIGN_RIGHT, "%d", ranking[i].score);
+    }
+
+    al_draw_text(fonte_texto, amarelo, centro_x, height - 30, ALLEGRO_ALIGN_CENTER, "Pressione ESC ou ENTER para voltar");
+}
+
+// Score final = score + 10 por RP que sobrou + 200 por ponto de vida
+int calcular_score_final(Player* player, SistemaQuimico* sq) {
+    int bonus_rp = sq->research_point * 10;
+    int bonus_vida = player->vida * 200;
+
+    return player->score + bonus_rp + bonus_vida;
+}
+
+// Adiciona uma linha "NOME SCORE" no final do ranking.txt
+void salvar_score(const char* nome, int score) {
+    FILE* arquivo = fopen("ranking.txt", "a");
+
+    if (arquivo == NULL) {
+        return;
+    }
+
+    fprintf(arquivo, "%s %d\n", nome, score);
+    fclose(arquivo);
+}
+
+// Lê o ranking.txt, guarda os 10 maiores scores e ordena (Bubble Sort)
+int carregar_ranking(RegistroRanking ranking[]) {
+    int total = 0;
+    char nome[4] = { 0 };
+    int score = 0;
+
+    FILE* arquivo = fopen("ranking.txt", "r");
+
+    if (arquivo == NULL) {
+        return 0;
+    }
+
+    while (fscanf(arquivo, "%3s %d", nome, &score) == 2) {
+        RegistroRanking novo = { { 0 }, 0 };
+
+        for (int k = 0; k < 4; k++) {
+            novo.nome[k] = nome[k];
+        }
+        novo.score = score;
+
+        if (total < TOP_RANKING) {
+            ranking[total] = novo;
+            total++;
+        }
+        else {
+            // lista cheia: troca o menor score se o novo for maior
+            int menor = 0;
+            for (int i = 1; i < TOP_RANKING; i++) {
+                if (ranking[i].score < ranking[menor].score) {
+                    menor = i;
+                }
+            }
+
+            if (novo.score > ranking[menor].score) {
+                ranking[menor] = novo;
+            }
+        }
+    }
+
+    fclose(arquivo);
+
+    // Bubble Sort: maior score primeiro
+    for (int i = 0; i < total - 1; i++) {
+        for (int j = 0; j < total - 1 - i; j++) {
+            if (ranking[j].score < ranking[j + 1].score) {
+                RegistroRanking aux = ranking[j];
+                ranking[j] = ranking[j + 1];
+                ranking[j + 1] = aux;
+            }
+        }
+    }
+
+    return total;
 }
