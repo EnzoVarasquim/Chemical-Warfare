@@ -65,7 +65,7 @@ int main()
     AtaqueBoss ataque_boss;
     init_ataque_boss(&ataque_boss);
 
-    ItemLab itens_lab[3];
+    ItemLab itens_lab[3] = { 0 };
     init_itens_lab(itens_lab);
 
     int total_inimigos = 3; // Mantém a contagem original de inimigos por wave
@@ -73,7 +73,7 @@ int main()
 
     Mouse mouse = init_mouse();
     Keyboard keyboard = init_keyboard();
-    Tiro num_tiros[MAX_TIROS];
+    Tiro num_tiros[MAX_TIROS] = { 0 };
 
     for (int i = 0; i < MAX_TIROS; i++) {
         num_tiros[i] = init_tiro();
@@ -190,8 +190,10 @@ int main()
             redesenhar = true;
         }
 
-        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+            printf("SAIU: DISPLAY_CLOSE\n");
             rodando = false;
+        }
 
         // Se a janela mudar de tamanho, recalcula a escala do menu.
         if (event.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
@@ -293,6 +295,7 @@ int main()
                 }
                 // SAIR
                 else if (opcao_menu == 3) {
+                    printf("SAIU: opcao SAIR (opcao_menu=%d)\n", opcao_menu);   //debug
                     rodando = false;
                 }
             }
@@ -530,7 +533,7 @@ int main()
                 atualizar_moedas(qtd_inimigos, total_inimigos, &player, &sq);
 
                 if (wave.laboratorio) {
-                    computar_compra_item(&sq, &player, &itens_lab, width, height);
+                    computar_compra_item(&sq, &player, itens_lab, width, height);
                 }
 
                 for (int i = 0; i < total_inimigos; i++) {
@@ -613,6 +616,7 @@ int main()
                 desenhar_barra_lateral(width, height);
 
                 if (saindo) {
+                    printf("SAIU: saindo=true\n");   //debug
                     al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), width / 1.6, height / 2.25, ALLEGRO_ALIGN_CENTER, "Saindo...");
                     al_flip_display();
                     al_rest(0.5);
@@ -808,29 +812,30 @@ int main()
                 }
             }
         }
-
-        free(qtd_inimigos);
-
-        // desliga os eventos e desinstala as bibliotecas quando fecha a tela
-        al_destroy_sample(som_tiro);
-        al_destroy_audio_stream(musica_menu);
-        al_destroy_audio_stream(musica_background);
-        al_destroy_event_queue(event_queue);
-        al_destroy_display(display);
-        al_destroy_timer(timer);
-        al_destroy_font(fonte_grande);
-        al_destroy_font(fonte_media_1);
-        al_destroy_font(fonte_media_2);
-        al_destroy_font(fonte_pequena);
-        al_destroy_font(fonte_menu_titulo);
-        al_destroy_font(fonte_menu_botao);
-
-        al_uninstall_mouse();
-        al_uninstall_keyboard();
-        al_uninstall_audio();
-        al_shutdown_primitives_addon();
-        al_uninstall_system();
-
-        return 0;
     }
+
+    free(qtd_inimigos);
+
+    // desliga os eventos e desinstala as bibliotecas quando fecha a tela
+    al_destroy_sample(som_tiro);
+    al_destroy_audio_stream(musica_menu);
+    al_destroy_audio_stream(musica_background);
+    al_destroy_event_queue(event_queue);
+    al_destroy_display(display);
+    al_destroy_timer(timer);
+    al_destroy_font(fonte_grande);
+    al_destroy_font(fonte_media_1);
+    al_destroy_font(fonte_media_2);
+    al_destroy_font(fonte_pequena);
+    al_destroy_font(fonte_menu_titulo);
+    al_destroy_font(fonte_menu_botao);
+
+    al_uninstall_mouse();
+    al_uninstall_keyboard();
+    al_uninstall_audio();
+    al_shutdown_primitives_addon();
+    al_uninstall_system();
+
+    return 0;
+    
 }
